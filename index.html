@@ -90,6 +90,9 @@ input[type=color]{width:34px;height:28px;padding:0;border:1px solid var(--line-s
 .look[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent);background:var(--accent-soft)}
 .look i{width:26px;height:26px;border-radius:5px;flex:0 0 auto;display:grid;place-items:center;font:italic 700 15px "Cormorant Garamond",serif;border:1px solid rgba(0,0,0,.15)}
 
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1px solid var(--line-strong);background:var(--panel);border-radius:999px;padding:4px 10px;font-size:12px;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:700}
 .search{display:flex;gap:6px}
 .search input{flex:1}
 .tabs{display:flex;gap:2px;margin-top:10px;border-bottom:1px solid var(--line)}
@@ -139,12 +142,9 @@ canvas#c.dragging{cursor:grabbing}
 .setup textarea{min-height:110px}
 .setup .actions{display:flex;gap:8px;justify-content:flex-end;align-items:center;margin-top:8px}
 .setup .actions .status{flex:1;font-size:12px;color:var(--muted)}
+.setup .row .hint{flex:1}
 .btn.gen{background:linear-gradient(135deg,#19441f,#2f6b3a);color:#fff;border-color:#19441f;font-weight:700}
 .btn.gen:hover{filter:brightness(1.1)}
-.setup .field{margin-bottom:12px}
-.setup textarea{min-height:120px}
-.setup .actions{display:flex;gap:8px;justify-content:flex-end;align-items:center;margin-top:8px}
-.setup .actions .status{flex:1;font-size:12px;color:var(--muted)}
 
 
 @media (max-width:1100px){
@@ -300,7 +300,9 @@ canvas#c.dragging{cursor:grabbing}
   <div>
     <h2>Generate a graphic</h2>
     <p>Type what it should say — first line is the headline, the next line the subline. Add a date or time and it becomes an event. Paste a client's quote for a review. Leave it blank for logo only. Keep pressing Generate until you like one, then tweak.</p>
-    <div class="field"><textarea id="genText" placeholder="Pre-Planning&#10;a simple process"></textarea></div>
+    <div class="chips" id="topicChips" style="margin-bottom:6px"></div>
+    <div class="row" style="margin-bottom:8px"><button class="btn sm" id="suggestBtn" title="Write a headline and subline in the house voice">✎ Suggest text</button><span class="hint">or paste the post's caption and it will pull the headline, topic and any date out of it</span></div>
+    <div class="field"><textarea id="genText" placeholder="Pre-Planning&#10;a simple process&#10;&#10;…or paste the whole caption here"></textarea></div>
     <div class="row" style="margin-bottom:0"><label>Template</label>
       <div class="seg" id="genTpl">
         <button data-v="auto" aria-pressed="true">Auto</button>
@@ -1270,6 +1272,7 @@ function learnFromCurrent(){
   bump('look', S.look); bump('fadePos', S.bg.fadePos);
   if (S.template === 'headline' || S.template === 'event') bump('textPos', S.textPos);
   const hl0 = byId('headline'); if (hl0) bump('rules', hl0.rules ? 'on' : 'off');
+  const sb0 = byId('sub'); if (sb0 && sb0.text && S.template === 'headline') { bump('sub', sb0.text.trim()); learn.subTopic = learn.subTopic || {}; learn.subTopic[sb0.text.trim()] = detectTopic(hl0?.text || '') || 'funeral'; }
   const hl = byId('headline'); if (hl && hl.shade) bump('shade', hl.shade.style);
   if (IMG.src?.term) bump('term', IMG.src.term);
 }
@@ -1280,7 +1283,85 @@ function pick(options, kind){
   for (let i=0;i<options.length;i++) { r -= weights[i]; if (r <= 0) return options[i][0]; }
   return options[options.length-1][0];
 }
+// ---------- phrase bank (house voice, seeded from the 2026 posts) ----------
+const BANK = {
+  pre:      { label:'Pre-Planning',     heads:['Pre-Planning'],
+              subs:['a simple process','at your own pace','opens gentle conversation','can be joyful','planning ahead at your own pace','a quiet gift for the people you love','peace of mind, one conversation at a time','your wishes, written down','gentle planning, no pressure','decide today, rest easy tomorrow'] },
+  funeral:  { label:'Funeral Planning', heads:['Funeral Planning'],
+              subs:['bringing you relief','is easy with us','planting peace here','reflecting your loved one’s wishes','together, one step at a time','we walk with you','guided with care','a service that feels like them','here when you need us','every detail, handled gently'] },
+  cremation:{ label:'Cremation',        heads:['Cremation','Cremation Planning'],
+              subs:['memorable & simple','honoring your loved one','is thoughtful','is planning with mindfulness','we keep anxiety-free','simple, dignified, personal','with the same care','options explained gently','meaningful in every form'] },
+  grief:    { label:'Grief Support',    heads:['Grief Support','Self-Care for Grief','Grieving Together'],
+              subs:['you don’t have to carry it alone','gentle support, every week','a place to be heard','support for the days after','healing takes its own time','walking with you through loss','join us — in person or online','room for every feeling'] },
+  thanks:   { label:'Thank you',        heads:['Thank You','With Gratitude'],
+              subs:['for trusting us with your family','from our family to yours','your kind words mean so much','it is our honor to serve','grateful for the families we walk with'] },
+};
+const SEASONAL_LINES = {
+  spring:['spring organizing is Pre-Planning','new season, gentle plans','as the days grow longer','a season for fresh starts'],
+  summer:['summer evenings, quiet conversations','a good season to plan ahead','long days, lighter hearts'],
+  autumn:['as the season turns','fall can bring up fresh grief','gather, remember, rest','a season for reflection'],
+  winter:['a season for remembering','light in the long nights','holding space this holiday season','warmth in the quiet months'],
+};
+const SEASON_NAME = _m >= 8 && _m <= 10 ? 'autumn' : _m >= 11 || _m <= 1 ? 'winter' : _m <= 4 ? 'spring' : 'summer';
+let topic = 'any';
+function renderTopics(){
+  const box = $('#topicChips'); box.innerHTML = '';
+  for (const [k,l] of [['any','Any'],...Object.entries(BANK).map(([k,v]) => [k,v.label]),['seasonal','Seasonal']])
+    box.append(h('button',{class:'chip','aria-pressed':String(k===topic),onclick:()=>{ topic = k; renderTopics(); }}, l));
+}
+// Sublines the team has actually downloaded join the bank and get weighted up over time.
+function subsFor(key){
+  const base = BANK[key].subs.map(t => [t, 1]);
+  const learned = Object.keys(learn.sub || {}).filter(t => (learn.subTopic||{})[t] === key && !BANK[key].subs.includes(t)).map(t => [t, 1]);
+  return base.concat(learned);
+}
+function suggestText(key){
+  const k = key === 'any' ? pick(Object.keys(BANK).filter(x => x !== 'thanks').map(x => [x, x === 'grief' ? 2 : 3]), 'topic') : key;
+  if (k === 'seasonal') {
+    const line = pick(SEASONAL_LINES[SEASON_NAME].map(t => [t,1]), 'seasonal');
+    if (/pre-planning/i.test(line)) return { headline: line.replace(/\s*pre-planning$/i,''), sub: 'Pre-Planning', topic:'pre' };
+    const t2 = pick([['pre',3],['funeral',2],['grief',2]], 'topic');
+    return { headline: pick(BANK[t2].heads.map(x => [x,1]), 'head'), sub: line, topic: t2 };
+  }
+  return { headline: pick(BANK[k].heads.map(x => [x,1]), 'head'), sub: pick(subsFor(k), 'sub'), topic: k };
+}
+function detectTopic(t){
+  const x = t.toLowerCase();
+  if (/pre-?plan|plan(ning)? ahead|advance plan|my wishes|your wishes/.test(x)) return 'pre';
+  if (/cremat/.test(x)) return 'cremation';
+  if (/funeral plan|arrangement|memorial service|start planning|plan a service|when a death occurs|after a loss|decisions that|what needs to happen/.test(x)) return 'funeral';
+  if (/grie[fv]|mourn|self-?care|bereave|support group/.test(x)) return 'grief';
+  if (/honou?red|thank|grateful|review|testimonial|families share|kind words/.test(x)) return 'thanks';
+  return null;
+}
+// Reads a pasted caption: quoted title, dates/times, topic words → a ready brief.
+function analyzeCaption(txt){
+  const quoted = ((txt.match(/[“"]([^”"]{6,90})[”"]/) || [])[1] || '').replace(/[\s,.;:!]+$/, '');
+  const tp = detectTopic(txt);
+  const time = (txt.match(/\b\d{1,2}(:\d{2})?\s*(?:[–-]\s*\d{1,2}(:\d{2})?\s*)?(am|pm|a\.m\.|p\.m\.)\b/i) || [])[0] || '';
+  const date = (txt.match(/\b(?:(?:mon|tues|wednes|thurs|fri|satur|sun)day,?\s+)?(?:jan|feb|mar|apr|may|jun|jul|aug|sep|sept|oct|nov|dec)[a-z]*\.?\s+\d{1,2}(?:st|nd|rd|th)?(?:,?\s+\d{4})?\b/i) || [])[0] || (/\btonight\b/i.test(txt) ? 'Tonight' : /\btomorrow\b/i.test(txt) ? 'Tomorrow' : '');
+  const eventish = /webinar|join us|gather|rsvp|session|support group|in person|online|zoom|picnic|event/i.test(txt) && (time || date || /webinar|rsvp/i.test(txt));
+  const isReviewPost = /review|testimonial|families share|one family wrote|kind words/i.test(txt);
+  if (eventish) {
+    const title = quoted || (tp ? (BANK[tp].heads[0] + (/webinar/i.test(txt) ? ' Webinar' : /group/i.test(txt) ? ' Group' : '')) : 'Join Us');
+    const details = [date, time, /zoom|online|virtual/i.test(txt) ? 'via Zoom' : /in person/i.test(txt) ? 'in person' : ''].filter(Boolean).join('\n');
+    return { template:'event', headline:title, sub: details || 'Details in the caption', quote:'', attr:'' };
+  }
+  // blog shares stay logo-only (the photo carries the mood), matching the 2026 posts
+  if (/\bblog\b|read more/i.test(txt)) return { template:'logo', headline:'', sub:'', quote:'', attr:'' };
+  if (isReviewPost || tp === 'thanks') { const sgg = suggestText('thanks'); return { template:'headline', headline:sgg.headline, sub:sgg.sub, quote:'', attr:'' }; }
+  if (tp) { const sgg = suggestText(tp); return { template:'headline', headline:sgg.headline, sub:sgg.sub, quote:'', attr:'' }; }
+  // no clear topic (a blog share, a reflection): the photo carries it
+  return { template:'logo', headline:'', sub:'', quote:'', attr:'' };
+}
 function parseBrief(txt){
+  const wordsAll = txt.split(/\s+/).filter(Boolean).length;
+  const captionSignals = /https?:\/\/|read more|our new blog|learn more|\bblog\b|join us|invited|we’ll|we'll|our team|start here|find .* here/i.test(txt);
+  const firstPerson = /\b(we were treated|treated us|treated like family|my (mom|dad|mother|father)|our (mom|dad|mother|father|parents)|thank you|recommend|helped us|took care of us|handled everything)\b/i.test(txt);
+  if ((wordsAll > 25 && !firstPerson) || captionSignals) return analyzeCaption(txt);
+  return parseLines(txt);
+}
+function parseLines(txt){
   const lines = txt.split('\n').map(l => l.trim()).filter(Boolean);
   const attr = lines.find(l => /^[\u2014\u2013-]\s*/.test(l));
   const body = lines.filter(l => l !== attr);
@@ -1352,7 +1433,8 @@ async function generate(){
   if (genBusy) return; genBusy = true;
   const btn = $('#genGo'); btn.disabled = true; $('#genStatus').textContent = 'Building…';
   try {
-    const brief = parseBrief($('#genText').value);
+    let brief = parseBrief($('#genText').value);
+    if (brief.template === 'logo' && !$('#genText').value.trim() && topic !== 'any') { const sgg = suggestText(topic); brief = { template:'headline', headline:sgg.headline, sub:sgg.sub, quote:'', attr:'' }; }
     const forced = document.querySelector('#genTpl button[aria-pressed="true"]').dataset.v;
     pushUndo();
     S.template = forced === 'auto' ? brief.template : forced;
@@ -1382,7 +1464,8 @@ async function shufflePhoto(){
 function shuffleLook(){
   pushUndo(); randomStyle(measureLum()); syncControls(); renderInspector(); render(); persist();
 }
-$('#genBtn').addEventListener('click', () => { $('#genStatus').textContent = ''; $('#gen').hidden = false; setTimeout(() => $('#genText').focus(), 0); });
+$('#genBtn').addEventListener('click', () => { $('#genStatus').textContent = ''; renderTopics(); $('#gen').hidden = false; setTimeout(() => $('#genText').focus(), 0); });
+$('#suggestBtn').addEventListener('click', () => { const sgg = suggestText(topic); $('#genText').value = sgg.headline + '\n' + sgg.sub; $('#genStatus').textContent = 'Press Suggest again for another, or edit it, then Generate.'; });
 $('#genCancel').addEventListener('click', () => { $('#gen').hidden = true; });
 $('#genGo').addEventListener('click', generate);
 $('#genText').addEventListener('keydown', e => { if ((e.metaKey||e.ctrlKey) && e.key === 'Enter') generate(); });
