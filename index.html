@@ -135,6 +135,12 @@ canvas#c.dragging{cursor:grabbing}
 .setup > div{background:var(--panel);color:var(--ink);border-radius:12px;padding:22px 24px;max-width:460px;width:100%;box-shadow:var(--shadow)}
 .setup h2{margin:0 0 6px;font:600 24px/1.1 "Cormorant Garamond",serif}
 .setup p{margin:0 0 12px;color:var(--muted);font-size:13px;line-height:1.5}
+.setup .field{margin-bottom:12px}
+.setup textarea{min-height:120px}
+.setup .actions{display:flex;gap:8px;justify-content:flex-end;align-items:center;margin-top:8px}
+.setup .actions .status{flex:1;font-size:12px;color:var(--muted)}
+.btn.gen{background:linear-gradient(135deg,#19441f,#2f6b3a);color:#fff;border-color:#19441f;font-weight:700}
+.btn.gen:hover{filter:brightness(1.1)}
 
 @media (max-width:1100px){
   .app{grid-template-columns:1fr 1fr}
@@ -206,6 +212,8 @@ canvas#c.dragging{cursor:grabbing}
           <b>Photo key</b> — photos come from Pexels (free for commercial use). Paste the team's key here; it's remembered on this computer.
         </div>
         <div class="search"><input type="password" id="apiKey" placeholder="Paste Pexels API key" autocomplete="off"><button class="btn sm" id="saveKey">Save</button></div>
+        <div class="note" style="margin:10px 0 8px"><b>AI key</b> — powers “Generate for me”. Paste the team's Anthropic key here.</div>
+        <div class="search"><input type="password" id="aiKeyInput" placeholder="sk-ant-…" autocomplete="off"><button class="btn sm" id="saveAiKey">Save</button></div>
       </div>
       <div class="search"><input type="text" id="q" placeholder="Search photos: autumn path, family, candle…"><button class="btn sm" id="searchBtn">Search</button></div>
       <div class="tabs" id="tabs">
@@ -246,6 +254,7 @@ canvas#c.dragging{cursor:grabbing}
     <div class="toolbar">
       <span class="hint">Click anything on the graphic to select it. Drag to move · corners to resize · <span class="kbd">←↑↓→</span> nudge · <span class="kbd">⌫</span> remove</span>
       <span class="spacer"></span>
+      <button class="btn sm gen" id="genBtn" title="Describe the post or paste the caption and get a draft to edit">✨ Generate for me</button>
       <button class="btn sm" id="addText">+ Add text</button>
     </div>
     <div class="canvas-wrap" id="wrap">
@@ -275,8 +284,18 @@ canvas#c.dragging{cursor:grabbing}
   <div>
     <h2>One-time setup</h2>
     <p>This tool searches photos on Pexels. Paste the team's Pexels key once and it's remembered on this computer. If someone sent you a setup link, you won't see this again.</p>
-    <div class="search"><input type="password" id="setupKey" placeholder="Paste Pexels API key" autocomplete="off"><button class="btn primary" id="setupSave">Save</button></div>
-    <p style="margin-top:12px"><button class="btn link" id="setupSkip">Skip — I'll upload my own photos</button></p>
+    <div class="field"><label for="setupKey">Pexels key (photo search)</label><input type="password" id="setupKey" placeholder="Paste Pexels API key" autocomplete="off"></div>
+    <div class="field"><label for="setupAi">Anthropic key (“Generate for me”) — optional</label><input type="password" id="setupAi" placeholder="sk-ant-…" autocomplete="off"></div>
+    <div class="actions"><button class="btn link" id="setupSkip">Skip for now</button><button class="btn primary" id="setupSave">Save</button></div>
+  </div>
+</div>
+
+<div class="setup" id="gen" hidden>
+  <div>
+    <h2>Generate a draft</h2>
+    <p>Paste the post's caption, or describe what the graphic is for. You'll get a template, headline, look and photo to start from — then edit anything.</p>
+    <div class="field"><textarea id="genInput" placeholder="e.g. Tonight we'll gather online for “Grieving When the Relationship Was Strained,” a webinar with grief expert Heather Stang…"></textarea></div>
+    <div class="actions"><span class="status" id="genStatus"></span><button class="btn link" id="genCancel">Cancel</button><button class="btn gen" id="genGo">Generate</button></div>
   </div>
 </div>
 
@@ -309,7 +328,7 @@ let S = { template:'headline', size:'square', logoPos:'top', look:'classic',
 const IMG = { bg:null, logo:null, src:null }; // src: {kind:'pexels',id,url,tiny,photographer,alt} | {kind:'own',data}
 let undo = [];
 let bokehCache = null, bokehKey = '';
-let page = 1, lastQuery = '', results = [], apiKey = '', tab = 'search';
+let page = 1, lastQuery = '', results = [], apiKey = '', aiKey = '', tab = 'search';
 let photoMem = { used:{}, favs:{} };
 let currentDraftId = null;
 
@@ -957,8 +976,9 @@ $('#q').addEventListener('keydown', e => { if (e.key === 'Enter') search(true); 
 $('#keyToggle').addEventListener('click', () => { $('#keyBox').hidden = !$('#keyBox').hidden; });
 function setKey(k){ apiKey = k.trim(); persist(); if (apiKey) { $('#keyBox').hidden = true; $('#setup').hidden = true; toast('Photo key saved'); if (!$('#q').value.trim()) $('#q').value = DEFAULT_QUERY[S.template]; search(true); } }
 $('#saveKey').addEventListener('click', () => setKey($('#apiKey').value));
-$('#setupSave').addEventListener('click', () => setKey($('#setupKey').value));
-$('#setupKey').addEventListener('keydown', e => { if (e.key === 'Enter') setKey($('#setupKey').value); });
+$('#saveAiKey').addEventListener('click', () => { aiKey = $('#aiKeyInput').value.trim(); persist(); if (aiKey) { $('#keyBox').hidden = true; toast('AI key saved'); } });
+$('#setupSave').addEventListener('click', () => { const ai = $('#setupAi').value.trim(); if (ai) { aiKey = ai; persist(); } const k = $('#setupKey').value.trim(); if (k) setKey(k); else $('#setup').hidden = true; });
+$('#setupKey').addEventListener('keydown', e => { if (e.key === 'Enter') $('#setupSave').click(); });
 $('#setupSkip').addEventListener('click', () => { $('#setup').hidden = true; });
 
 // ---------- own photo ----------
@@ -1084,7 +1104,7 @@ $('#saveBtn').addEventListener('click', saveDraft);
 
 // ---------- persistence (per device) ----------
 function persist(){
-  try { localStorage.setItem(LS.prefs, JSON.stringify({ template:S.template, size:S.size, logoPos:S.logoPos, look:S.look, apiKey })); } catch {}
+  try { localStorage.setItem(LS.prefs, JSON.stringify({ template:S.template, size:S.size, logoPos:S.logoPos, look:S.look, apiKey, aiKey })); } catch {}
 }
 function restore(){
   let o = null; try { o = JSON.parse(localStorage.getItem(LS.prefs)||'null'); } catch {}
@@ -1094,11 +1114,14 @@ function restore(){
   if (['top','with','bottom'].includes(o.logoPos)) S.logoPos = o.logoPos;
   if (LOOKS[o.look]) S.look = o.look;
   if (typeof o.apiKey === 'string' && o.apiKey) apiKey = o.apiKey;
+  if (typeof o.aiKey === 'string' && o.aiKey) aiKey = o.aiKey;
 }
 // A setup link (…/#key=XXXX) stores the key and cleans the address bar.
 function keyFromLink(){
-  const m = location.hash.match(/[#&]key=([A-Za-z0-9]+)/);
-  if (m) { apiKey = m[1]; persist(); history.replaceState(null, '', location.pathname + location.search); return true; }
+  const m = location.hash.match(/[#&]key=([A-Za-z0-9_-]+)/), a = location.hash.match(/[#&]ai=([A-Za-z0-9_-]+)/);
+  if (m) apiKey = m[1];
+  if (a) aiKey = a[1];
+  if (m || a) { persist(); history.replaceState(null, '', location.pathname + location.search); return true; }
   return false;
 }
 
@@ -1168,6 +1191,86 @@ $('#dlAllBtn').addEventListener('click', async () => {
   }
 });
 
+// ---------- "Generate for me" (Claude) ----------
+const GEN_SYSTEM = `You plan social-media graphics for Bakken-Young Funeral & Cremation Services, a family funeral home. Tone: calm, warm, respectful, plain-spoken, never salesy or morbid.
+
+You are given a post caption or a rough concept. Decide how the graphic should look and return ONLY the JSON described by the schema.
+
+Templates:
+- "logo": photo with just the logo. Use when the caption is reflective, seasonal, or a blog share where the image should carry the mood and no title is needed.
+- "headline": photo + short italic headline + one-line subheadline + logo. Use for services, events, webinars, planning topics, holidays, announcements.
+- "review": a client's quote in a plum box with a FEATURED REVIEW label. Use only when the caption contains or clearly refers to a family's testimonial.
+
+Rules:
+- headline: 2-5 words, title case, no period (e.g. "Funeral Planning", "Pre-Planning", "Grieving Complicated Loss"). Empty string for logo/review.
+- subheadline: one short line, 4-9 words, sentence case, no period (e.g. "Reflecting your loved one's wishes", "Tonight at 7 PM with Heather Stang"). Empty string for logo/review.
+- quote: for review only - the testimonial in the family's own words, trimmed to 45-80 words, wrapped in curly quotes. Otherwise empty string.
+- attribution: for review only, e.g. "— from a client" or "— the Johnson family" if a name is given. Otherwise empty string.
+- photo_search: 2-4 concrete stock-photo search words that a photo library will match well (subjects and setting, not feelings). Prefer calm nature, seasons, hands, candles, homes, families, everyday moments. Avoid coffins, hospitals, crying, cemeteries unless explicitly asked. Examples: "autumn forest path", "grandparents grandchild garden", "woman writing journal window", "soft candle light".
+- look: "classic" (white text, works on most photos), "green" (deep-green text, only for bright airy photos like white flowers or a sunlit room), "gold" (gold headline, for warm evening or holiday moods), "cream" (soft cream text with plum shading, for tender or memorial moods).
+- logo_position: for headline only: "top" (logo top, text bottom), "with" (text and logo together in the middle), "bottom" (text top, logo bottom). Otherwise "top".`;
+const GEN_SCHEMA = { type:'object', additionalProperties:false,
+  required:['template','headline','subheadline','quote','attribution','photo_search','look','logo_position'],
+  properties:{ template:{type:'string',enum:['logo','headline','review']}, headline:{type:'string'}, subheadline:{type:'string'}, quote:{type:'string'}, attribution:{type:'string'},
+               photo_search:{type:'string'}, look:{type:'string',enum:['classic','green','gold','cream']}, logo_position:{type:'string',enum:['top','with','bottom']} } };
+
+async function generatePlan(brief){
+  const r = await fetch('https://api.anthropic.com/v1/messages', {
+    method:'POST',
+    headers:{ 'content-type':'application/json', 'x-api-key': aiKey, 'anthropic-version':'2023-06-01', 'anthropic-dangerous-direct-browser-access':'true' },
+    body: JSON.stringify({
+      model:'claude-opus-5', max_tokens:2000,
+      output_config:{ effort:'low', format:{ type:'json_schema', schema:GEN_SCHEMA } },
+      system: GEN_SYSTEM,
+      messages:[{ role:'user', content: brief }]
+    })
+  });
+  if (r.status === 401) throw new Error('The AI key was rejected — check it under “Photo key”.');
+  if (r.status === 429) throw new Error('The AI service is busy — try again in a moment.');
+  if (!r.ok) { let m = 'HTTP '+r.status; try { m = (await r.json()).error?.message || m; } catch {} throw new Error(m); }
+  const j = await r.json();
+  if (j.stop_reason === 'refusal') throw new Error('The AI declined this request. Try rewording the brief.');
+  const txt = (j.content || []).filter(b => b.type === 'text').map(b => b.text).join('');
+  return JSON.parse(txt);
+}
+async function applyPlan(plan){
+  pushUndo();
+  S.template = plan.template; S.look = LOOKS[plan.look] ? plan.look : 'classic';
+  if (plan.template === 'headline') S.logoPos = plan.logo_position || 'top';
+  templateDefaults(); layout();
+  const setText = (id, v) => { const el = byId(id); if (el && v) el.text = v; };
+  setText('headline', plan.headline); setText('sub', plan.subheadline);
+  setText('quote', plan.quote); setText('attr', plan.attribution);
+  currentDraftId = null;
+  syncControls(); renderInspector(); render(); persist();
+  if (apiKey && plan.photo_search) {
+    $('#q').value = plan.photo_search;
+    await search(true);
+    if (results.length) await usePhoto(results[0]);
+  }
+}
+function openGen(){
+  if (!aiKey) { $('#keyBox').hidden = false; $('#aiKeyInput').focus(); toast('Add the AI key first (under “Photo key”)'); return; }
+  $('#genStatus').textContent = ''; $('#gen').hidden = false; setTimeout(() => $('#genInput').focus(), 0);
+}
+$('#genBtn').addEventListener('click', openGen);
+$('#genCancel').addEventListener('click', () => { $('#gen').hidden = true; });
+$('#genInput').addEventListener('keydown', e => { if ((e.metaKey||e.ctrlKey) && e.key === 'Enter') $('#genGo').click(); });
+$('#genGo').addEventListener('click', async () => {
+  const brief = $('#genInput').value.trim();
+  if (!brief) { $('#genInput').focus(); return; }
+  const btn = $('#genGo'); btn.disabled = true; $('#genStatus').textContent = 'Thinking…';
+  try {
+    const plan = await generatePlan(brief);
+    $('#gen').hidden = true;
+    await applyPlan(plan);
+    toast('Draft ready — change anything you like');
+  } catch (err) {
+    console.error(err);
+    $('#genStatus').textContent = 'Couldn’t generate: ' + (err.message || err);
+  } finally { btn.disabled = false; }
+});
+
 // ---------- misc ----------
 let toastT = 0;
 function toast(msg){ const t = $('#toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), 3200); }
@@ -1181,7 +1284,8 @@ async function fontsReady(){
   const fromLink = keyFromLink();
   await new Promise(res => { const im = new Image(); im.onload = () => { IMG.logo = im; res(); }; im.onerror = res; im.src = LOGO_SRC; });
   renderLooks(); templateDefaults(); layout(); syncControls(); fitCanvas(); renderDrafts();
-  if (apiKey) { $('#apiKey').value = apiKey; $('#q').value = DEFAULT_QUERY[S.template]; search(true); if (fromLink) toast('Photo key saved — you’re all set'); }
+  if (aiKey) $('#aiKeyInput').value = aiKey;
+  if (apiKey) { $('#apiKey').value = apiKey; $('#q').value = DEFAULT_QUERY[S.template]; search(true); if (fromLink) toast('Keys saved — you’re all set'); }
   else $('#setup').hidden = false;
   await fontsReady(); render();
   try { document.fonts.ready.then(render); } catch {}
