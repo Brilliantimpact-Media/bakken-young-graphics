@@ -232,6 +232,14 @@ canvas#c.dragging{cursor:grabbing}
       <div class="row" style="margin-top:10px">
         <input type="file" id="bgFile" accept="image/*" hidden>
         <button class="btn sm" id="bgBtn">Upload my own photo…</button>
+        <button class="btn sm" id="rulesToggle">Photo rules</button>
+      </div>
+      <div id="rulesBox" hidden>
+        <div class="note" style="margin-top:8px">
+          <b>Photos are screened automatically.</b> Anything described with animals, hospitals or illness, money, vehicles, parties, alcohol, babies, costumes, cemeteries or coffins is skipped, and Generate only uses photos whose description matches what it searched for. Starred favorites are picked first.
+        </div>
+        <div class="field" style="margin-top:8px"><label for="avoidWords">Also avoid (comma-separated)</label><input type="text" id="avoidWords" placeholder="e.g. bucket, wallet, sunglasses"></div>
+        <p class="hint" id="skippedNote"></p>
       </div>
       <p class="hint" style="margin-top:6px">You can also drag a photo onto the canvas or paste one (⌘V). Drag the photo on the canvas to reposition it.</p>
     </div>
@@ -921,6 +929,42 @@ function usedLabel(id){
   return 'Used ' + new Date(r.lastUsed).toLocaleDateString(undefined, { month:'short', year:'2-digit' });
 }
 
+// ---------- photo screening ----------
+const LEARN_KEY = 'by-learn-v1';
+let learn = { term:{}, look:{}, textPos:{}, shade:{}, fadePos:{} };
+try { const o = JSON.parse(localStorage.getItem(LEARN_KEY)||'null'); if (o && o.term) learn = o; } catch {}
+// Pexels matches loosely, so every result is checked against its own description before it can be used.
+const BLOCK_WORDS = [
+  'cat','kitten','dog','puppy','pet','bird','horse','cow','goat','sheep','pig','chicken','duck','rabbit','fish','insect','butterfly','squirrel','deer','wildlife','zoo','animal',
+  'hospital','patient','sick','ill','illness','disease','nurse','doctor','medical','medicine','pill','syringe','iv','oxygen','wheelchair','bandage','clinic','surgery','stethoscope','mask','dying','death','dead','corpse','coffin','casket','grave','cemetery','graveyard','tombstone','headstone','skull','skeleton','bone','blood',
+  'bed','bedroom','pillow','sleeping','asleep','nap','lying',
+  'money','cash','coin','wallet','purse','credit card','bucket','car','truck','motorcycle','bike','bicycle','tractor','boat','airplane','phone','smartphone','headphones','camera','gun','knife','weapon','tool','hammer',
+  'party','birthday','balloon','confetti','beer','wine','cocktail','alcohol','bar','cigarette','smoking','vape','bikini','swimsuit','gym','fitness','workout','yoga','selfie','dance','concert','festival',
+  'baby','infant','newborn','toddler','kid','kids','child','children','boy','girl','teen','student','classroom','school',
+  'halloween','costume','clown','zombie','mannequin','doll','toy','cartoon','graffiti','tattoo',
+];
+const STOP = new Set(['a','an','the','of','in','on','at','with','and','soft','light','warm','background','looking','up','through','dark','morning','evening','sunset','sunrise']);
+function userAvoid(){ return (learn.avoid || '').split(',').map(w => w.trim().toLowerCase()).filter(Boolean); }
+function blockedBy(alt){
+  const a = ' ' + (alt || '').toLowerCase().replace(/[^a-z0-9 ]+/g, ' ') + ' ';
+  for (const w of [...BLOCK_WORDS, ...userAvoid()]) if (a.includes(' ' + w + ' ') || a.includes(' ' + w + 's ')) return w;
+  return null;
+}
+function relevant(alt, term){
+  const a = (alt || '').toLowerCase();
+  const keys = term.toLowerCase().split(/\s+/).filter(k => k.length > 2 && !STOP.has(k));
+  return keys.some(k => a.includes(k.replace(/s$/, '')));
+}
+let lastSkipped = 0;
+function screen(list, term){
+  const ok = [];
+  lastSkipped = 0;
+  for (const p of list) { if (blockedBy(p.alt)) { lastSkipped++; continue; } ok.push(p); }
+  return term ? ok.filter(p => !p.alt || relevant(p.alt, term)).concat(ok.filter(p => p.alt && !relevant(p.alt, term))) : ok;
+}
+$('#rulesToggle').addEventListener('click', () => { $('#rulesBox').hidden = !$('#rulesBox').hidden; $('#avoidWords').value = learn.avoid || ''; });
+$('#avoidWords').addEventListener('change', e => { learn.avoid = e.target.value; try { localStorage.setItem(LEARN_KEY, JSON.stringify(learn)); } catch {} toast('Saved — applies to the next search'); });
+
 // ---------- photo search (Pexels) ----------
 function orientation(){ const [w,h] = SIZES[S.size]; return w > h ? 'landscape' : w < h ? 'portrait' : 'square'; }
 async function fetchPhotos(term, pg){
@@ -939,9 +983,11 @@ async function search(fresh){
   lastQuery = base;
   $('#rstatus').textContent = 'Searching…';
   try {
-    const photos = await fetchPhotos(base, page);
+    const raw = await fetchPhotos(base, page);
+    const photos = screen(raw, null);
     results = page === 1 ? photos : results.concat(photos);
-    results.more = photos.length === 18;
+    results.more = raw.length === 18;
+    $('#skippedNote').textContent = lastSkipped ? `${lastSkipped} photo${lastSkipped===1?'':'s'} hidden by the photo rules on this page.` : '';
     renderResults();
     $('#rstatus').textContent = results.length ? `${results.length} photos for “${base}”` : 'No photos found — try different words.';
   } catch (err) {
@@ -1208,7 +1254,7 @@ const SEASON = _m >= 8 && _m <= 10 ? ['autumn trees path','fall leaves forest','
                          ['summer field sunset','lake calm summer','wildflowers meadow','garden morning light'];
 // Weighted to match the 2026 set: hands, writing/planning, foliage, seniors, candles, a little bokeh.
 const HANDS   = [['hands holding comfort',3],['elderly hands together',3],['hands praying soft light',2],['hands planting seedling',2],['handshake warm light',2],['hands resting lap',2]];
-const WRITING = [['person writing notebook',3],['woman writing journal window',3],['hands laptop coffee desk',3],['planner pen calendar',2],['man writing letter desk',2]];
+const WRITING = [['person writing notebook',3],['woman writing journal window',3],['person typing laptop desk',3],['hand writing planner calendar',2],['man writing letter desk',2]];
 const NATURE  = [['sunlight through leaves',3],['forest canopy looking up',3],['wildflower field sunset',2],['bleeding heart flowers',1],['garden path morning',2], ...SEASON.map(t => [t,1.5])];
 const SENIORS = [['senior woman smiling window',2],['older couple talking table',2],['grandmother reading book',2],['senior man porch morning',1]];
 const CANDLES = [['candle light soft',2],['candle flame dark background',2]];
@@ -1219,9 +1265,6 @@ const POOLS = {
   event:    [...WRITING, ...HANDS, ...NATURE.slice(0,3), ...SENIORS.slice(0,2), ...CANDLES],
   review:   [...NATURE, ...BOKEH, ...CANDLES],
 };
-const LEARN_KEY = 'by-learn-v1';
-let learn = { term:{}, look:{}, textPos:{}, shade:{}, fadePos:{} };
-try { const o = JSON.parse(localStorage.getItem(LEARN_KEY)||'null'); if (o && o.term) learn = o; } catch {}
 function bump(kind, key){ if (!key) return; if (!learn[kind]) learn[kind] = {}; learn[kind][key] = (learn[kind][key]||0) + 1; try { localStorage.setItem(LEARN_KEY, JSON.stringify(learn)); } catch {} }
 function learnFromCurrent(){
   bump('look', S.look); bump('fadePos', S.bg.fadePos);
@@ -1250,22 +1293,28 @@ function parseBrief(txt){
 }
 async function randomPhoto(template){
   const opts = POOLS[template];
-  for (let attempt = 0; attempt < 3; attempt++) {
+  // Starred favorites are the curated library: use one about a third of the time when there are enough.
+  const favs = Object.values(photoMem.favs).filter(p => !photoMem.used[p.id] && p.id !== IMG.src?.id);
+  if (favs.length >= 3 && Math.random() < 0.35) { const p = favs[Math.floor(Math.random()*favs.length)]; return Object.assign({ term:'favorites' }, p); }
+  for (let attempt = 0; attempt < 4; attempt++) {
     const term = pick(opts, 'term');
     const r0 = Math.random(); const pg = r0 < 0.65 ? 1 : r0 < 0.9 ? 2 : 3; // first page is far more on-topic
     let photos = [];
     try { photos = await fetchPhotos(term, pg); } catch (e) { if (/rejected/.test(e.message)) throw e; }
     if (!photos.length && pg > 1) { try { photos = await fetchPhotos(term, 1); } catch {} }
     if (!photos.length) continue;
-    const fresh = photos.filter(p => !photoMem.used[p.id] && p.id !== IMG.src?.id);
-    const list = fresh.length ? fresh : photos;
+    // keep only photos that pass the rules AND whose description matches the search, then pick from the top few
+    const vetted = screen(photos, term).filter(p => p.alt && relevant(p.alt, term));
+    if (!vetted.length) continue;
+    const fresh = vetted.filter(p => !photoMem.used[p.id] && p.id !== IMG.src?.id);
+    const list = (fresh.length ? fresh : vetted).slice(0, 10);
     const p = list[Math.floor(Math.random()*list.length)];
     // show the search she'd have typed, so "Show more" and the results grid stay in sync
-    $('#q').value = term; lastQuery = term; page = pg; results = photos; results.more = photos.length === 18; setTab('search'); renderResults();
+    $('#q').value = term; lastQuery = term; page = pg; results = screen(photos, null); results.more = photos.length === 18; setTab('search'); renderResults();
     $('#rstatus').textContent = `${photos.length} photos for “${term}”`;
     return Object.assign({ term }, p);
   }
-  throw new Error('No photos came back — check the connection and try again');
+  throw new Error('Couldn\u2019t find a photo that passes the rules \u2014 try Generate again');
 }
 function randomStyle(lum){
   const bright = lum > 0.6;
