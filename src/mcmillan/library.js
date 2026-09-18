@@ -86,13 +86,15 @@ async function usePhoto(p){
 function addProduct(p, im){
   const w = W(), h = H(); const aspect = im.naturalHeight / im.naturalWidth;
   let el = byId('product');
-  if (!el) { el = { id:'product', type:'image', src:p.url, x:0, y:0, w:0, shadow:true }; S.els.push(el); }
+  if (!el) { el = { id:'product', type:'image', src:p.url, x:0, y:0, w:0, shadow:true }; S.els.unshift(el); }
   el.src = p.url;
-  // default: large, lower half, leaving the top for the headline
-  el.w = Math.min(0.62*w, (0.5*h)/aspect); el.x = (w - el.w)/2; el.y = h - el.w*aspect - 0.16*h;
-  if (S.bg.kind !== 'photo') { /* keep art */ } else { S.bg.kind = 'art'; }
-  // logo stays on top of the image stack
-  const li = S.els.findIndex(e => e.type === 'logo'); if (li >= 0) { const l = S.els.splice(li,1)[0]; S.els.push(l); }
+  // sit between the text block and the logo: as large as that gap allows
+  const texts = S.els.filter(e => e.type === 'text'); const logo = byId('logo');
+  const textBottom = texts.length ? Math.max(...texts.map(t => bbox(ctx, t).y + bbox(ctx, t).h)) : 0.12*h;
+  const logoTop = logo ? logo.y : h - 0.14*h;
+  const top = textBottom + 0.03*h, bottom = logoTop - 0.02*h, avail = Math.max(0.2*h, bottom - top);
+  el.w = Math.min(0.66*w, avail/aspect); el.x = (w - el.w)/2; el.y = bottom - el.w*aspect;
+  if (S.bg.kind === 'photo') S.bg.kind = 'art';
 }
 function setArt(style, newSeed){
   pushUndo();

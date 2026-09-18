@@ -146,7 +146,9 @@ async function randomBackground(template, brief){
 async function maybeAddProduct(){
   const prods = LIB.filter(p => p.kind === 'product');
   const el = byId('product');
-  if (!prods.length || S.template === 'review' || S.bg.kind === 'photo') { if (el) S.els = S.els.filter(e => e.id !== 'product'); return; }
+  const hl = byId('headline'); const statement = hl && /^[A-Z][A-Z &]+:$/.test(hl.text.trim());
+  const roomBelow = (S.template === 'headline' || S.template === 'event') && (S.textPos === 'tc' || S.textPos === 'tl') && !statement;
+  if (!prods.length || !roomBelow || S.bg.kind === 'photo' || S.frame !== 'none') { if (el) S.els = S.els.filter(e => e.id !== 'product'); return; }
   if (Math.random() < (S.bg.art === 'circuit' ? 0.7 : 0.35)) {
     const p = prods[Math.floor(Math.random()*prods.length)];
     const im = await libImage(p.url); addProduct(p, im);

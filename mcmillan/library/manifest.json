@@ -1,3 +1,389 @@
 {
-  "images": []
+ "images": [
+  {
+   "file": "truck-woodville.jpg",
+   "thumb": "truck-woodville-thumb.jpg",
+   "kind": "application",
+   "tags": [
+    "truck",
+    "delivery",
+    "Woodville"
+   ],
+   "source": "7_1_26.png"
+  },
+  {
+   "file": "app-kitchen-fan.jpg",
+   "thumb": "app-kitchen-fan-thumb.jpg",
+   "kind": "application",
+   "tags": [
+    "kitchen",
+    "commercial",
+    "fan"
+   ],
+   "source": "7_22_26.png"
+  },
+  {
+   "file": "app-gym-treadmills.jpg",
+   "thumb": "app-gym-treadmills-thumb.jpg",
+   "kind": "application",
+   "tags": [
+    "gym",
+    "treadmill"
+   ],
+   "source": "7_22_26.png"
+  },
+  {
+   "file": "app-ac-condenser.jpg",
+   "thumb": "app-ac-condenser-thumb.jpg",
+   "kind": "application",
+   "tags": [
+    "HVAC",
+    "condenser"
+   ],
+   "source": "7_22_26.png"
+  },
+  {
+   "file": "app-garage-opener.jpg",
+   "thumb": "app-garage-opener-thumb.jpg",
+   "kind": "application",
+   "tags": [
+    "garage door",
+    "opener"
+   ],
+   "source": "7_22_26.png"
+  },
+  {
+   "file": "team-stators-portrait.jpg",
+   "thumb": "team-stators-portrait-thumb.jpg",
+   "kind": "team",
+   "tags": [
+    "employee",
+    "stators",
+    "winding"
+   ],
+   "source": "7_28_26.png"
+  },
+  {
+   "file": "flag-usa.jpg",
+   "thumb": "flag-usa-thumb.jpg",
+   "kind": "other",
+   "tags": [
+    "flag",
+    "made in USA"
+   ],
+   "source": "7_2_26.png"
+  },
+  {
+   "file": "phone-desk.jpg",
+   "thumb": "phone-desk-thumb.jpg",
+   "kind": "other",
+   "tags": [
+    "phone",
+    "call",
+    "contact"
+   ],
+   "source": "7_7_26.png"
+  },
+  {
+   "file": "event-50th-flowers.jpg",
+   "thumb": "event-50th-flowers-thumb.jpg",
+   "kind": "event",
+   "tags": [
+    "50th",
+    "anniversary",
+    "flowers"
+   ],
+   "source": "15.png"
+  },
+  {
+   "file": "event-50th-table.jpg",
+   "thumb": "event-50th-table-thumb.jpg",
+   "kind": "event",
+   "tags": [
+    "50th",
+    "anniversary",
+    "decor"
+   ],
+   "source": "15.png"
+  },
+  {
+   "file": "event-50th-cupcakes.jpg",
+   "thumb": "event-50th-cupcakes-thumb.jpg",
+   "kind": "event",
+   "tags": [
+    "50th",
+    "anniversary",
+    "cupcakes"
+   ],
+   "source": "15.png"
+  },
+  {
+   "file": "event-picnic-cornhole.jpg",
+   "thumb": "event-picnic-cornhole-thumb.jpg",
+   "kind": "event",
+   "tags": [
+    "picnic",
+    "cornhole"
+   ],
+   "source": "16.png"
+  },
+  {
+   "file": "event-picnic-pair.jpg",
+   "thumb": "event-picnic-pair-thumb.jpg",
+   "kind": "event",
+   "tags": [
+    "picnic",
+    "employees"
+   ],
+   "source": "16.png"
+  },
+  {
+   "file": "event-picnic-trio.jpg",
+   "thumb": "event-picnic-trio-thumb.jpg",
+   "kind": "event",
+   "tags": [
+    "picnic",
+    "employees"
+   ],
+   "source": "16.png"
+  },
+  {
+   "file": "shop-test-bench.jpg",
+   "thumb": "shop-test-bench-thumb.jpg",
+   "kind": "shop",
+   "tags": [
+    "test bench",
+    "engineer",
+    "monitor"
+   ],
+   "source": "8_10_26.png"
+  },
+  {
+   "file": "team-safety-glasses.jpg",
+   "thumb": "team-safety-glasses-thumb.jpg",
+   "kind": "team",
+   "tags": [
+    "employee",
+    "safety glasses"
+   ],
+   "source": "8_20_26.png"
+  },
+  {
+   "file": "shop-press-operator.jpg",
+   "thumb": "shop-press-operator-thumb.jpg",
+   "kind": "shop",
+   "tags": [
+    "press",
+    "operator"
+   ],
+   "source": "8_25_26.png"
+  },
+  {
+   "file": "shop-stator-line.jpg",
+   "thumb": "shop-stator-line-thumb.jpg",
+   "kind": "shop",
+   "tags": [
+    "stators",
+    "assembly"
+   ],
+   "source": "8_25_26.png"
+  },
+  {
+   "file": "stock-dictionary-integrity.jpg",
+   "thumb": "stock-dictionary-integrity-thumb.jpg",
+   "kind": "other",
+   "tags": [
+    "integrity",
+    "dictionary"
+   ],
+   "source": "8_4_26.png"
+  },
+  {
+   "file": "stock-dictionary-quality.jpg",
+   "thumb": "stock-dictionary-quality-thumb.jpg",
+   "kind": "other",
+   "tags": [
+    "quality",
+    "dictionary"
+   ],
+   "source": "8_5_26.png"
+  },
+  {
+   "file": "stock-warehouse-conveyor.jpg",
+   "thumb": "stock-warehouse-conveyor-thumb.jpg",
+   "kind": "other",
+   "tags": [
+    "warehouse",
+    "conveyor",
+    "supply chain"
+   ],
+   "source": "15.png"
+  },
+  {
+   "file": "stock-frustrated-desk.jpg",
+   "thumb": "stock-frustrated-desk-thumb.jpg",
+   "kind": "other",
+   "tags": [
+    "frustrated",
+    "laptop"
+   ],
+   "source": "9_10_26.png"
+  },
+  {
+   "file": "shop-winding-floor.jpg",
+   "thumb": "shop-winding-floor-thumb.jpg",
+   "kind": "shop",
+   "tags": [
+    "winding",
+    "stators",
+    "floor"
+   ],
+   "source": "9_15_26.png"
+  },
+  {
+   "file": "shop-test-station.jpg",
+   "thumb": "shop-test-station-thumb.jpg",
+   "kind": "shop",
+   "tags": [
+    "test",
+    "engineer",
+    "monitor"
+   ],
+   "source": "9_16_26.png"
+  },
+  {
+   "file": "shop-machinist.jpg",
+   "thumb": "shop-machinist-thumb.jpg",
+   "kind": "shop",
+   "tags": [
+    "machining",
+    "employee"
+   ],
+   "source": "9_23_26.png"
+  },
+  {
+   "file": "team-apron-portrait.jpg",
+   "thumb": "team-apron-portrait-thumb.jpg",
+   "kind": "team",
+   "tags": [
+    "employee",
+    "apron"
+   ],
+   "source": "9_23_26.png"
+  },
+  {
+   "file": "team-stators-closeup.jpg",
+   "thumb": "team-stators-closeup-thumb.jpg",
+   "kind": "team",
+   "tags": [
+    "employee",
+    "stators"
+   ],
+   "source": "9_23_26.png"
+  },
+  {
+   "file": "shop-assembly-mask.jpg",
+   "thumb": "shop-assembly-mask-thumb.jpg",
+   "kind": "shop",
+   "tags": [
+    "assembly",
+    "employee"
+   ],
+   "source": "9_23_26.png"
+  },
+  {
+   "file": "team-company-photo.jpg",
+   "thumb": "team-company-photo-thumb.jpg",
+   "kind": "team",
+   "tags": [
+    "company photo",
+    "team",
+    "building"
+   ],
+   "source": "9_7_26.png"
+  },
+  {
+   "file": "shop-stator-winding-closeup.jpg",
+   "thumb": "shop-stator-winding-closeup-thumb.jpg",
+   "kind": "shop",
+   "tags": [
+    "stator",
+    "copper",
+    "winding"
+   ],
+   "source": "9_9_26.png"
+  },
+  {
+   "file": "motor-psc-white.png",
+   "thumb": "motor-psc-white-thumb.jpg",
+   "kind": "product",
+   "tags": [
+    "PSC motor, white"
+   ],
+   "source": "8_18_26.png"
+  },
+  {
+   "file": "motor-black-long.png",
+   "thumb": "motor-black-long-thumb.jpg",
+   "kind": "product",
+   "tags": [
+    "black motor"
+   ],
+   "source": "8_18_26.png"
+  },
+  {
+   "file": "motor-black-shaft.png",
+   "thumb": "motor-black-shaft-thumb.jpg",
+   "kind": "product",
+   "tags": [
+    "black motor with shaft"
+   ],
+   "source": "8_18_26.png"
+  },
+  {
+   "file": "motor-gray-vented.png",
+   "thumb": "motor-gray-vented-thumb.jpg",
+   "kind": "product",
+   "tags": [
+    "vented motor"
+   ],
+   "source": "8_18_26.png"
+  },
+  {
+   "file": "motors-pair-a.png",
+   "thumb": "motors-pair-a-thumb.jpg",
+   "kind": "product",
+   "tags": [
+    "two motors"
+   ],
+   "source": "9_3_26.png"
+  },
+  {
+   "file": "motors-pair-b.png",
+   "thumb": "motors-pair-b-thumb.jpg",
+   "kind": "product",
+   "tags": [
+    "two motors"
+   ],
+   "source": "7_14_26.png"
+  },
+  {
+   "file": "motor-open-frame.png",
+   "thumb": "motor-open-frame-thumb.jpg",
+   "kind": "product",
+   "tags": [
+    "open-frame motor"
+   ],
+   "source": "7-24-26.png"
+  },
+  {
+   "file": "motor-ul5va.png",
+   "thumb": "motor-ul5va-thumb.jpg",
+   "kind": "product",
+   "tags": [
+    "UL 5VA motor"
+   ],
+   "source": "17.png"
+  }
+ ]
 }

@@ -78,8 +78,8 @@ function layout(){
     els.push(text('attr', a, { x:bx+pad, y:by+bh - (wide? 0.14*h : 0.09*h), w:bw-pad*2, size:26*u*(wide? .8:1), weight:600, align:'right', italic:false, shadow:false, font:'sans', color:'#00d66b' }));
     els.push(logoAt(w/2, h - logoH - 0.06*h));
   }
-  // keep a product cutout the user placed (or the generator added)
-  const prod = byId('product'); if (prod) els.push(prod);
+  // keep a product cutout the user placed (or the generator added) — drawn beneath the text, above the background
+  const prod = byId('product'); if (prod) els.unshift(prod);
   S.els = els;
   S.sel = null;
   applyLook(false);
