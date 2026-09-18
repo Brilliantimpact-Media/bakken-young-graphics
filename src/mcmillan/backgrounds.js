@@ -44,7 +44,24 @@ function makeArt(style, seed, w, h){
   if (artCache.size > 16) artCache.delete(artCache.keys().next().value);
   artCache.set(key, c); return c;
 }
+// Collage: 3–4 library photos in a grid with white gutters (their picnic / 50th / applications posts).
+function collageCells(grid, w, h){
+  const g = Math.round(w*0.012);
+  if (grid === '2x2') return [[0,0,(w-g)/2,(h-g)/2],[(w+g)/2,0,(w-g)/2,(h-g)/2],[0,(h+g)/2,(w-g)/2,(h-g)/2],[(w+g)/2,(h+g)/2,(w-g)/2,(h-g)/2]];
+  if (grid === '2+1') return [[0,0,(w-g)/2,h*0.55-g/2],[(w+g)/2,0,(w-g)/2,h*0.55-g/2],[0,h*0.55+g/2,w,h*0.45-g/2]];
+  return [[0,0,w,h*0.55-g/2],[0,h*0.55+g/2,(w-g)/2,h*0.45-g/2],[(w+g)/2,h*0.55+g/2,(w-g)/2,h*0.45-g/2]]; // '1+2'
+}
+function drawCover(ctx, img, x, y, cw, ch){
+  const iw = img.naturalWidth, ih = img.naturalHeight, s = Math.max(cw/iw, ch/ih), dw = iw*s, dh = ih*s;
+  ctx.save(); ctx.beginPath(); ctx.rect(x, y, cw, ch); ctx.clip(); ctx.drawImage(img, x + (cw-dw)/2, y + (ch-dh)/2, dw, dh); ctx.restore();
+}
 function drawPhoto(ctx, w, h, bg){
+  if (bg.kind === 'collage' && bg.cells && bg.cells.length) {
+    ctx.fillStyle = '#ffffff'; ctx.fillRect(0,0,w,h);
+    const cells = collageCells(bg.grid || '2x2', w, h);
+    bg.cells.forEach((c, i) => { const im = IMG.lib[c.url]; const r = cells[i]; if (im && r) drawCover(ctx, im, r[0], r[1], r[2], r[3]); else if (r) { ctx.fillStyle = '#586e63'; ctx.fillRect(r[0], r[1], r[2], r[3]); } });
+    return;
+  }
   if (bg.kind !== 'photo' || !IMG.bg) { ctx.drawImage(makeArt(bg.art || 'gradient', bg.seed || 1, w, h), 0, 0); return; }
   const img = IMG.bg; const iw = img.naturalWidth || img.width, ih = img.naturalHeight || img.height;
   const s = Math.max(w/iw, h/ih) * bg.zoom; const dw = iw*s, dh = ih*s;

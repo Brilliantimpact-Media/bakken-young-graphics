@@ -98,7 +98,12 @@ function addProduct(p, im){
 }
 function setArt(style, newSeed){
   pushUndo();
-  S.bg.kind = 'art'; S.bg.art = style || S.bg.art || 'gradient';
+  S.bg.kind = 'art'; S.bg.cells = null; S.bg.art = style || S.bg.art || 'gradient';
+  if (S.template === 'logo') {
+    const sgg = suggestText('quality');
+    S.template = 'headline'; S.els = [text('headline', sgg.headline)]; if (sgg.sub) S.els.push(text('sub', sgg.sub));
+    toast('Green art always carries a message \u2014 added a headline you can edit');
+  }
   if (newSeed || !S.bg.seed) S.bg.seed = Math.floor(Math.random()*100000) + 1;
   IMG.src = { kind:'art', art:S.bg.art, seed:S.bg.seed };
   templateDefaults(); layout(); syncControls(); renderInspector(); renderResults(); render(); persist();
@@ -108,3 +113,22 @@ function renderArtChips(){
   for (const [k,l] of Object.entries(ART)) box.append(h('button',{class:'chip','aria-pressed':String(S.bg.kind !== 'photo' && S.bg.art === k),onclick:()=>setArt(k, true)}, l));
   box.append(h('button',{class:'btn sm',title:'Same style, different variation',onclick:()=>setArt(S.bg.art, true)}, '↻ Variation'));
 }
+
+// Build a collage from the library: same category when possible, 3 or 4 photos, random grid.
+async function makeCollage(kind){
+  const pool0 = LIB.filter(p => p.kind !== 'product' && (!kind || kind === 'all' || p.kind === kind));
+  const pool = pool0.length >= 3 ? pool0 : LIB.filter(p => p.kind !== 'product');
+  if (pool.length < 3) { toast('Need at least 3 library photos for a collage'); return false; }
+  const shuffled = pool.slice().sort(() => Math.random() - 0.5);
+  const grid = pool.length >= 4 && Math.random() < 0.5 ? '2x2' : (Math.random() < 0.5 ? '2+1' : '1+2');
+  const n = grid === '2x2' ? 4 : 3;
+  const cells = shuffled.slice(0, n).map(p => ({ url:p.url, id:p.id, kind:p.kind }));
+  await Promise.all(cells.map(c => libImage(c.url)));
+  S.bg.kind = 'collage'; S.bg.cells = cells; S.bg.grid = grid; S.bg.dim = 0; S.bg.fadePos = 'none';
+  IMG.bg = null; IMG.src = { kind:'collage', id:'collage:' + cells.map(c => c.id).join('+'), cells };
+  return true;
+}
+$('#collageBtn').addEventListener('click', async () => {
+  pushUndo();
+  if (await makeCollage(libKind)) { S.frame = 'none'; templateDefaults(); layout(); syncControls(); renderInspector(); renderResults(); fitCanvas(); persist(); }
+});

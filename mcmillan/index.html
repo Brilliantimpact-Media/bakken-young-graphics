@@ -245,6 +245,7 @@ canvas#c.dragging{cursor:grabbing}
       <div class="row" style="margin-top:10px">
         <input type="file" id="bgFile" accept="image/*" hidden>
         <button class="btn sm" id="bgBtn">Upload a photo…</button>
+        <button class="btn sm" id="collageBtn" title="3–4 library photos in a grid with the logo on a white plate">⊞ Collage</button>
       </div>
       <p class="hint" style="margin-top:6px">Click a library image to use it as the background; product shots are placed on top of the green art. You can also drag a photo onto the canvas or paste one (⌘V).</p>
     </div>
@@ -385,7 +386,13 @@ function layout(){
   const logoAt = (cx, y, v) => logoEl({ x: cx - logoW/2, y, w: logoW, variant: v || 'full' });
 
   if (S.template === 'logo') {
-    if (fr) els.push(logoAt(w/2, fr.y + fr.h/2 - logoH/2, logoVariant));
+    if (S.bg.kind === 'collage') {
+      // colour logo on a small white plate over the gutters, like their collage posts
+      const lw = logoW*0.78, lh = lw*0.21;
+      const cy = (S.bg.grid || '2x2') === '2x2' ? h/2 : h*0.55;
+      els.push(logoEl({ x:(w-lw)/2, y:cy - lh/2, w:lw, variant:'color', shade:{ style:'box', color:'#ffffff', alpha:1, size:0.28 } }));
+    }
+    else if (fr) els.push(logoAt(w/2, fr.y + fr.h/2 - logoH/2, logoVariant));
     else els.push(logoAt(w/2, h - logoH - 0.07*h));
   }
   else if (S.template === 'headline' || S.template === 'event') {
@@ -457,6 +464,7 @@ function templateDefaults(){
   // Art backgrounds need no darkening; photos get a light tint. Bands are chosen by the user or the generator.
   S.bg.fadePos = 'none'; S.bg.fade = 0.45; S.bg.fadeSize = 0.5;
   S.bg.dim = S.bg.kind === 'photo' ? (S.template === 'review' ? 0.35 : 0.22) : 0;
+  if (S.bg.kind === 'collage') S.frame = 'none';
   const L = LOOKS[S.look];
   if (L.dim !== null && S.bg.kind === 'photo') S.bg.dim = L.dim;
 }
@@ -560,7 +568,24 @@ function makeArt(style, seed, w, h){
   if (artCache.size > 16) artCache.delete(artCache.keys().next().value);
   artCache.set(key, c); return c;
 }
+// Collage: 3–4 library photos in a grid with white gutters (their picnic / 50th / applications posts).
+function collageCells(grid, w, h){
+  const g = Math.round(w*0.012);
+  if (grid === '2x2') return [[0,0,(w-g)/2,(h-g)/2],[(w+g)/2,0,(w-g)/2,(h-g)/2],[0,(h+g)/2,(w-g)/2,(h-g)/2],[(w+g)/2,(h+g)/2,(w-g)/2,(h-g)/2]];
+  if (grid === '2+1') return [[0,0,(w-g)/2,h*0.55-g/2],[(w+g)/2,0,(w-g)/2,h*0.55-g/2],[0,h*0.55+g/2,w,h*0.45-g/2]];
+  return [[0,0,w,h*0.55-g/2],[0,h*0.55+g/2,(w-g)/2,h*0.45-g/2],[(w+g)/2,h*0.55+g/2,(w-g)/2,h*0.45-g/2]]; // '1+2'
+}
+function drawCover(ctx, img, x, y, cw, ch){
+  const iw = img.naturalWidth, ih = img.naturalHeight, s = Math.max(cw/iw, ch/ih), dw = iw*s, dh = ih*s;
+  ctx.save(); ctx.beginPath(); ctx.rect(x, y, cw, ch); ctx.clip(); ctx.drawImage(img, x + (cw-dw)/2, y + (ch-dh)/2, dw, dh); ctx.restore();
+}
 function drawPhoto(ctx, w, h, bg){
+  if (bg.kind === 'collage' && bg.cells && bg.cells.length) {
+    ctx.fillStyle = '#ffffff'; ctx.fillRect(0,0,w,h);
+    const cells = collageCells(bg.grid || '2x2', w, h);
+    bg.cells.forEach((c, i) => { const im = IMG.lib[c.url]; const r = cells[i]; if (im && r) drawCover(ctx, im, r[0], r[1], r[2], r[3]); else if (r) { ctx.fillStyle = '#586e63'; ctx.fillRect(r[0], r[1], r[2], r[3]); } });
+    return;
+  }
   if (bg.kind !== 'photo' || !IMG.bg) { ctx.drawImage(makeArt(bg.art || 'gradient', bg.seed || 1, w, h), 0, 0); return; }
   const img = IMG.bg; const iw = img.naturalWidth || img.width, ih = img.naturalHeight || img.height;
   const s = Math.max(w/iw, h/ih) * bg.zoom; const dw = iw*s, dh = ih*s;
@@ -841,9 +866,15 @@ $('#undoBtn').addEventListener('click', doUndo);
 $('#undoBtn').disabled = true;
 
 // ---------- controls ----------
-function setTemplate(t){
-  pushUndo(); S.template = t; templateDefaults(); layout(); if (IMG.bg && S.bg.kind === 'photo') autoContrast(false);
-  syncControls(); renderInspector(); render();
+async function setTemplate(t){
+  pushUndo(); S.template = t;
+  // house rule: logo-only lives on photos, never on plain green art
+  if (t === 'logo' && S.bg.kind === 'art') {
+    const r = await randomBackground('logo', {});
+    if (r === 'none') toast('Logo-only graphics use a photo \u2014 the library is empty, so upload one below');
+  }
+  templateDefaults(); layout(); if (IMG.bg && S.bg.kind === 'photo') autoContrast(false);
+  syncControls(); renderInspector(); renderResults(); render();
 }
 $('#tiles').addEventListener('click', e => { const b = e.target.closest('.tile'); if (b) { setTemplate(b.dataset.t); persist(); } });
 $('#size').addEventListener('change', e => { pushUndo(); S.size = e.target.value; S.bg.ox = S.bg.oy = 0; layout(); renderInspector(); fitCanvas(); persist(); });
@@ -1109,7 +1140,12 @@ function addProduct(p, im){
 }
 function setArt(style, newSeed){
   pushUndo();
-  S.bg.kind = 'art'; S.bg.art = style || S.bg.art || 'gradient';
+  S.bg.kind = 'art'; S.bg.cells = null; S.bg.art = style || S.bg.art || 'gradient';
+  if (S.template === 'logo') {
+    const sgg = suggestText('quality');
+    S.template = 'headline'; S.els = [text('headline', sgg.headline)]; if (sgg.sub) S.els.push(text('sub', sgg.sub));
+    toast('Green art always carries a message \u2014 added a headline you can edit');
+  }
   if (newSeed || !S.bg.seed) S.bg.seed = Math.floor(Math.random()*100000) + 1;
   IMG.src = { kind:'art', art:S.bg.art, seed:S.bg.seed };
   templateDefaults(); layout(); syncControls(); renderInspector(); renderResults(); render(); persist();
@@ -1119,6 +1155,25 @@ function renderArtChips(){
   for (const [k,l] of Object.entries(ART)) box.append(h('button',{class:'chip','aria-pressed':String(S.bg.kind !== 'photo' && S.bg.art === k),onclick:()=>setArt(k, true)}, l));
   box.append(h('button',{class:'btn sm',title:'Same style, different variation',onclick:()=>setArt(S.bg.art, true)}, '↻ Variation'));
 }
+
+// Build a collage from the library: same category when possible, 3 or 4 photos, random grid.
+async function makeCollage(kind){
+  const pool0 = LIB.filter(p => p.kind !== 'product' && (!kind || kind === 'all' || p.kind === kind));
+  const pool = pool0.length >= 3 ? pool0 : LIB.filter(p => p.kind !== 'product');
+  if (pool.length < 3) { toast('Need at least 3 library photos for a collage'); return false; }
+  const shuffled = pool.slice().sort(() => Math.random() - 0.5);
+  const grid = pool.length >= 4 && Math.random() < 0.5 ? '2x2' : (Math.random() < 0.5 ? '2+1' : '1+2');
+  const n = grid === '2x2' ? 4 : 3;
+  const cells = shuffled.slice(0, n).map(p => ({ url:p.url, id:p.id, kind:p.kind }));
+  await Promise.all(cells.map(c => libImage(c.url)));
+  S.bg.kind = 'collage'; S.bg.cells = cells; S.bg.grid = grid; S.bg.dim = 0; S.bg.fadePos = 'none';
+  IMG.bg = null; IMG.src = { kind:'collage', id:'collage:' + cells.map(c => c.id).join('+'), cells };
+  return true;
+}
+$('#collageBtn').addEventListener('click', async () => {
+  pushUndo();
+  if (await makeCollage(libKind)) { S.frame = 'none'; templateDefaults(); layout(); syncControls(); renderInspector(); renderResults(); fitCanvas(); persist(); }
+});
 
 // ---------- own photo ----------
 function loadImageFile(file){
@@ -1196,6 +1251,7 @@ async function openDraft(d, asCopy){
     else if (d.photo && d.photo.kind === 'own') { const img = new Image(); await new Promise((res, rej) => { img.onload = res; img.onerror = rej; img.src = d.photo.data; }); IMG.bg = img; IMG.src = clone(d.photo); }
     else if (d.photo) IMG.src = clone(d.photo);
     const pr = byId('product'); if (pr) await libImage(pr.src);
+    if (S.bg.kind === 'collage' && S.bg.cells) await Promise.all(S.bg.cells.map(c => libImage(c.url).catch(() => null)));
   } catch { toast('An image for this draft couldn’t be loaded'); }
   finally { $('#loading').classList.remove('show'); }
   syncControls(); renderInspector(); renderResults(); fitCanvas(); renderDrafts();
@@ -1442,22 +1498,38 @@ function parseLines(txt){
 }
 
 // Background choice: generated art (always available) or a photo from the library when there is one.
+// House rules from the Jul–Sep posts:
+//  • green art ALWAYS carries a message (statement or headline) — never logo-only
+//  • logo-only graphics are photos: usually a collage of event / application / team shots, sometimes one strong photo
+//  • product cutouts sit on art with a headline above them
 async function randomBackground(template, brief){
   const statement = brief && /^[A-Z][A-Z &]+:$/.test((brief.headline||'').trim());
   const photos = LIB.filter(p => p.kind !== 'product' && !photoMem.used[p.id] && p.id !== IMG.src?.id);
   const anyPhotos = LIB.filter(p => p.kind !== 'product');
   const pool = photos.length ? photos : anyPhotos;
-  const wantPhoto = pool.length && !statement && pick([['photo', template === 'logo' ? 8 : 5], ['art', 4]], 'bgKind') === 'photo';
+  if (template === 'logo') {
+    if (!anyPhotos.length) return 'none';               // caller converts to a headline on art
+    const groups = ['event','application','team','shop'].filter(k => anyPhotos.filter(p => p.kind === k).length >= 3);
+    const useCollage = anyPhotos.length >= 3 && pick([['collage', 6], ['photo', 4]], 'logoBg') === 'collage';
+    if (useCollage && await makeCollage(groups.length ? groups[Math.floor(Math.random()*groups.length)] : 'all')) return 'collage';
+    const prefer = pool.filter(p => ['event','application','team'].includes(p.kind));
+    const from = prefer.length ? prefer : pool;
+    const p = from[Math.floor(Math.random()*from.length)];
+    IMG.bg = await libImage(p.url); IMG.src = Object.assign({ kind:'lib' }, p);
+    S.bg.kind = 'photo'; S.bg.ox = S.bg.oy = 0; S.bg.zoom = 1; S.bg.cells = null;
+    return 'photo';
+  }
+  const wantPhoto = pool.length && !statement && pick([['photo', 5], ['art', 4]], 'bgKind') === 'photo';
   if (wantPhoto) {
     const favs = pool.filter(p => photoMem.favs[p.id]);
     const from = favs.length >= 3 && Math.random() < 0.35 ? favs : pool;
     const p = from[Math.floor(Math.random()*from.length)];
     const im = await libImage(p.url);
     IMG.bg = im; IMG.src = Object.assign({ kind:'lib' }, p);
-    S.bg.kind = 'photo'; S.bg.ox = S.bg.oy = 0; S.bg.zoom = 1;
+    S.bg.kind = 'photo'; S.bg.ox = S.bg.oy = 0; S.bg.zoom = 1; S.bg.cells = null;
     return 'photo';
   }
-  S.bg.kind = 'art';
+  S.bg.kind = 'art'; S.bg.cells = null;
   S.bg.art = pick([['texture', 3], ['gradient', 3], ['circuit', template === 'headline' ? 4 : 2], ['dark', 1]], 'art');
   S.bg.seed = Math.floor(Math.random()*100000) + 1;
   IMG.src = { kind:'art', art:S.bg.art, seed:S.bg.seed };
@@ -1478,6 +1550,7 @@ function randomStyle(lum){
   const had = new Set(S.els.map(e => e.id));
   const onPhoto = S.bg.kind === 'photo';
   S.look = pick([['white', 7], ['bright', 2]], 'look');
+  if (S.bg.kind === 'collage') { S.frame = 'none'; templateDefaults(); layout(); autoContrast(false); return; }
   // bands only make sense over a photo
   S.frame = onPhoto ? pick([['none', 5], ['top', 2], ['bottom', 1.5], ['wtop', 1.5], ['wbottom', 1.5]], 'frame') : 'none';
   if (S.template === 'headline') {
@@ -1507,7 +1580,14 @@ async function generate(){
     if (S.template === 'headline' || S.template === 'event') { S.els.push(text('headline', brief.headline || 'Proven before it ships.')); if (brief.sub) S.els.push(text('sub', brief.sub)); }
     if (S.template === 'review') { S.els.push(text('quote', brief.quote)); S.els.push(text('attr', brief.attr)); }
     layout();
-    await randomBackground(S.template, brief);
+    const bgKind = await randomBackground(S.template, brief);
+    if (S.template === 'logo' && bgKind === 'none') {
+      // no photos to lean on: art needs words, so turn it into a headline card
+      const sgg = suggestText(topic === 'any' ? 'quality' : topic);
+      S.template = 'headline'; S.els = [text('headline', sgg.headline)]; if (sgg.sub) S.els.push(text('sub', sgg.sub));
+      layout(); await randomBackground('headline', { headline: sgg.headline });
+      toast('Green art always carries a message \u2014 added a headline');
+    }
     randomStyle(measureLum());
     await maybeAddProduct();
     currentDraftId = null;
@@ -1521,7 +1601,7 @@ async function generate(){
 async function shufflePhoto(){
   if (genBusy) return; genBusy = true;
   $('#loading').classList.add('show');
-  try { pushUndo(); await randomBackground(S.template, { headline: byId('headline')?.text || '' }); templateDefaults(); layout(); autoContrast(false); await maybeAddProduct(); syncControls(); renderInspector(); renderResults(); fitCanvas(); }
+  try { pushUndo(); if (S.bg.kind === 'collage') await makeCollage(S.bg.cells?.[0]?.kind || 'all'); else await randomBackground(S.template, { headline: byId('headline')?.text || '' }); templateDefaults(); layout(); autoContrast(false); await maybeAddProduct(); syncControls(); renderInspector(); renderResults(); fitCanvas(); }
   catch (err) { toast(err.message || String(err)); }
   finally { $('#loading').classList.remove('show'); genBusy = false; }
 }

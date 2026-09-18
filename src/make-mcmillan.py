@@ -153,6 +153,7 @@ s = s[:i] + """    <div class="sec">
       <div class="row" style="margin-top:10px">
         <input type="file" id="bgFile" accept="image/*" hidden>
         <button class="btn sm" id="bgBtn">Upload a photo…</button>
+        <button class="btn sm" id="collageBtn" title="3–4 library photos in a grid with the logo on a white plate">⊞ Collage</button>
       </div>
       <p class="hint" style="margin-top:6px">Click a library image to use it as the background; product shots are placed on top of the green art. You can also drag a photo onto the canvas or paste one (⌘V).</p>
     </div>
@@ -178,7 +179,16 @@ rep("$('#textPos').addEventListener('click', e => { const b = e.target.closest('
 rep("  $('#textPosRow').style.display = (S.template === 'headline' || S.template === 'event') ? '' : 'none';",
     "  $('#textPosRow').style.display = (S.template === 'headline' || S.template === 'event') && (S.frame||'none') === 'none' ? '' : 'none';\n  document.querySelectorAll('#frameSeg button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === (S.frame||'none'))));\n  renderArtChips();\n  const isPhoto = S.bg.kind === 'photo';\n  ['dim','zoom','fade','fadeSize'].forEach(id => { const n = document.getElementById(id); if (n) n.closest('.row').style.opacity = isPhoto ? '' : '.4'; });\n  $('#adjHint').hidden = isPhoto;")
 rep("function setTemplate(t){\n  pushUndo(); S.template = t; templateDefaults(); layout(); if (IMG.bg && !LOOKS[S.look].dark) autoContrast(false);\n  syncControls(); renderInspector(); render();\n  if (apiKey) { $('#q').value = DEFAULT_QUERY[t]; search(true); }\n}",
-    "function setTemplate(t){\n  pushUndo(); S.template = t; templateDefaults(); layout(); if (IMG.bg && S.bg.kind === 'photo') autoContrast(false);\n  syncControls(); renderInspector(); render();\n}")
+    """async function setTemplate(t){
+  pushUndo(); S.template = t;
+  // house rule: logo-only lives on photos, never on plain green art
+  if (t === 'logo' && S.bg.kind === 'art') {
+    const r = await randomBackground('logo', {});
+    if (r === 'none') toast('Logo-only graphics use a photo \\u2014 the library is empty, so upload one below');
+  }
+  templateDefaults(); layout(); if (IMG.bg && S.bg.kind === 'photo') autoContrast(false);
+  syncControls(); renderInspector(); renderResults(); render();
+}""")
 rep("function snapshot(){ return JSON.stringify({ template:S.template, size:S.size, textPos:S.textPos, look:S.look, bg:S.bg, els:S.els }); }",
     "function snapshot(){ return JSON.stringify({ template:S.template, size:S.size, textPos:S.textPos, look:S.look, frame:S.frame, bandColor:S.bandColor, bg:S.bg, els:S.els }); }")
 rep("state: { template:S.template, size:S.size, textPos:S.textPos, look:S.look, bg:clone(S.bg), els:clone(S.els) }",
@@ -223,6 +233,7 @@ rep("""  IMG.bg = null; IMG.src = null;
     else if (d.photo && d.photo.kind === 'own') { const img = new Image(); await new Promise((res, rej) => { img.onload = res; img.onerror = rej; img.src = d.photo.data; }); IMG.bg = img; IMG.src = clone(d.photo); }
     else if (d.photo) IMG.src = clone(d.photo);
     const pr = byId('product'); if (pr) await libImage(pr.src);
+    if (S.bg.kind === 'collage' && S.bg.cells) await Promise.all(S.bg.cells.map(c => libImage(c.url).catch(() => null)));
   } catch { toast('An image for this draft couldn’t be loaded'); }
   finally { $('#loading').classList.remove('show'); }""")
 rep("  return `bakken-young-${slug}-${w}x${hh}.png`;", "  return `mcmillan-${slug}-${w}x${hh}.png`;")

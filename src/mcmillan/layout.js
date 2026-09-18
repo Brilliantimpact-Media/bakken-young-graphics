@@ -16,7 +16,13 @@ function layout(){
   const logoAt = (cx, y, v) => logoEl({ x: cx - logoW/2, y, w: logoW, variant: v || 'full' });
 
   if (S.template === 'logo') {
-    if (fr) els.push(logoAt(w/2, fr.y + fr.h/2 - logoH/2, logoVariant));
+    if (S.bg.kind === 'collage') {
+      // colour logo on a small white plate over the gutters, like their collage posts
+      const lw = logoW*0.78, lh = lw*0.21;
+      const cy = (S.bg.grid || '2x2') === '2x2' ? h/2 : h*0.55;
+      els.push(logoEl({ x:(w-lw)/2, y:cy - lh/2, w:lw, variant:'color', shade:{ style:'box', color:'#ffffff', alpha:1, size:0.28 } }));
+    }
+    else if (fr) els.push(logoAt(w/2, fr.y + fr.h/2 - logoH/2, logoVariant));
     else els.push(logoAt(w/2, h - logoH - 0.07*h));
   }
   else if (S.template === 'headline' || S.template === 'event') {
@@ -88,6 +94,7 @@ function templateDefaults(){
   // Art backgrounds need no darkening; photos get a light tint. Bands are chosen by the user or the generator.
   S.bg.fadePos = 'none'; S.bg.fade = 0.45; S.bg.fadeSize = 0.5;
   S.bg.dim = S.bg.kind === 'photo' ? (S.template === 'review' ? 0.35 : 0.22) : 0;
+  if (S.bg.kind === 'collage') S.frame = 'none';
   const L = LOOKS[S.look];
   if (L.dim !== null && S.bg.kind === 'photo') S.bg.dim = L.dim;
 }

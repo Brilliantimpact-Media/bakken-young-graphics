@@ -122,22 +122,38 @@ function parseLines(txt){
 }
 
 // Background choice: generated art (always available) or a photo from the library when there is one.
+// House rules from the Jul–Sep posts:
+//  • green art ALWAYS carries a message (statement or headline) — never logo-only
+//  • logo-only graphics are photos: usually a collage of event / application / team shots, sometimes one strong photo
+//  • product cutouts sit on art with a headline above them
 async function randomBackground(template, brief){
   const statement = brief && /^[A-Z][A-Z &]+:$/.test((brief.headline||'').trim());
   const photos = LIB.filter(p => p.kind !== 'product' && !photoMem.used[p.id] && p.id !== IMG.src?.id);
   const anyPhotos = LIB.filter(p => p.kind !== 'product');
   const pool = photos.length ? photos : anyPhotos;
-  const wantPhoto = pool.length && !statement && pick([['photo', template === 'logo' ? 8 : 5], ['art', 4]], 'bgKind') === 'photo';
+  if (template === 'logo') {
+    if (!anyPhotos.length) return 'none';               // caller converts to a headline on art
+    const groups = ['event','application','team','shop'].filter(k => anyPhotos.filter(p => p.kind === k).length >= 3);
+    const useCollage = anyPhotos.length >= 3 && pick([['collage', 6], ['photo', 4]], 'logoBg') === 'collage';
+    if (useCollage && await makeCollage(groups.length ? groups[Math.floor(Math.random()*groups.length)] : 'all')) return 'collage';
+    const prefer = pool.filter(p => ['event','application','team'].includes(p.kind));
+    const from = prefer.length ? prefer : pool;
+    const p = from[Math.floor(Math.random()*from.length)];
+    IMG.bg = await libImage(p.url); IMG.src = Object.assign({ kind:'lib' }, p);
+    S.bg.kind = 'photo'; S.bg.ox = S.bg.oy = 0; S.bg.zoom = 1; S.bg.cells = null;
+    return 'photo';
+  }
+  const wantPhoto = pool.length && !statement && pick([['photo', 5], ['art', 4]], 'bgKind') === 'photo';
   if (wantPhoto) {
     const favs = pool.filter(p => photoMem.favs[p.id]);
     const from = favs.length >= 3 && Math.random() < 0.35 ? favs : pool;
     const p = from[Math.floor(Math.random()*from.length)];
     const im = await libImage(p.url);
     IMG.bg = im; IMG.src = Object.assign({ kind:'lib' }, p);
-    S.bg.kind = 'photo'; S.bg.ox = S.bg.oy = 0; S.bg.zoom = 1;
+    S.bg.kind = 'photo'; S.bg.ox = S.bg.oy = 0; S.bg.zoom = 1; S.bg.cells = null;
     return 'photo';
   }
-  S.bg.kind = 'art';
+  S.bg.kind = 'art'; S.bg.cells = null;
   S.bg.art = pick([['texture', 3], ['gradient', 3], ['circuit', template === 'headline' ? 4 : 2], ['dark', 1]], 'art');
   S.bg.seed = Math.floor(Math.random()*100000) + 1;
   IMG.src = { kind:'art', art:S.bg.art, seed:S.bg.seed };
@@ -158,6 +174,7 @@ function randomStyle(lum){
   const had = new Set(S.els.map(e => e.id));
   const onPhoto = S.bg.kind === 'photo';
   S.look = pick([['white', 7], ['bright', 2]], 'look');
+  if (S.bg.kind === 'collage') { S.frame = 'none'; templateDefaults(); layout(); autoContrast(false); return; }
   // bands only make sense over a photo
   S.frame = onPhoto ? pick([['none', 5], ['top', 2], ['bottom', 1.5], ['wtop', 1.5], ['wbottom', 1.5]], 'frame') : 'none';
   if (S.template === 'headline') {
@@ -187,7 +204,14 @@ async function generate(){
     if (S.template === 'headline' || S.template === 'event') { S.els.push(text('headline', brief.headline || 'Proven before it ships.')); if (brief.sub) S.els.push(text('sub', brief.sub)); }
     if (S.template === 'review') { S.els.push(text('quote', brief.quote)); S.els.push(text('attr', brief.attr)); }
     layout();
-    await randomBackground(S.template, brief);
+    const bgKind = await randomBackground(S.template, brief);
+    if (S.template === 'logo' && bgKind === 'none') {
+      // no photos to lean on: art needs words, so turn it into a headline card
+      const sgg = suggestText(topic === 'any' ? 'quality' : topic);
+      S.template = 'headline'; S.els = [text('headline', sgg.headline)]; if (sgg.sub) S.els.push(text('sub', sgg.sub));
+      layout(); await randomBackground('headline', { headline: sgg.headline });
+      toast('Green art always carries a message \u2014 added a headline');
+    }
     randomStyle(measureLum());
     await maybeAddProduct();
     currentDraftId = null;
@@ -201,7 +225,7 @@ async function generate(){
 async function shufflePhoto(){
   if (genBusy) return; genBusy = true;
   $('#loading').classList.add('show');
-  try { pushUndo(); await randomBackground(S.template, { headline: byId('headline')?.text || '' }); templateDefaults(); layout(); autoContrast(false); await maybeAddProduct(); syncControls(); renderInspector(); renderResults(); fitCanvas(); }
+  try { pushUndo(); if (S.bg.kind === 'collage') await makeCollage(S.bg.cells?.[0]?.kind || 'all'); else await randomBackground(S.template, { headline: byId('headline')?.text || '' }); templateDefaults(); layout(); autoContrast(false); await maybeAddProduct(); syncControls(); renderInspector(); renderResults(); fitCanvas(); }
   catch (err) { toast(err.message || String(err)); }
   finally { $('#loading').classList.remove('show'); genBusy = false; }
 }
