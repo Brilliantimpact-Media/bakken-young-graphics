@@ -182,6 +182,11 @@ rep('<p>Type what it should say — first line is the headline, the next line th
     '<p>Type the headline (first line) and an optional subline. A value like <b>INTEGRITY:</b> plus its explanation becomes a statement card. Add a date or time for an event. Leave it blank for logo only. Keep pressing Generate until you like one, then tweak.</p>')
 rep('placeholder="Pre-Planning&#10;a simple process&#10;&#10;…or paste the whole caption here"', 'placeholder="QUALITY:&#10;Investing in people, systems, and testing so motors do their job quietly for years.&#10;&#10;…or paste the whole caption here"')
 
+rep('<div class="kicker">Bakken-Young studio</div>', '<div class="kicker">McMillan studio</div>')
+rep('.welcome-card h2{margin:0 0 10px;font:600 40px/1.05 "Cormorant Garamond",Georgia,serif;color:var(--ink)}', '.welcome-card h2{margin:0 0 10px;font:800 34px/1.05 "Montserrat",sans-serif;color:var(--ink)}')
+s = s.replace("rgba(25,68,31,.55)", "rgba(0,214,107,.55)").replace("rgba(25,68,31,0)", "rgba(0,214,107,0)")
+rep("['#tiles','#results','#drafts','#genBtn','#shufPhoto','#shufLook','#addText','#bgBtn','#importBtn','#looks']", "['#tiles','#results','#drafts','#genBtn','#shufPhoto','#shufLook','#addText','#bgBtn','#importBtn','#looks','#artChips','#collageBtn','#addProduct']")
+
 # ================= controls / sync =================
 rep("$('#textPos').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; pushUndo(); S.textPos = b.dataset.v; templateDefaults(); layout(); syncControls(); renderInspector(); render(); persist(); });",
     "$('#textPos').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; pushUndo(); S.textPos = b.dataset.v; templateDefaults(); layout(); syncControls(); renderInspector(); render(); persist(); });\n$('#frameSeg').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; pushUndo(); S.frame = b.dataset.v; templateDefaults(); layout(); syncControls(); renderInspector(); render(); persist(); });")

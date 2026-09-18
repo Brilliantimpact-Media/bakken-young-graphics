@@ -135,6 +135,16 @@ canvas#c.dragging{cursor:grabbing}
 .canvas-wrap.drop .dropzone-msg{display:flex}
 .loading{position:absolute;top:24px;right:24px;background:rgba(0,0,0,.6);color:#fff;font-size:12px;padding:4px 10px;border-radius:999px;display:none}
 .loading.show{display:block}
+.welcome{position:absolute;inset:0;display:grid;place-items:center;background:var(--stage);border-radius:10px;z-index:3;padding:24px}
+.welcome-card{max-width:480px;width:100%;text-align:center;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:36px 30px 30px;box-shadow:var(--shadow)}
+.welcome-card .kicker{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:10px}
+.welcome-card h2{margin:0 0 10px;font:800 34px/1.05 "Montserrat",sans-serif;color:var(--ink)}
+.welcome-card p{margin:0 auto 24px;max-width:38ch;color:var(--muted);font-size:14px;line-height:1.55}
+.btn.gen.big{font-size:18px;padding:14px 30px;border-radius:12px}
+.ping{position:relative;animation:ping 1.7s ease-out infinite}
+@keyframes ping{0%{box-shadow:0 0 0 0 rgba(0,214,107,.55),0 6px 18px rgba(0,0,0,.18)}70%{box-shadow:0 0 0 22px rgba(0,214,107,0),0 6px 18px rgba(0,0,0,.18)}100%{box-shadow:0 0 0 0 rgba(0,214,107,0),0 6px 18px rgba(0,0,0,.18)}}
+.welcome-card .alt{display:block;margin:16px auto 0;font-size:13px}
+@media (prefers-reduced-motion:reduce){.ping{animation:none}}
 .toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--ground);padding:9px 14px;border-radius:8px;font-size:13px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:10;max-width:90vw;text-align:center}
 .toast.show{opacity:1}
 .kbd{font-family:ui-monospace,Menlo,monospace;font-size:11px;background:var(--panel-2);border:1px solid var(--line-strong);border-radius:4px;padding:1px 4px}
@@ -287,6 +297,15 @@ canvas#c.dragging{cursor:grabbing}
       <canvas id="c" width="1080" height="1080" aria-label="Graphic preview"></canvas>
       <div class="dropzone-msg">Drop photo to use as background</div>
       <div class="loading" id="loading">Loading photo…</div>
+      <div class="welcome" id="welcome">
+        <div class="welcome-card">
+          <div class="kicker">McMillan studio</div>
+          <h2>Welcome!</h2>
+          <p>Press Generate and get a finished graphic in one click — then change anything you like. Or pick a template on the left to build one yourself.</p>
+          <button class="btn gen big ping" id="welcomeGen">✨ Generate</button>
+          <button class="btn link alt" id="welcomeSkip">Start from a template instead</button>
+        </div>
+      </div>
     </div>
     <p class="stage-hint" id="dims">1080 × 1080 px</p>
   </section>
@@ -1379,6 +1398,13 @@ $('#dlAllBtn').addEventListener('click', async () => {
     btn.disabled = false; btn.textContent = 'All sizes';
   }
 });
+
+// ---------- welcome card (shown until the first action) ----------
+function hideWelcome(){ const w = $('#welcome'); if (w && !w.hidden) { w.hidden = true; fitCanvas(); } }
+$('#welcomeGen').addEventListener('click', () => { hideWelcome(); $('#genBtn').click(); });
+$('#welcomeSkip').addEventListener('click', hideWelcome);
+['#tiles','#results','#drafts','#genBtn','#shufPhoto','#shufLook','#addText','#bgBtn','#importBtn','#looks','#artChips','#collageBtn','#addProduct'].forEach(sel => { const n = $(sel); if (n) n.addEventListener('click', hideWelcome, true); });
+$('#c').addEventListener('pointerdown', hideWelcome, true);
 
 // ---------- Generate (randomizer) — McMillan ----------
 const _m = new Date().getMonth();
