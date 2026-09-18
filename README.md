@@ -1,6 +1,9 @@
-# Bakken-Young Graphics
+# Graphic Generator
 
-Internal tool for making branded social-media graphics for Bakken-Young Funeral & Cremation Services.
-Open the published page, pick a template, search a photo, adjust, download.
+Brilliant Impact's client graphics studio. The welcome page lists clients; each client has its own studio folder with its own logo, colors, templates and rules.
 
-Single static page (`index.html`). Photo search uses the Pexels API; the key is entered once per browser and never stored in this repo.
+- `index.html` — welcome page / client picker (reads `clients.js`)
+- `clients.js` — one entry per client (name, colors, logo, folder)
+- `bakken-young/` — Bakken-Young Funeral & Cremation Services studio
+
+Live: https://simplylexmarie.com/Graphic_Generator/
