@@ -1,0 +1,1519 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Bakken-Young Graphics</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=Nunito+Sans:wght@400;600;700&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<style>
+:root{
+  --ground:#eef0ec; --panel:#ffffff; --panel-2:#f5f6f3; --line:#d8ddd6; --line-strong:#b9c1b8;
+  --ink:#1e2622; --muted:#66706a; --accent:#19441f; --accent-ink:#ffffff; --accent-soft:#e3ece3;
+  --gold:#f0ad54; --danger:#a83a3a; --stage:#dfe3dc; --shadow:0 1px 2px rgba(20,30,24,.08),0 8px 24px rgba(20,30,24,.06);
+  --focus:#19441f;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#151917; --panel:#1e2421; --panel-2:#252c28; --line:#323b35; --line-strong:#48544c;
+    --ink:#e7ebe6; --muted:#98a39b; --accent:#7fb58d; --accent-ink:#0f1a13; --accent-soft:#25352a;
+    --gold:#f0ad54; --danger:#e07a7a; --stage:#0f1311; --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.3);
+    --focus:#7fb58d;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#151917; --panel:#1e2421; --panel-2:#252c28; --line:#323b35; --line-strong:#48544c;
+  --ink:#e7ebe6; --muted:#98a39b; --accent:#7fb58d; --accent-ink:#0f1a13; --accent-soft:#25352a;
+  --gold:#f0ad54; --danger:#e07a7a; --stage:#0f1311; --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.3);
+  --focus:#7fb58d;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--ground);color:var(--ink);font:14px/1.45 "Nunito Sans",-apple-system,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+a{color:var(--accent)}
+[hidden]{display:none!important}
+
+.top{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px 20px;border-bottom:1px solid var(--line);background:var(--panel)}
+.brand{display:flex;align-items:baseline;gap:10px}
+.brand h1{margin:0;font:600 20px/1 "Cormorant Garamond",Georgia,serif;letter-spacing:.01em}
+.brand .home{color:var(--muted);text-decoration:none;font-size:22px;line-height:1;padding:0 4px;border-radius:6px}
+.brand .home:hover{background:var(--panel-2);color:var(--ink)}
+.brand .profile{font:600 20px/1 "Cormorant Garamond",Georgia,serif;letter-spacing:.01em;border:0;background:transparent;color:var(--ink);padding:4px 26px 4px 4px;border-radius:6px;cursor:pointer;-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%2366706a' stroke-width='1.6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center}
+.brand .profile:hover{background-color:var(--panel-2)}
+.brand span{color:var(--muted);font-size:12px;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap}
+.top-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+
+.app{display:grid;grid-template-columns:300px minmax(0,1fr) 300px;gap:16px;padding:16px;min-height:calc(100% - 57px)}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:4px 0;box-shadow:var(--shadow);align-self:start;max-height:calc(100vh - 100px);overflow:auto}
+.sec{padding:12px 16px;border-bottom:1px solid var(--line)}
+.sec:last-child{border-bottom:0}
+.sec h2,.subh{margin:0 0 10px;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:700;display:flex;justify-content:space-between;align-items:center}
+.subh{margin-top:14px;margin-bottom:8px}
+.sec h2 button{font-size:11px;letter-spacing:0;text-transform:none;font-weight:600}
+.row{display:flex;gap:8px;align-items:center;margin-bottom:8px}
+.row:last-child{margin-bottom:0}
+.row label{flex:0 0 76px;color:var(--muted);font-size:12px}
+.row > *:not(label){flex:1;min-width:0}
+.field{display:flex;flex-direction:column;gap:4px;margin-bottom:10px}
+.field:last-child{margin-bottom:0}
+.field label{font-size:12px;color:var(--muted)}
+input[type=text],input[type=password],textarea,select{width:100%;padding:7px 9px;border:1px solid var(--line-strong);border-radius:6px;background:var(--panel-2);color:var(--ink)}
+textarea{resize:vertical;min-height:64px;line-height:1.35}
+input[type=range]{width:100%;accent-color:var(--accent)}
+input[type=color]{width:34px;height:28px;padding:0;border:1px solid var(--line-strong);border-radius:6px;background:none}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:7px 12px;border:1px solid var(--line-strong);border-radius:7px;background:var(--panel);cursor:pointer;white-space:nowrap}
+.btn:hover{background:var(--panel-2)}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:700}
+.btn.primary:hover{filter:brightness(1.07)}
+.btn.danger{color:var(--danger)}
+.btn.sm{padding:5px 9px;font-size:12px}
+.btn.link{border:0;background:none;padding:0;color:var(--accent);text-decoration:underline;cursor:pointer}
+.btn.block{width:100%}
+.btn[disabled]{opacity:.45;cursor:default}
+
+.tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.tile{border:1px solid var(--line-strong);border-radius:8px;background:var(--panel-2);padding:8px 6px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;font-size:11px;font-weight:600}
+.tile svg{width:38px;height:38px;display:block}
+.tile[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft);box-shadow:inset 0 0 0 1px var(--accent)}
+.seg{display:flex;border:1px solid var(--line-strong);border-radius:7px;overflow:hidden}
+.seg button{flex:1;padding:6px 4px;border:0;background:var(--panel);cursor:pointer;font-size:12px}
+.seg button + button{border-left:1px solid var(--line-strong)}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);font-weight:700}
+.swatches{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.sw{width:24px;height:24px;border-radius:50%;border:1px solid var(--line-strong);cursor:pointer;padding:0;box-shadow:inset 0 0 0 2px var(--panel)}
+.sw[aria-pressed="true"]{box-shadow:inset 0 0 0 2px var(--panel),0 0 0 2px var(--accent)}
+.hint{color:var(--muted);font-size:12px;margin:0}
+.note{font-size:12px;color:var(--muted);background:var(--panel-2);border:1px dashed var(--line-strong);border-radius:6px;padding:8px 10px;margin-top:8px;line-height:1.5}
+.note b{color:var(--ink)}
+
+.looks{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}
+.look{border:1px solid var(--line-strong);border-radius:8px;padding:6px 8px;cursor:pointer;display:flex;align-items:center;gap:8px;background:var(--panel-2);font-size:12px;font-weight:600;text-align:left}
+.look[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent);background:var(--accent-soft)}
+.look i{width:26px;height:26px;border-radius:5px;flex:0 0 auto;display:grid;place-items:center;font:italic 700 15px "Cormorant Garamond",serif;border:1px solid rgba(0,0,0,.15)}
+
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1px solid var(--line-strong);background:var(--panel);border-radius:999px;padding:4px 10px;font-size:12px;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:700}
+.search{display:flex;gap:6px}
+.search input{flex:1}
+.tabs{display:flex;gap:2px;margin-top:10px;border-bottom:1px solid var(--line)}
+.tabs button{border:0;background:none;padding:6px 10px;font-size:12px;cursor:pointer;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-1px}
+.tabs button[aria-selected="true"]{color:var(--ink);font-weight:700;border-bottom-color:var(--accent)}
+.results{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-top:8px;max-height:300px;overflow:auto;padding-right:2px}
+.res{position:relative;border:2px solid transparent;border-radius:6px;background:var(--panel-2);aspect-ratio:1;overflow:hidden;cursor:pointer}
+.res img{width:100%;height:100%;object-fit:cover;display:block}
+.res:hover{border-color:var(--line-strong)}
+.res[aria-pressed="true"]{border-color:var(--accent)}
+.res .star{position:absolute;top:3px;right:3px;width:22px;height:22px;border-radius:50%;border:0;background:rgba(0,0,0,.45);color:#fff;font-size:13px;line-height:22px;padding:0;cursor:pointer;opacity:0;transition:opacity .15s}
+.res:hover .star,.res .star[aria-pressed="true"]{opacity:1}
+.res .star[aria-pressed="true"]{color:var(--gold)}
+.res .used{position:absolute;left:0;right:0;bottom:0;background:rgba(0,0,0,.6);color:#fff;font-size:10px;padding:2px 4px;text-align:center;letter-spacing:.03em}
+.results .more{aspect-ratio:auto;grid-column:1 / -1;padding:8px;font-size:12px;border:1px solid var(--line-strong);border-radius:6px;background:var(--panel);cursor:pointer}
+.results-status{font-size:12px;color:var(--muted);margin-top:6px}
+
+.drafts{display:flex;flex-direction:column;gap:6px}
+.draft{display:flex;gap:8px;align-items:center;border:1px solid var(--line);border-radius:7px;padding:5px;background:var(--panel-2)}
+.draft img{width:52px;height:52px;object-fit:cover;border-radius:4px;flex:0 0 auto;background:#333}
+.draft .meta{flex:1;min-width:0}
+.draft .meta b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:13px}
+.draft .meta span{font-size:11px;color:var(--muted)}
+.draft .acts{display:flex;flex-direction:column;gap:3px}
+.draft .acts button{font-size:11px;padding:2px 7px}
+
+.stage{display:flex;flex-direction:column;gap:10px;min-width:0}
+.toolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.toolbar .spacer{flex:1}
+.canvas-wrap{background:var(--stage);border:1px solid var(--line);border-radius:10px;padding:16px;display:flex;align-items:center;justify-content:center;min-height:320px;position:relative}
+.canvas-wrap.drop{outline:2px dashed var(--accent);outline-offset:-8px}
+canvas#c{display:block;max-width:100%;box-shadow:0 12px 40px rgba(0,0,0,.28);touch-action:none;cursor:grab;background:#222}
+canvas#c.dragging{cursor:grabbing}
+.stage-hint{font-size:12px;color:var(--muted);text-align:center;margin:0}
+.dropzone-msg{position:absolute;inset:16px;display:none;align-items:center;justify-content:center;background:rgba(25,68,31,.75);color:#fff;font-weight:700;border-radius:8px;pointer-events:none}
+.canvas-wrap.drop .dropzone-msg{display:flex}
+.loading{position:absolute;top:24px;right:24px;background:rgba(0,0,0,.6);color:#fff;font-size:12px;padding:4px 10px;border-radius:999px;display:none}
+.loading.show{display:block}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--ground);padding:9px 14px;border-radius:8px;font-size:13px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:10;max-width:90vw;text-align:center}
+.toast.show{opacity:1}
+.kbd{font-family:ui-monospace,Menlo,monospace;font-size:11px;background:var(--panel-2);border:1px solid var(--line-strong);border-radius:4px;padding:1px 4px}
+.setup{position:fixed;inset:0;background:rgba(0,0,0,.55);display:grid;place-items:center;z-index:20;padding:16px}
+.setup > div{background:var(--panel);color:var(--ink);border-radius:12px;padding:22px 24px;max-width:460px;width:100%;box-shadow:var(--shadow)}
+.setup h2{margin:0 0 6px;font:600 24px/1.1 "Cormorant Garamond",serif}
+.setup p{margin:0 0 12px;color:var(--muted);font-size:13px;line-height:1.5}
+.setup .field{margin-bottom:12px}
+.setup textarea{min-height:110px}
+.setup .actions{display:flex;gap:8px;justify-content:flex-end;align-items:center;margin-top:8px}
+.setup .actions .status{flex:1;font-size:12px;color:var(--muted)}
+.setup .row .hint{flex:1}
+.btn.gen{background:linear-gradient(135deg,#19441f,#2f6b3a);color:#fff;border-color:#19441f;font-weight:700}
+.btn.gen:hover{filter:brightness(1.1)}
+
+
+@media (max-width:1100px){
+  .app{grid-template-columns:1fr 1fr}
+  .stage{grid-column:1 / -1;grid-row:1}
+  .panel{max-height:none}
+}
+@media (max-width:640px){
+  .app{grid-template-columns:1fr;padding:12px 16px}
+  .top{padding:10px 16px}
+  .canvas-wrap{padding:8px}
+}
+@media (prefers-reduced-motion:reduce){.toast{transition:none}.res .star{transition:none}}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="brand">
+    <a class="home" href="../" title="All clients" aria-label="All clients">&#8249;</a>
+    <select id="profileSel" class="profile" aria-label="Client"><option value="bakken-young">Bakken-Young</option></select>
+    <span>Social graphics</span>
+  </div>
+  <div class="top-actions">
+    <button class="btn sm" id="undoBtn" title="Undo (⌘Z)">Undo</button>
+    <button class="btn sm" id="resetBtn" title="Put everything back where the template starts">Reset layout</button>
+    <button class="btn sm" id="saveBtn" title="Save this draft to reopen later (⌘S)">Save draft</button>
+    <button class="btn sm" id="dlAllBtn" title="Download square, landscape, portrait and story versions in one zip">All sizes</button>
+    <button class="btn primary" id="dlBtn">Download PNG</button>
+  </div>
+</header>
+
+<main class="app">
+  <aside class="panel" id="left">
+    <div class="sec">
+      <h2>Template</h2>
+      <div class="tiles" id="tiles">
+        <button class="tile" data-t="logo" aria-pressed="false">
+          <svg viewBox="0 0 44 44"><rect x="2" y="2" width="40" height="40" rx="4" fill="#6b8f78"/><rect x="12" y="29" width="20" height="7" rx="1.5" fill="#fff"/></svg>Logo only</button>
+        <button class="tile" data-t="headline" aria-pressed="false">
+          <svg viewBox="0 0 44 44"><rect x="2" y="2" width="40" height="40" rx="4" fill="#6b8f78"/><rect x="14" y="7" width="16" height="5" rx="1.5" fill="#fff"/><rect x="8" y="26" width="28" height="5" rx="1.5" fill="#fff"/><rect x="12" y="33" width="20" height="3" rx="1.5" fill="#fff" opacity=".85"/></svg>Headline</button>
+        <button class="tile" data-t="event" aria-pressed="false">
+          <svg viewBox="0 0 44 44"><rect x="2" y="2" width="40" height="40" rx="4" fill="#6b8f78"/><rect x="10" y="8" width="24" height="5" rx="1.5" fill="#fff"/><rect x="13" y="16" width="18" height="3" rx="1.5" fill="#fff" opacity=".85"/><rect x="15" y="21" width="14" height="3" rx="1.5" fill="#fff" opacity=".85"/><rect x="14" y="32" width="16" height="5" rx="1.5" fill="#fff"/></svg>Event</button>
+        <button class="tile" data-t="review" aria-pressed="false">
+          <svg viewBox="0 0 44 44"><rect x="2" y="2" width="40" height="40" rx="4" fill="#6b8f78"/><rect x="6" y="6" width="32" height="24" rx="2" fill="#592231" opacity=".85"/><rect x="14" y="4" width="16" height="4" rx="1" fill="#f0ad54"/><rect x="9" y="12" width="26" height="2" fill="#fff"/><rect x="9" y="16" width="26" height="2" fill="#fff"/><rect x="9" y="20" width="18" height="2" fill="#fff"/><rect x="6" y="33" width="14" height="5" rx="1.5" fill="#fff"/></svg>Review</button>
+      </div>
+      <div class="row" style="margin-top:10px"><label for="size">Size</label>
+        <select id="size">
+          <option value="square">Square · 1080×1080 (Facebook/Instagram)</option>
+          <option value="landscape">Landscape · 1200×630 (link post)</option>
+          <option value="portrait">Portrait · 1080×1350</option>
+          <option value="story">Story · 1080×1920</option>
+        </select></div>
+      <div class="row" id="textPosRow"><label>Text</label>
+        <div class="seg" id="textPos">
+          <button data-v="tc" aria-pressed="true">Top</button>
+          <button data-v="tl" aria-pressed="false">Top left</button>
+          <button data-v="tr" aria-pressed="false">Top right</button>
+          <button data-v="mid" aria-pressed="false">Middle</button>
+        </div></div>
+    </div>
+
+    <div class="sec">
+      <h2>Look</h2>
+      <div class="looks" id="looks"></div>
+    </div>
+
+    <div class="sec" id="textSec">
+      <h2>Text</h2>
+      <div id="quickFields"></div>
+    </div>
+
+    <div class="sec">
+      <h2>Background photo <button class="btn link" id="keyToggle">Change key</button></h2>
+      <div id="keyBox" hidden>
+        <div class="note" style="margin:0 0 8px">
+          <b>Photo key</b> — photos come from Pexels (free for commercial use). A team key is built in; paste a different one here only if you need to.
+        </div>
+        <div class="search"><input type="password" id="apiKey" placeholder="Paste Pexels API key" autocomplete="off"><button class="btn sm" id="saveKey">Save</button></div>
+      </div>
+      <div class="search"><input type="text" id="q" placeholder="Search photos: autumn path, family, candle…"><button class="btn sm" id="searchBtn">Search</button></div>
+      <div class="tabs" id="tabs">
+        <button data-tab="search" aria-selected="true">Results</button>
+        <button data-tab="favs" aria-selected="false">Favorites</button>
+        <button data-tab="recent" aria-selected="false">Recently used</button>
+      </div>
+      <div class="results" id="results"></div>
+      <div class="results-status" id="rstatus"></div>
+      <div class="row" style="margin-top:10px">
+        <input type="file" id="bgFile" accept="image/*" hidden>
+        <button class="btn sm" id="bgBtn">Upload my own photo…</button>
+        <button class="btn sm" id="rulesToggle">Photo rules</button>
+      </div>
+      <div id="rulesBox" hidden>
+        <div class="note" style="margin-top:8px">
+          <b>Photos are screened automatically.</b> Anything described with animals, hospitals or illness, money, vehicles, parties, alcohol, babies, costumes, cemeteries or coffins is skipped, and Generate only uses photos whose description matches what it searched for. Starred favorites are picked first.
+        </div>
+        <div class="field" style="margin-top:8px"><label for="avoidWords">Also avoid (comma-separated)</label><input type="text" id="avoidWords" placeholder="e.g. bucket, wallet, sunglasses"></div>
+        <p class="hint" id="skippedNote"></p>
+      </div>
+      <p class="hint" style="margin-top:6px">You can also drag a photo onto the canvas or paste one (⌘V). Drag the photo on the canvas to reposition it.</p>
+    </div>
+
+    <div class="sec">
+      <h2>Photo adjustments <button class="btn link" id="autoBtn" title="Set Darken and Fade based on how bright the photo is behind the logo and text">Auto-adjust</button></h2>
+      <div class="row"><label for="dim">Darken</label><input type="range" id="dim" min="0" max="70" value="15"></div>
+      <div class="row"><label for="zoom">Zoom</label><input type="range" id="zoom" min="100" max="300" value="100"></div>
+      <div class="row"><label></label><button class="btn sm" id="bgReset">Re-center photo</button></div>
+      <div class="subh">Edge fade</div>
+      <div class="row"><label>Where</label>
+        <div class="seg" id="fadePos">
+          <button data-v="none" aria-pressed="false">None</button>
+          <button data-v="bottom" aria-pressed="true">Bottom</button>
+          <button data-v="top" aria-pressed="false">Top</button>
+          <button data-v="both" aria-pressed="false">Both</button>
+        </div></div>
+      <div class="row"><label for="fade">Strength</label><input type="range" id="fade" min="0" max="90" value="45"></div>
+      <div class="row"><label for="fadeSize">Height</label><input type="range" id="fadeSize" min="15" max="90" value="55"></div>
+      <div class="row"><label>Color</label><div class="swatches" id="fadeColor"></div></div>
+      <p class="hint">Shading directly behind the logo or a text block is separate — click the logo or text to set it.</p>
+    </div>
+  </aside>
+
+  <section class="stage">
+    <div class="toolbar">
+      <span class="hint">Click anything on the graphic to select it. Drag to move · corners to resize · <span class="kbd">←↑↓→</span> nudge · <span class="kbd">⌫</span> remove</span>
+      <span class="spacer"></span>
+      <button class="btn sm gen" id="genBtn" title="Build a complete graphic from your text with a random photo, look and layout">✨ Generate</button>
+      <button class="btn sm" id="shufPhoto" title="Keep the layout, try a different photo">Shuffle photo</button>
+      <button class="btn sm" id="shufLook" title="Keep the photo, try a different look and layout">Shuffle look</button>
+      <button class="btn sm" id="addText">+ Add text</button>
+    </div>
+    <div class="canvas-wrap" id="wrap">
+      <canvas id="c" width="1080" height="1080" aria-label="Graphic preview"></canvas>
+      <div class="dropzone-msg">Drop photo to use as background</div>
+      <div class="loading" id="loading">Loading photo…</div>
+    </div>
+    <p class="stage-hint" id="dims">1080 × 1080 px</p>
+  </section>
+
+  <aside class="panel" id="right">
+    <div class="sec">
+      <h2>Selected</h2>
+      <div id="inspector"><p class="hint">Nothing selected. Click a piece of the graphic to adjust it.</p></div>
+    </div>
+    <div class="sec">
+      <h2>Saved drafts <span><button class="btn link" id="importBtn">Import</button></span></h2>
+      <input type="file" id="importFile" accept="application/json,.json" hidden>
+      <div class="drafts" id="drafts"></div>
+      <p class="hint" id="draftsHint" style="margin-top:8px">Drafts are saved in this browser. To hand one to someone else, use “Export file” and they use Import.</p>
+    </div>
+  </aside>
+</main>
+<div class="toast" id="toast"></div>
+
+<div class="setup" id="gen" hidden>
+  <div>
+    <h2>Generate a graphic</h2>
+    <p>Type what it should say — first line is the headline, the next line the subline. Add a date or time and it becomes an event. Paste a client's quote for a review. Leave it blank for logo only. Keep pressing Generate until you like one, then tweak.</p>
+    <div class="chips" id="topicChips" style="margin-bottom:6px"></div>
+    <div class="row" style="margin-bottom:8px"><button class="btn sm" id="suggestBtn" title="Write a headline and subline in the house voice">✎ Suggest text</button><span class="hint">or paste the post's caption and it will pull the headline, topic and any date out of it</span></div>
+    <div class="field"><textarea id="genText" placeholder="Pre-Planning&#10;a simple process&#10;&#10;…or paste the whole caption here"></textarea></div>
+    <div class="row" style="margin-bottom:0"><label>Template</label>
+      <div class="seg" id="genTpl">
+        <button data-v="auto" aria-pressed="true">Auto</button>
+        <button data-v="logo" aria-pressed="false">Logo only</button>
+        <button data-v="headline" aria-pressed="false">Headline</button>
+        <button data-v="event" aria-pressed="false">Event</button>
+        <button data-v="review" aria-pressed="false">Review</button>
+      </div></div>
+    <div class="actions"><span class="status" id="genStatus"></span><button class="btn link" id="genCancel">Cancel</button><button class="btn gen" id="genGo">Generate</button></div>
+  </div>
+</div>
+
+<script>
+(() => {
+'use strict';
+const $ = s => document.querySelector(s);
+const SIZES = { square:[1080,1080], landscape:[1200,630], portrait:[1080,1350], story:[1080,1920] };
+const SERIF = '"Cormorant Garamond", Georgia, "Times New Roman", serif';
+const COLORS = [
+  ['#ffffff','White'],['#19441f','Bakken green'],['#719587','Sage'],['#f0ad54','Gold'],['#592231','Plum'],['#1f1f1f','Charcoal'],['#f3e9d2','Cream']
+];
+const SHADE_COLORS = [['#000000','Black'],['#19441f','Bakken green'],['#592231','Plum'],['#719587','Sage'],['#f0ad54','Gold'],['#ffffff','White']];
+const LS = { prefs:'by-prefs-v4', drafts:'by-drafts-v1', photos:'by-photos-v1' };
+const LOGO_SRC = 'data:image/png;base64,__LOGO_B64__';
+const DEFAULT_QUERY = { logo:'sunlight through leaves', headline:'hands holding comfort', event:'person writing notebook', review:'forest canopy looking up' };
+const NO_SHADE = () => ({ style:'none', color:'#000000', alpha:0.35, size:0.5 });
+
+// Looks: text colors + photo treatment. `dark` = dark text meant for light photos.
+const LOOKS = {
+  classic: { label:'White on photo', accent:'#ffffff', text:'#ffffff', shadow:true,  dim:null, fade:null,   shade:{style:'none',color:'#000000',alpha:0.35}, swatch:['#3b4a3e','#fff'] },
+  green:   { label:'Green on light', accent:'#19441f', text:'#19441f', shadow:false, dim:0,    fade:'none', shade:{style:'none',color:'#000000',alpha:0.3}, dark:true, swatch:['#e8e4d6','#19441f'] },
+  gold:    { label:'Gold accent',    accent:'#f0ad54', text:'#ffffff', shadow:true,  dim:null, fade:null,   shade:{style:'none',color:'#000000',alpha:0.35}, swatch:['#3b4a3e','#f0ad54'] },
+};
+
+// ---------- state ----------
+let S = { template:'headline', size:'square', textPos:'tc', look:'classic',
+          bg:{zoom:1, ox:0, oy:0, dim:0.35, fadePos:'none', fade:0.45, fadeSize:0.55, fadeColor:'#000000'}, els:[], sel:null };
+const IMG = { bg:null, logo:null, src:null }; // src: {kind:'pexels',id,url,tiny,photographer,alt} | {kind:'own',data}
+let undo = [];
+let bokehCache = null, bokehKey = '';
+const BUILT_IN_KEY = 'dMBOWE33ohoJ8Weu0lSEIQhWNDpSnHnC3n9Vkhs3l7I4cfYOKDJgZ7Tf';
+let page = 1, lastQuery = '', results = [], apiKey = BUILT_IN_KEY, tab = 'search';
+let photoMem = { used:{}, favs:{} };
+let currentDraftId = null;
+
+const W = () => SIZES[S.size][0], H = () => SIZES[S.size][1];
+const byId = id => S.els.find(e => e.id === id);
+const U = () => Math.min(W(), H()) / 1080;
+function logoAspect(){ return IMG.logo ? IMG.logo.naturalHeight / IMG.logo.naturalWidth : 0.286; }
+const clone = o => JSON.parse(JSON.stringify(o));
+
+function text(id, str, o){
+  return Object.assign({ id, type:'text', text:str, x:0, y:0, w:800, size:60, italic:false, weight:600, color:'#ffffff', align:'center', lh:1.12, shadow:true, upper:false, ls:0, shade:NO_SHADE() }, o);
+}
+function logoEl(o){ const L = LOOKS[S.look]; return Object.assign({ id:'logo', type:'logo', shadow:true, shade:{style:L.shade.style, color:L.shade.color, alpha:L.shade.alpha, size:0.5} }, o); }
+
+function layout(){
+  const w = W(), h = H(), u = U();
+  const wide = w > h;
+  const els = [];
+  // House style (from the 2026 Canva set): small logo bottom-center, text in the top third.
+  const logoW = wide ? 0.24*w : 0.30*w;
+  const logoH = logoW * logoAspect();
+  const bottomLogo = () => logoEl({ x:(w-logoW)/2, y:h - logoH - 0.065*h, w:logoW });
+  const pos = S.textPos || 'tc';
+
+  if (S.template === 'logo') {
+    els.push(bottomLogo());
+  }
+  else if (S.template === 'headline' || S.template === 'event') {
+    const isEvent = S.template === 'event';
+    const hl = byId('headline')?.text ?? (isEvent ? 'Grief Support Webinar' : 'Pre-Planning');
+    const sb = byId('sub')?.text ?? (isEvent ? 'Tuesday, April 14\n6:30 \u2013 8:00 PM' : 'a simple process');
+    const hsize = (isEvent ? 64 : 60)*u*(wide? .9:1), ssize = (isEvent ? 42 : 46)*u*(wide? .9:1);
+    const corner = !isEvent && (pos === 'tl' || pos === 'tr');
+    const tw = corner ? 0.56*w : 0.84*w;
+    const tx = pos === 'tl' && corner ? 0.07*w : pos === 'tr' && corner ? w - 0.07*w - tw : (w - tw)/2;
+    const align = corner ? (pos === 'tl' ? 'left' : 'right') : 'center';
+    const hLines = 1, sLines = Math.max(1, sb.split('\n').length);
+    const block = hsize*1.15 + ssize*1.2*sLines;
+    let y = pos === 'mid' ? (h - block - logoH - 0.03*h)/2 : 0.085*h;
+    els.push(text('headline', hl, { x:tx, y, w:tw, size:hsize, italic:true, weight:600, align, lh:1.1 }));
+    y += hsize*1.18;
+    els.push(text('sub', sb, { x:tx, y, w:tw, size:ssize, weight:500, align, lh:1.18 }));
+    if (pos === 'mid') { y += ssize*1.2*sLines + 0.03*h; els.push(logoEl({ x:(w-logoW)/2, y, w:logoW })); }
+    else els.push(bottomLogo());
+  }
+  else if (S.template === 'review') {
+    const q = byId('quote')?.text ?? '\u201CBoth times we were treated like we were family to them. Kind and respectful always, giving us what we needed sometimes before we knew we needed it. We would highly recommend Bakken-Young Funeral and Cremation Services.\u201D';
+    const a = byId('attr')?.text ?? '\u2014 from a client';
+    const bx = 0.08*w, bw = 0.84*w, by = wide ? 0.10*h : 0.08*h, bh = wide ? 0.68*h : 0.60*h;
+    els.push({ id:'box', type:'box', x:bx, y:by, w:bw, h:bh, fill:'#1f3a26', alpha:0.78, label:'FEATURED REVIEW', labelFill:'#719587', labelColor:'#ffffff', kids:['quote','attr'] });
+    const pad = 0.05*w;
+    els.push(text('quote', q, { x:bx+pad, y:by + (wide? 0.12*h : 0.08*h), w:bw-pad*2, size:42*u*(wide? .8:1), weight:500, align:'left', italic:false, shadow:false, lh:1.22 }));
+    els.push(text('attr', a, { x:bx+pad, y:by+bh - (wide? 0.13*h : 0.085*h), w:bw-pad*2, size:32*u*(wide? .8:1), weight:500, align:'right', italic:true, shadow:false }));
+    els.push(bottomLogo());
+  }
+  S.els = els;
+  S.sel = null;
+  applyLook(false);
+}
+function templateDefaults(){
+  // Uniform darkening is the house look; edge fades stay available as an option.
+  S.bg.fadePos = 'none'; S.bg.fade = 0.45;
+  S.bg.dim = S.template === 'review' ? 0.3 : S.template === 'logo' ? 0.25 : 0.35;
+  const L = LOOKS[S.look];
+  if (L.dim !== null) S.bg.dim = L.dim;
+  if (L.fade) S.bg.fadePos = L.fade;
+}
+// Apply the current look's colors to the text/logo elements. Review box text stays white (it sits on plum).
+function applyLook(withPhoto){
+  const L = LOOKS[S.look];
+  for (const el of S.els) {
+    if (el.type === 'text') {
+      const inBox = el.id === 'quote' || el.id === 'attr';
+      el.color = inBox ? '#ffffff' : (el.id === 'headline' ? L.accent : L.text);
+      el.shadow = inBox ? false : L.shadow;
+    } else if (el.type === 'logo') {
+      el.shade = Object.assign(el.shade || {size:0.5}, { style:L.shade.style, color:L.shade.color, alpha:L.shade.alpha });
+    }
+  }
+  if (withPhoto) { templateDefaults(); if (IMG.bg && !L.dark) autoContrast(false); }
+}
+
+// ---------- text measuring ----------
+function fontStr(el, size){ return `${el.italic?'italic ':''}${el.weight} ${size||el.size}px ${SERIF}`; }
+function wrapLines(ctx, el){
+  ctx.font = fontStr(el);
+  if ('letterSpacing' in ctx) ctx.letterSpacing = (el.ls||0)+'px';
+  const out = [];
+  const src = el.upper ? el.text.toUpperCase() : el.text;
+  for (const para of src.split('\n')) {
+    const words = para.split(/\s+/).filter(Boolean);
+    if (!words.length) { out.push(''); continue; }
+    let line = '';
+    for (const wd of words) {
+      const test = line ? line+' '+wd : wd;
+      if (ctx.measureText(test).width > el.w && line) { out.push(line); line = wd; }
+      else line = test;
+    }
+    out.push(line);
+  }
+  return out;
+}
+function bbox(ctx, el){
+  if (el.type === 'text') {
+    const lines = wrapLines(ctx, el);
+    return { x:el.x, y:el.y, w:el.w, h:Math.max(1, lines.length) * el.size * el.lh };
+  }
+  if (el.type === 'logo') return { x:el.x, y:el.y, w:el.w, h:el.w*logoAspect() };
+  return { x:el.x, y:el.y, w:el.w, h:el.h };
+}
+// Visible extent of a text block (the widest line), so shading hugs the words rather than the whole text box.
+function textExtent(ctx, el){
+  const lines = wrapLines(ctx, el);
+  ctx.font = fontStr(el);
+  let maxW = 0; for (const ln of lines) maxW = Math.max(maxW, ctx.measureText(ln).width);
+  maxW = Math.min(el.w, maxW || el.w);
+  const x = el.align === 'left' ? el.x : el.align === 'right' ? el.x + el.w - maxW : el.x + (el.w - maxW)/2;
+  return { x, y:el.y, w:maxW, h:Math.max(1, lines.length) * el.size * el.lh };
+}
+
+// ---------- drawing ----------
+function drawBokeh(w, h){
+  const key = w+'x'+h;
+  if (bokehCache && bokehKey === key) return bokehCache;
+  const c = document.createElement('canvas'); c.width = w; c.height = h;
+  const g = c.getContext('2d');
+  const grad = g.createLinearGradient(0,0,w,h);
+  grad.addColorStop(0,'#7e8f6a'); grad.addColorStop(.5,'#a9a98a'); grad.addColorStop(1,'#c7a877');
+  g.fillStyle = grad; g.fillRect(0,0,w,h);
+  let seed = 7; const rnd = () => (seed = (seed*16807) % 2147483647) / 2147483647;
+  for (let i=0;i<70;i++){
+    const r = (0.03+rnd()*0.11)*Math.max(w,h), x = rnd()*w, y = rnd()*h;
+    const rg = g.createRadialGradient(x,y,r*0.2,x,y,r);
+    const a = 0.10+rnd()*0.25;
+    rg.addColorStop(0,`rgba(255,250,235,${a})`); rg.addColorStop(0.85,`rgba(255,250,235,${a*0.7})`); rg.addColorStop(1,'rgba(255,250,235,0)');
+    g.fillStyle = rg; g.beginPath(); g.arc(x,y,r,0,Math.PI*2); g.fill();
+  }
+  bokehCache = c; bokehKey = key; return c;
+}
+function drawPhoto(ctx, w, h, bg){
+  const img = IMG.bg || drawBokeh(w,h);
+  const iw = img.naturalWidth || img.width, ih = img.naturalHeight || img.height;
+  const s = Math.max(w/iw, h/ih) * bg.zoom;
+  const dw = iw*s, dh = ih*s;
+  ctx.drawImage(img, (w-dw)/2 + bg.ox, (h-dh)/2 + bg.oy, dw, dh);
+}
+function hexA(hex, a){ const n = parseInt(hex.slice(1),16); return `rgba(${n>>16&255},${n>>8&255},${n&255},${a})`; }
+function drawBackground(ctx, w, h){
+  drawPhoto(ctx, w, h, S.bg);
+  if (S.bg.dim > 0) { ctx.fillStyle = `rgba(0,0,0,${S.bg.dim})`; ctx.fillRect(0,0,w,h); }
+  const f = S.bg.fade, p = S.bg.fadePos, col = S.bg.fadeColor || '#000000', size = h * (S.bg.fadeSize ?? 0.55);
+  if (f > 0 && p !== 'none') {
+    if (p === 'bottom' || p === 'both') {
+      const g = ctx.createLinearGradient(0, h - size, 0, h);
+      g.addColorStop(0, hexA(col, 0)); g.addColorStop(1, hexA(col, f));
+      ctx.fillStyle = g; ctx.fillRect(0,0,w,h);
+    }
+    if (p === 'top' || p === 'both') {
+      const g = ctx.createLinearGradient(0, size, 0, 0);
+      g.addColorStop(0, hexA(col, 0)); g.addColorStop(1, hexA(col, f*0.85));
+      ctx.fillStyle = g; ctx.fillRect(0,0,w,h);
+    }
+  }
+}
+// Soft feathered rectangle: solid in the middle, fading out at all four edges.
+function softRect(ctx, x, y, w, h, color, alpha){
+  if (w < 2 || h < 2) return;
+  const c = document.createElement('canvas'); c.width = Math.ceil(w); c.height = Math.ceil(h);
+  const g = c.getContext('2d');
+  const fy = Math.min(0.5, 0.45), fx = Math.min(0.5, (h*0.45)/w);
+  const v = g.createLinearGradient(0,0,0,h);
+  v.addColorStop(0, hexA(color,0)); v.addColorStop(fy, hexA(color,alpha)); v.addColorStop(1-fy, hexA(color,alpha)); v.addColorStop(1, hexA(color,0));
+  g.fillStyle = v; g.fillRect(0,0,w,h);
+  g.globalCompositeOperation = 'destination-in';
+  const hz = g.createLinearGradient(0,0,w,0);
+  hz.addColorStop(0,'rgba(0,0,0,0)'); hz.addColorStop(fx,'rgba(0,0,0,1)'); hz.addColorStop(1-fx,'rgba(0,0,0,1)'); hz.addColorStop(1,'rgba(0,0,0,0)');
+  g.fillStyle = hz; g.fillRect(0,0,w,h);
+  ctx.drawImage(c, x, y);
+}
+function drawShade(ctx, sh, b){
+  if (!sh || sh.style === 'none' || sh.alpha <= 0) return;
+  const px = b.w*0.06 + b.h*sh.size, py = b.h*0.2 + b.h*sh.size;
+  const x = b.x - px, y = b.y - py, w = b.w + px*2, h = b.h + py*2;
+  ctx.save();
+  if (sh.style === 'box') {
+    ctx.fillStyle = hexA(sh.color, sh.alpha);
+    const r = Math.min(h*0.18, 40);
+    ctx.beginPath(); ctx.roundRect(x, y, w, h, r); ctx.fill();
+  } else {
+    softRect(ctx, x, y, w, h, sh.color, sh.alpha);
+  }
+  ctx.restore();
+}
+function drawLogo(ctx, el){
+  const h = el.w * logoAspect();
+  drawShade(ctx, el.shade, { x:el.x, y:el.y, w:el.w, h });
+  ctx.save();
+  if (el.shadow !== false) { ctx.shadowColor = 'rgba(0,0,0,.55)'; ctx.shadowBlur = el.w*0.035; ctx.shadowOffsetY = el.w*0.006; }
+  if (IMG.logo) ctx.drawImage(IMG.logo, el.x, el.y, el.w, h);
+  ctx.restore();
+}
+function drawText(ctx, el){
+  const lines = wrapLines(ctx, el);
+  if (el.shade && el.shade.style !== 'none') drawShade(ctx, el.shade, textExtent(ctx, el));
+  ctx.save();
+  ctx.font = fontStr(el);
+  if ('letterSpacing' in ctx) ctx.letterSpacing = (el.ls||0)+'px';
+  ctx.fillStyle = el.color; ctx.textBaseline = 'alphabetic'; ctx.textAlign = el.align;
+  if (el.shadow) { ctx.shadowColor = 'rgba(0,0,0,.5)'; ctx.shadowBlur = el.size*0.16; ctx.shadowOffsetY = el.size*0.03; }
+  const ax = el.align === 'left' ? el.x : el.align === 'right' ? el.x+el.w : el.x+el.w/2;
+  lines.forEach((ln,i) => ctx.fillText(ln, ax, el.y + el.size*0.78 + i*el.size*el.lh));
+  if (el.rules && el.align === 'center' && lines[0]) {
+    const tw = ctx.measureText(lines[0]).width, gap = el.size*0.45, ly = el.y + el.size*0.5;
+    ctx.shadowColor = 'transparent'; ctx.strokeStyle = el.color; ctx.lineWidth = Math.max(1.5, el.size*0.03); ctx.globalAlpha = 0.85;
+    ctx.beginPath(); ctx.moveTo(el.x, ly); ctx.lineTo(ax - tw/2 - gap, ly); ctx.moveTo(ax + tw/2 + gap, ly); ctx.lineTo(el.x + el.w, ly); ctx.stroke();
+  }
+  ctx.restore();
+}
+function drawBox(ctx, el){
+  ctx.save();
+  ctx.globalAlpha = el.alpha; ctx.fillStyle = el.fill;
+  ctx.fillRect(el.x, el.y, el.w, el.h);
+  ctx.globalAlpha = 1;
+  if (el.label) {
+    const lw = Math.min(el.w*0.6, Math.max(el.w*0.45, 300)), lh = el.h*0.085;
+    const lx = el.x + (el.w-lw)/2, ly = el.y - lh*0.45;
+    ctx.globalAlpha = 0.92; ctx.fillStyle = el.labelFill; ctx.fillRect(lx, ly, lw, lh); ctx.globalAlpha = 1;
+    ctx.fillStyle = el.labelColor; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    const fs = lh*0.5;
+    ctx.font = `700 ${fs}px ${SERIF}`;
+    if ('letterSpacing' in ctx) ctx.letterSpacing = (fs*0.1)+'px';
+    ctx.fillText(el.label.toUpperCase(), lx+lw/2, ly+lh/2 + fs*0.06);
+  }
+  ctx.restore();
+}
+function drawScene(ctx, w, h, forExport){
+  ctx.clearRect(0,0,w,h);
+  drawBackground(ctx, w, h);
+  for (const el of S.els) {
+    if (el.type === 'box') drawBox(ctx, el);
+    else if (el.type === 'text') drawText(ctx, el);
+    else if (el.type === 'logo') drawLogo(ctx, el);
+  }
+  if (!forExport && S.sel) {
+    const el = byId(S.sel); if (!el) return;
+    const b = bbox(ctx, el), k = w/cv.getBoundingClientRect().width;
+    ctx.save();
+    ctx.strokeStyle = '#4fd1a0'; ctx.lineWidth = 1.5*k; ctx.setLineDash([6*k,4*k]);
+    ctx.strokeRect(b.x, b.y, b.w, b.h);
+    ctx.setLineDash([]);
+    ctx.fillStyle = '#fff'; ctx.strokeStyle = '#19441f'; ctx.lineWidth = 1.5*k;
+    for (const [hx,hy] of corners(b)) { ctx.beginPath(); ctx.arc(hx,hy,6*k,0,Math.PI*2); ctx.fill(); ctx.stroke(); }
+    ctx.restore();
+  }
+}
+function corners(b){ return [[b.x,b.y],[b.x+b.w,b.y],[b.x,b.y+b.h],[b.x+b.w,b.y+b.h]]; }
+
+const cv = $('#c'), ctx = cv.getContext('2d');
+let raf = 0;
+function render(){ if (raf) return; raf = requestAnimationFrame(() => { raf = 0; drawScene(ctx, W(), H(), false); }); }
+
+function fitCanvas(){
+  const w = W(), h = H();
+  if (cv.width !== w || cv.height !== h) { cv.width = w; cv.height = h; }
+  const wrap = $('#wrap');
+  const maxW = wrap.clientWidth - 32, maxH = Math.max(300, Math.min(window.innerHeight*0.72, 820));
+  const s = Math.min(maxW/w, maxH/h, 1);
+  const cw = Math.round(w*s)+'px', ch = Math.round(h*s)+'px';
+  if (cv.style.width !== cw) cv.style.width = cw;
+  if (cv.style.height !== ch) cv.style.height = ch;
+  $('#dims').textContent = `${w} × ${h} px` + (IMG.src?.kind === 'pexels' ? ` · Photo: ${IMG.src.photographer} / Pexels` : '');
+  render();
+}
+let fitRaf = 0;
+new ResizeObserver(() => { if (fitRaf) return; fitRaf = requestAnimationFrame(() => { fitRaf = 0; fitCanvas(); }); }).observe($('#wrap'));
+
+// ---------- smart contrast ----------
+// Samples the photo's brightness under the logo and text, then sets Darken/Fade so they stay readable.
+function measureLum(){
+  if (!IMG.bg) return 0.5;
+  const w = W(), h = H(), sw = 120, sh = Math.round(120*h/w);
+  const c = document.createElement('canvas'); c.width = sw; c.height = sh;
+  const g = c.getContext('2d'); g.scale(sw/w, sh/h); drawPhoto(g, w, h, S.bg);
+  let data; try { data = g.getImageData(0,0,sw,sh).data; } catch { return 0.5; }
+  const lumAt = (b) => {
+    let sum = 0, n = 0;
+    const x0 = Math.max(0, Math.floor(b.x*sw/w)), x1 = Math.min(sw-1, Math.ceil((b.x+b.w)*sw/w));
+    const y0 = Math.max(0, Math.floor(b.y*sh/h)), y1 = Math.min(sh-1, Math.ceil((b.y+b.h)*sh/h));
+    for (let y=y0;y<=y1;y++) for (let x=x0;x<=x1;x++) { const i=(y*sw+x)*4; sum += (0.2126*data[i]+0.7152*data[i+1]+0.0722*data[i+2])/255; n++; }
+    return n ? sum/n : 0.5;
+  };
+  let tot = 0, cnt = 0;
+  for (const el of S.els) { if (el.type === 'box') continue; const b = bbox(ctx, el); const l = lumAt(b); tot += l * (el.type === 'logo' ? 2 : 1); cnt += el.type === 'logo' ? 2 : 1; }
+  return cnt ? tot/cnt : 0.5;
+}
+function autoContrast(announce){
+  if (!IMG.bg) return;
+  const L = LOOKS[S.look];
+  const lum = measureLum();
+  if (L.dark) {
+    S.bg.dim = 0; if (lum < 0.4 && announce) toast('This photo is fairly dark — green text may be hard to read. Try “White on photo”.');
+  } else {
+    // bright photo → more darkening & fade; dark photo → almost none
+    // house style: a uniform tint of roughly 25-50% depending on how bright the photo is
+    S.bg.dim = Math.round(Math.min(0.5, Math.max(0.2, 0.15 + lum * 0.5)) * 100) / 100;
+    S.bg.fade = Math.round(Math.min(0.7, Math.max(0.3, 0.25 + lum * 0.5)) * 100) / 100;
+  }
+  syncControls(); render();
+  if (announce) toast(`Adjusted for a ${lum > 0.6 ? 'bright' : lum < 0.35 ? 'dark' : 'medium'} photo`);
+}
+$('#autoBtn').addEventListener('click', () => { pushUndo(); autoContrast(true); });
+
+// ---------- pointer interaction ----------
+let drag = null;
+function toDesign(e){ const r = cv.getBoundingClientRect(); return [ (e.clientX-r.left)*W()/r.width, (e.clientY-r.top)*H()/r.height ]; }
+function hitHandle(x,y){
+  if (!S.sel) return -1;
+  const el = byId(S.sel); if (!el) return -1;
+  const b = bbox(ctx, el), k = W()/cv.getBoundingClientRect().width, r = 12*k;
+  return corners(b).findIndex(([hx,hy]) => Math.hypot(x-hx,y-hy) <= r);
+}
+function hitEl(x,y){
+  for (let i=S.els.length-1;i>=0;i--) { const b = bbox(ctx, S.els[i]); if (x>=b.x&&x<=b.x+b.w&&y>=b.y&&y<=b.y+b.h) return S.els[i]; }
+  return null;
+}
+cv.addEventListener('pointerdown', e => {
+  if (e.button !== 0) return;
+  cv.setPointerCapture(e.pointerId);
+  const [x,y] = toDesign(e);
+  const hi = hitHandle(x,y);
+  pushUndo();
+  if (hi >= 0) {
+    const el = byId(S.sel), b = bbox(ctx, el);
+    const anchor = corners(b)[3-hi];
+    drag = { kind:'scale', el, anchor, b0:{...b}, d0:Math.hypot(x-anchor[0], y-anchor[1]), size0:el.size, w0:el.w, h0:el.h };
+  } else {
+    const el = hitEl(x,y);
+    if (el) {
+      S.sel = el.id;
+      const kids = (el.kids||[]).map(byId).filter(Boolean);
+      drag = { kind:'move', el, sx:x, sy:y, ox:el.x, oy:el.y, kids:kids.map(k => ({k, x:k.x, y:k.y})) };
+    } else {
+      S.sel = null;
+      drag = { kind:'pan', sx:x, sy:y, ox:S.bg.ox, oy:S.bg.oy };
+    }
+    renderInspector();
+  }
+  cv.classList.add('dragging');
+  render();
+});
+cv.addEventListener('pointermove', e => {
+  if (!drag) return;
+  const [x,y] = toDesign(e);
+  if (drag.kind === 'move') {
+    const dx = x-drag.sx, dy = y-drag.sy;
+    drag.el.x = drag.ox+dx; drag.el.y = drag.oy+dy;
+    for (const c of drag.kids) { c.k.x = c.x+dx; c.k.y = c.y+dy; }
+  } else if (drag.kind === 'pan') {
+    S.bg.ox = drag.ox + (x-drag.sx); S.bg.oy = drag.oy + (y-drag.sy);
+  } else if (drag.kind === 'scale') {
+    const d = Math.hypot(x-drag.anchor[0], y-drag.anchor[1]);
+    const f = Math.max(0.15, d / drag.d0);
+    const el = drag.el, b0 = drag.b0, [ax,ay] = drag.anchor;
+    const nw = b0.w*f, nh = b0.h*f;
+    el.x = ax <= b0.x+1 ? ax : ax-nw;
+    el.y = ay <= b0.y+1 ? ay : ay-nh;
+    if (el.type === 'text') { el.w = drag.w0*f; el.size = Math.max(8, drag.size0*f); }
+    else if (el.type === 'logo') el.w = drag.w0*f;
+    else { el.w = drag.w0*f; el.h = drag.h0*f; }
+  }
+  render();
+  if (drag.kind !== 'pan') syncInspectorValues();
+});
+const endDrag = () => { if (drag) { drag = null; cv.classList.remove('dragging'); render(); } };
+cv.addEventListener('pointerup', endDrag); cv.addEventListener('pointercancel', endDrag);
+
+document.addEventListener('keydown', e => {
+  const tag = document.activeElement?.tagName;
+  const typing = tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT';
+  if ((e.metaKey||e.ctrlKey) && e.key.toLowerCase() === 'z' && !typing) { e.preventDefault(); doUndo(); return; }
+  if ((e.metaKey||e.ctrlKey) && e.key.toLowerCase() === 's') { e.preventDefault(); saveDraft(); return; }
+  if (typing || !S.sel) return;
+  const el = byId(S.sel); if (!el) return;
+  const step = e.shiftKey ? 10 : 1;
+  const mv = (dx,dy) => { pushUndo(); el.x += dx; el.y += dy; (el.kids||[]).map(byId).forEach(k => { if (k) { k.x+=dx; k.y+=dy; } }); render(); };
+  if (e.key === 'ArrowLeft') { e.preventDefault(); mv(-step,0); }
+  else if (e.key === 'ArrowRight') { e.preventDefault(); mv(step,0); }
+  else if (e.key === 'ArrowUp') { e.preventDefault(); mv(0,-step); }
+  else if (e.key === 'ArrowDown') { e.preventDefault(); mv(0,step); }
+  else if (e.key === 'Backspace' || e.key === 'Delete') { e.preventDefault(); removeSel(); }
+  else if (e.key === 'Escape') { S.sel = null; renderInspector(); render(); }
+});
+
+// ---------- undo ----------
+function snapshot(){ return JSON.stringify({ template:S.template, size:S.size, textPos:S.textPos, look:S.look, bg:S.bg, els:S.els }); }
+function pushUndo(){ undo.push(snapshot()); if (undo.length > 60) undo.shift(); $('#undoBtn').disabled = false; }
+function doUndo(){
+  const snap = undo.pop(); if (!snap) return;
+  Object.assign(S, JSON.parse(snap)); S.sel = null;
+  if (undo.length === 0) $('#undoBtn').disabled = true;
+  syncControls(); renderInspector(); fitCanvas();
+}
+$('#undoBtn').addEventListener('click', doUndo);
+$('#undoBtn').disabled = true;
+
+// ---------- controls ----------
+function setTemplate(t){
+  pushUndo(); S.template = t; templateDefaults(); layout(); if (IMG.bg && !LOOKS[S.look].dark) autoContrast(false);
+  syncControls(); renderInspector(); render();
+  if (apiKey) { $('#q').value = DEFAULT_QUERY[t]; search(true); }
+}
+$('#tiles').addEventListener('click', e => { const b = e.target.closest('.tile'); if (b) { setTemplate(b.dataset.t); persist(); } });
+$('#size').addEventListener('change', e => { pushUndo(); S.size = e.target.value; S.bg.ox = S.bg.oy = 0; layout(); renderInspector(); fitCanvas(); persist(); });
+$('#textPos').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; pushUndo(); S.textPos = b.dataset.v; templateDefaults(); layout(); syncControls(); renderInspector(); render(); persist(); });
+$('#fadePos').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; S.bg.fadePos = b.dataset.v; syncControls(); render(); });
+$('#resetBtn').addEventListener('click', () => { pushUndo(); S.bg.ox = S.bg.oy = 0; S.bg.zoom = 1; templateDefaults(); layout(); syncControls(); renderInspector(); render(); toast('Layout reset'); });
+$('#dim').addEventListener('input', e => { S.bg.dim = e.target.value/100; render(); });
+$('#fade').addEventListener('input', e => { S.bg.fade = e.target.value/100; render(); });
+$('#fadeSize').addEventListener('input', e => { S.bg.fadeSize = e.target.value/100; render(); });
+$('#zoom').addEventListener('input', e => { S.bg.zoom = e.target.value/100; render(); });
+$('#bgReset').addEventListener('click', () => { S.bg.ox = S.bg.oy = 0; S.bg.zoom = 1; $('#zoom').value = 100; render(); });
+
+function renderFadeColor(){
+  const box = $('#fadeColor'); box.innerHTML = '';
+  for (const [hex,name] of SHADE_COLORS) box.append(h('button',{class:'sw',title:name,style:`background:${hex}`,'aria-pressed':String((S.bg.fadeColor||'#000000').toLowerCase()===hex),onclick:()=>{ S.bg.fadeColor = hex; renderFadeColor(); render(); }}));
+  box.append(h('input',{type:'color',value:S.bg.fadeColor||'#000000',title:'Custom color',oninput:e=>{ S.bg.fadeColor = e.target.value; render(); }}));
+}
+function renderLooks(){
+  const box = $('#looks'); box.innerHTML = '';
+  for (const [k,L] of Object.entries(LOOKS)) {
+    const b = h('button',{class:'look','aria-pressed':String(k===S.look),onclick:()=>{ pushUndo(); S.look = k; applyLook(true); syncControls(); renderInspector(); render(); persist(); }},
+      h('i',{style:`background:${L.swatch[0]};color:${L.swatch[1]}`},'Aa'), L.label);
+    box.append(b);
+  }
+}
+function syncControls(){
+  document.querySelectorAll('#tiles .tile').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.t === S.template)));
+  document.querySelectorAll('#textPos button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === S.textPos)));
+  document.querySelectorAll('#fadePos button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === S.bg.fadePos)));
+  document.querySelectorAll('#looks .look').forEach((b,i) => b.setAttribute('aria-pressed', String(Object.keys(LOOKS)[i] === S.look)));
+  $('#textPosRow').style.display = (S.template === 'headline' || S.template === 'event') ? '' : 'none';
+  $('#size').value = S.size;
+  $('#dim').value = Math.round(S.bg.dim*100);
+  $('#fade').value = Math.round(S.bg.fade*100);
+  $('#fadeSize').value = Math.round((S.bg.fadeSize ?? 0.55)*100);
+  $('#zoom').value = Math.round(S.bg.zoom*100);
+  renderFadeColor();
+  renderQuickFields();
+}
+
+function renderQuickFields(){
+  const box = $('#quickFields');
+  const defs = S.template === 'headline' ? [['headline','Headline','input'],['sub','Subheadline','input']]
+             : S.template === 'event' ? [['headline','Event title','input'],['sub','Details (date, time, place)','textarea']]
+             : S.template === 'review' ? [['quote','Review quote','textarea'],['attr','Attribution','input']] : [];
+  $('#textSec').style.display = defs.length ? '' : 'none';
+  box.innerHTML = '';
+  for (const [id,label,kind] of defs) {
+    const el = byId(id);
+    const f = document.createElement('div'); f.className = 'field';
+    const l = document.createElement('label'); l.textContent = label; l.htmlFor = 'qf-'+id; f.appendChild(l);
+    if (!el) {
+      const b = document.createElement('button'); b.className = 'btn sm'; b.textContent = 'Add back'; b.id = 'qf-'+id;
+      b.addEventListener('click', () => { pushUndo(); const keep = S.els; layout(); const fresh = byId(id); S.els = keep; if (fresh) { S.els.push(fresh); S.sel = fresh.id; } renderQuickFields(); renderInspector(); render(); });
+      f.appendChild(b);
+    } else {
+      const inp = document.createElement(kind === 'textarea' ? 'textarea' : 'input'); if (kind !== 'textarea') inp.type = 'text';
+      inp.id = 'qf-'+id; inp.value = el.text;
+      inp.addEventListener('focus', () => { pushUndo(); });
+      inp.addEventListener('input', () => { el.text = inp.value; render(); if (S.sel === id) syncInspectorValues(); });
+      f.appendChild(inp);
+    }
+    box.appendChild(f);
+  }
+}
+
+// ---------- inspector ----------
+function h(tag, attrs, ...kids){
+  const n = document.createElement(tag);
+  for (const [k,v] of Object.entries(attrs||{})) { if (k === 'class') n.className = v; else if (k.startsWith('on')) n.addEventListener(k.slice(2), v); else if (k in n && k !== 'style') n[k] = v; else n.setAttribute(k, v); }
+  for (const c of kids) n.append(c);
+  return n;
+}
+function removeSel(){
+  if (!S.sel) return; pushUndo();
+  const el = byId(S.sel);
+  const ids = new Set([S.sel, ...(el?.kids||[])]);
+  S.els = S.els.filter(e => !ids.has(e.id));
+  S.sel = null; renderQuickFields(); renderInspector(); render();
+}
+function renderInspector(){
+  const box = $('#inspector'); box.innerHTML = '';
+  const el = S.sel && byId(S.sel);
+  if (!el) { box.append(h('p',{class:'hint'},'Nothing selected. Click a piece of the graphic to adjust it.')); return; }
+  const row = (label, ...c) => h('div',{class:'row'}, h('label',{}, label), ...c);
+  const change = fn => e => { fn(e); render(); };
+  const commitOnce = { done:false };
+  const guard = () => { if (!commitOnce.done) { pushUndo(); commitOnce.done = true; setTimeout(() => commitOnce.done = false, 800); } };
+  const swatches = (list, get, set) => {
+    const wrap = h('div',{class:'swatches'});
+    for (const [hex,name] of list) wrap.append(h('button',{class:'sw',title:name,style:`background:${hex}`,'aria-pressed':String(get().toLowerCase()===hex),onclick:()=>{guard();set(hex);render();renderInspector();}}));
+    wrap.append(h('input',{type:'color',value:get(),title:'Custom color',oninput:change(e=>{guard();set(e.target.value);})}));
+    return wrap;
+  };
+  const seg = (opts, get, set) => { const s = h('div',{class:'seg'}); for (const [v,l] of opts) s.append(h('button',{'aria-pressed':String(get()===v),onclick:()=>{guard();set(v);render();renderInspector();}}, l)); return s; };
+  const chk = (label, get, set) => h('label',{class:'row',style:'cursor:pointer'}, h('input',{type:'checkbox',checked:get(),style:'flex:0 0 auto;accent-color:var(--accent)',onchange:change(e=>{guard();set(e.target.checked);})}), h('span',{}, label));
+  // Shading behind an element: its own style/color/opacity/spread, independent of the photo's edge fade.
+  const shadeControls = (what) => {
+    if (!el.shade) el.shade = NO_SHADE();
+    box.append(h('div',{class:'subh'}, 'Shading behind ' + what));
+    box.append(row('Style', seg([['none','None'],['glow','Soft fade'],['box','Box']], ()=>el.shade.style, v=>el.shade.style=v)));
+    if (el.shade.style !== 'none') {
+      box.append(row('Color', swatches(SHADE_COLORS, ()=>el.shade.color, v=>el.shade.color=v)));
+      box.append(row('Opacity', h('input',{type:'range',min:5,max:100,value:Math.round(el.shade.alpha*100),oninput:change(e=>{guard();el.shade.alpha=e.target.value/100;})})));
+      box.append(row('Spread', h('input',{type:'range',min:0,max:250,value:Math.round(el.shade.size*100),oninput:change(e=>{guard();el.shade.size=e.target.value/100;})})));
+    }
+  };
+
+  if (el.type === 'text') {
+    box.append(h('div',{class:'field'}, h('label',{},'Text'), h('textarea',{id:'insp-text',value:el.text,oninput:change(e=>{guard();el.text=e.target.value;const q=$('#qf-'+el.id);if(q)q.value=el.text;})})));
+    box.append(row('Size', h('input',{type:'range',id:'insp-size',min:12,max:Math.round(W()*0.25),value:Math.round(el.size),oninput:change(e=>{guard();el.size=+e.target.value;})})));
+    box.append(row('Width', h('input',{type:'range',id:'insp-width',min:Math.round(W()*0.15),max:W(),value:Math.round(el.w),oninput:change(e=>{guard();el.w=+e.target.value;})})));
+    box.append(row('Spacing', h('input',{type:'range',id:'insp-lh',min:90,max:180,value:Math.round(el.lh*100),oninput:change(e=>{guard();el.lh=e.target.value/100;})})));
+    box.append(row('Color', swatches(COLORS, ()=>el.color, v=>el.color=v)));
+    box.append(row('Align', seg([['left','Left'],['center','Center'],['right','Right']], ()=>el.align, v=>el.align=v)));
+    box.append(row('Style', seg([['n','Regular'],['i','Italic']], ()=>el.italic?'i':'n', v=>el.italic=v==='i')));
+    box.append(row('Weight', seg([[400,'Light'],[600,'Medium'],[700,'Bold']], ()=>el.weight, v=>el.weight=v)));
+    box.append(chk('Soft shadow (helps on busy photos)', ()=>el.shadow, v=>el.shadow=v));
+    box.append(chk('ALL CAPS', ()=>el.upper, v=>el.upper=v));
+    if (el.align === 'center') box.append(chk('Divider lines beside first line', ()=>!!el.rules, v=>el.rules=v));
+    shadeControls('this text');
+  }
+  else if (el.type === 'logo') {
+    box.append(h('p',{class:'hint',style:'margin-bottom:8px'}, 'Bakken-Young logo'));
+    box.append(row('Width', h('input',{type:'range',id:'insp-width',min:Math.round(W()*0.1),max:Math.round(W()*0.95),value:Math.round(el.w),oninput:change(e=>{guard();el.w=+e.target.value;})})));
+    box.append(chk('Drop shadow', ()=>el.shadow!==false, v=>el.shadow=v));
+    shadeControls('logo');
+    box.append(h('p',{class:'hint',style:'margin-top:8px'},'Tip: “Auto-adjust” in Photo adjustments sets Darken/Fade for this photo.'));
+  }
+  else if (el.type === 'box') {
+    box.append(h('div',{class:'field'}, h('label',{},'Label'), h('input',{type:'text',value:el.label,oninput:change(e=>{guard();el.label=e.target.value;})})));
+    box.append(row('Box color', swatches(COLORS, ()=>el.fill, v=>el.fill=v)));
+    box.append(row('Opacity', h('input',{type:'range',min:20,max:100,value:Math.round(el.alpha*100),oninput:change(e=>{guard();el.alpha=e.target.value/100;})})));
+    box.append(row('Label color', swatches(COLORS, ()=>el.labelFill, v=>el.labelFill=v)));
+    box.append(h('p',{class:'hint'},'Moving the box moves the quote with it. Drag a corner to resize it.'));
+  }
+  box.append(h('div',{class:'row',style:'margin-top:12px'}, h('button',{class:'btn sm',onclick:()=>{ pushUndo(); const i=S.els.indexOf(el); if(i<S.els.length-1){S.els.splice(i,1);S.els.push(el);} render(); }},'Bring to front'), h('button',{class:'btn sm danger',onclick:removeSel},'Remove')));
+}
+function syncInspectorValues(){
+  const el = S.sel && byId(S.sel); if (!el) return;
+  const set = (id,v) => { const n = document.getElementById(id); if (n && document.activeElement !== n) n.value = v; };
+  set('insp-text', el.text); set('insp-size', Math.round(el.size||0)); set('insp-width', Math.round(el.w));
+}
+$('#addText').addEventListener('click', () => {
+  pushUndo();
+  const id = 'text-'+Date.now().toString(36);
+  const L = LOOKS[S.look];
+  S.els.push(text(id, 'New text', { x:W()*0.1, y:H()*0.45, w:W()*0.8, size:60*U(), weight:600, italic:false, color:L.text, shadow:L.shadow }));
+  S.sel = id; renderInspector(); render();
+  setTimeout(() => { const t = $('#insp-text'); if (t) { t.focus(); t.select(); } }, 0);
+});
+
+// ---------- photo memory (favorites + recently used) ----------
+function loadPhotoMem(){ try { const o = JSON.parse(localStorage.getItem(LS.photos)||'null'); if (o && o.used) photoMem = o; } catch {} }
+function savePhotoMem(){ try { localStorage.setItem(LS.photos, JSON.stringify(photoMem)); } catch {} }
+function photoRec(p){ return { id:p.id, tiny:p.src?.tiny || p.tiny, url:p.src?.large2x || p.url, photographer:p.photographer, alt:p.alt||'' }; }
+function markUsed(){
+  learnFromCurrent();
+  if (IMG.src?.kind !== 'pexels') return;
+  const r = photoMem.used[IMG.src.id] || Object.assign({}, IMG.src, { count:0 });
+  r.count = (r.count||0) + 1; r.lastUsed = Date.now();
+  photoMem.used[IMG.src.id] = r;
+  // keep the 60 most recent
+  const ids = Object.keys(photoMem.used).sort((a,b) => photoMem.used[b].lastUsed - photoMem.used[a].lastUsed);
+  ids.slice(60).forEach(id => delete photoMem.used[id]);
+  savePhotoMem();
+}
+function toggleFav(rec){
+  if (photoMem.favs[rec.id]) delete photoMem.favs[rec.id]; else photoMem.favs[rec.id] = Object.assign({}, rec, { addedAt:Date.now() });
+  savePhotoMem(); renderResults();
+}
+function usedLabel(id){
+  const r = photoMem.used[id]; if (!r) return '';
+  return 'Used ' + new Date(r.lastUsed).toLocaleDateString(undefined, { month:'short', year:'2-digit' });
+}
+
+// ---------- photo screening ----------
+const LEARN_KEY = 'by-learn-v1';
+let learn = { term:{}, look:{}, textPos:{}, shade:{}, fadePos:{} };
+try { const o = JSON.parse(localStorage.getItem(LEARN_KEY)||'null'); if (o && o.term) learn = o; } catch {}
+// Pexels matches loosely, so every result is checked against its own description before it can be used.
+const BLOCK_WORDS = [
+  'cat','kitten','dog','puppy','pet','bird','horse','cow','goat','sheep','pig','chicken','duck','rabbit','fish','insect','butterfly','squirrel','deer','wildlife','zoo','animal',
+  'hospital','patient','sick','ill','illness','disease','nurse','doctor','medical','medicine','pill','syringe','iv','oxygen','wheelchair','bandage','clinic','surgery','stethoscope','mask','dying','death','dead','corpse','coffin','casket','grave','cemetery','graveyard','tombstone','headstone','skull','skeleton','bone','blood',
+  'bed','bedroom','pillow','sleeping','asleep','nap','lying',
+  'money','cash','coin','wallet','purse','credit card','bucket','car','truck','motorcycle','bike','bicycle','tractor','boat','airplane','phone','smartphone','headphones','camera','gun','knife','weapon','tool','hammer',
+  'party','birthday','balloon','confetti','beer','wine','cocktail','alcohol','bar','cigarette','smoking','vape','bikini','swimsuit','gym','fitness','workout','yoga','selfie','dance','concert','festival',
+  'baby','infant','newborn','toddler','kid','kids','child','children','boy','girl','teen','student','classroom','school',
+  'halloween','costume','clown','zombie','mannequin','doll','toy','cartoon','graffiti','tattoo',
+];
+const STOP = new Set(['a','an','the','of','in','on','at','with','and','soft','light','warm','background','looking','up','through','dark','morning','evening','sunset','sunrise']);
+function userAvoid(){ return (learn.avoid || '').split(',').map(w => w.trim().toLowerCase()).filter(Boolean); }
+function blockedBy(alt){
+  const a = ' ' + (alt || '').toLowerCase().replace(/[^a-z0-9 ]+/g, ' ') + ' ';
+  for (const w of [...BLOCK_WORDS, ...userAvoid()]) if (a.includes(' ' + w + ' ') || a.includes(' ' + w + 's ')) return w;
+  return null;
+}
+function relevant(alt, term){
+  const a = (alt || '').toLowerCase();
+  const keys = term.toLowerCase().split(/\s+/).filter(k => k.length > 2 && !STOP.has(k));
+  return keys.some(k => a.includes(k.replace(/s$/, '')));
+}
+let lastSkipped = 0;
+function screen(list, term){
+  const ok = [];
+  lastSkipped = 0;
+  for (const p of list) { if (blockedBy(p.alt)) { lastSkipped++; continue; } ok.push(p); }
+  return term ? ok.filter(p => !p.alt || relevant(p.alt, term)).concat(ok.filter(p => p.alt && !relevant(p.alt, term))) : ok;
+}
+$('#rulesToggle').addEventListener('click', () => { $('#rulesBox').hidden = !$('#rulesBox').hidden; $('#avoidWords').value = learn.avoid || ''; });
+$('#avoidWords').addEventListener('change', e => { learn.avoid = e.target.value; try { localStorage.setItem(LEARN_KEY, JSON.stringify(learn)); } catch {} toast('Saved — applies to the next search'); });
+
+// ---------- photo search (Pexels) ----------
+function orientation(){ const [w,h] = SIZES[S.size]; return w > h ? 'landscape' : w < h ? 'portrait' : 'square'; }
+async function fetchPhotos(term, pg){
+  const url = `https://api.pexels.com/v1/search?query=${encodeURIComponent(term)}&per_page=18&page=${pg}&orientation=${orientation()}`;
+  const r = await fetch(url, { headers:{ Authorization: apiKey } });
+  if (r.status === 401) { $('#keyBox').hidden = false; throw new Error('The photo key was rejected'); }
+  if (!r.ok) throw new Error('HTTP '+r.status);
+  return (await r.json()).photos.map(photoRec);
+}
+async function search(fresh){
+  setTab('search');
+  if (!apiKey) { $('#keyBox').hidden = false; $('#apiKey').focus(); $('#rstatus').textContent = 'Add the photo key above to search.'; return; }
+  const base = $('#q').value.trim();
+  if (!base) { $('#rstatus').textContent = 'Type what you’re looking for, then press Search.'; $('#q').focus(); return; }
+  if (fresh || base !== lastQuery) { page = 1; results = []; }
+  lastQuery = base;
+  $('#rstatus').textContent = 'Searching…';
+  try {
+    const raw = await fetchPhotos(base, page);
+    const photos = screen(raw, null);
+    results = page === 1 ? photos : results.concat(photos);
+    results.more = raw.length === 18;
+    $('#skippedNote').textContent = lastSkipped ? `${lastSkipped} photo${lastSkipped===1?'':'s'} hidden by the photo rules on this page.` : '';
+    renderResults();
+    $('#rstatus').textContent = results.length ? `${results.length} photos for “${base}”` : 'No photos found — try different words.';
+  } catch (err) {
+    console.error('Photo search failed', err);
+    const isFile = location.protocol === 'file:';
+    const isSafari = /safari/i.test(navigator.userAgent) && !/chrome|crios|android/i.test(navigator.userAgent);
+    let why = 'Photo search couldn’t connect';
+    if (isFile && isSafari) why += ' — Safari blocks this when the file is opened directly. Open this file in Chrome instead.';
+    else if (isFile) why += ' — try opening the file in Chrome.';
+    else why += ' — check the internet connection and try again.';
+    $('#rstatus').textContent = why + ' (' + (err && err.message ? err.message : err) + ')';
+  }
+}
+function setTab(t){ tab = t; document.querySelectorAll('#tabs button').forEach(b => b.setAttribute('aria-selected', String(b.dataset.tab === t))); }
+$('#tabs').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; setTab(b.dataset.tab); renderResults(); });
+function renderResults(){
+  const box = $('#results'); box.innerHTML = '';
+  let list, more = false;
+  if (tab === 'favs') { list = Object.values(photoMem.favs).sort((a,b) => b.addedAt - a.addedAt); $('#rstatus').textContent = list.length ? `${list.length} favorite${list.length===1?'':'s'}` : 'No favorites yet — hover a photo and click ☆ to save it here.'; }
+  else if (tab === 'recent') { list = Object.values(photoMem.used).sort((a,b) => b.lastUsed - a.lastUsed); $('#rstatus').textContent = list.length ? 'Photos you’ve downloaded graphics with, newest first' : 'Nothing yet — photos show up here after you download a graphic using them.'; }
+  else { list = results; more = !!results.more; }
+  for (const p of list) {
+    const d = h('div',{class:'res',title:(p.alt||'')+' — '+p.photographer,'aria-pressed':String(IMG.src?.id===p.id),role:'button',tabindex:'0',onclick:()=>usePhoto(p),onkeydown:e=>{ if (e.key==='Enter') usePhoto(p); }},
+      h('img',{src:p.tiny,alt:p.alt||'',loading:'lazy'}),
+      h('button',{class:'star',title:photoMem.favs[p.id]?'Remove from favorites':'Add to favorites','aria-pressed':String(!!photoMem.favs[p.id]),onclick:e=>{ e.stopPropagation(); toggleFav(p); }}, photoMem.favs[p.id] ? '★' : '☆'));
+    const u = usedLabel(p.id); if (u) d.append(h('span',{class:'used'}, u));
+    box.append(d);
+  }
+  if (more) box.append(h('button',{class:'more',onclick:()=>{ page++; search(false); }},'Show more'));
+}
+async function usePhoto(p){
+  $('#loading').classList.add('show');
+  try {
+    const img = new Image(); img.crossOrigin = 'anonymous';
+    await new Promise((res, rej) => { img.onload = res; img.onerror = rej; img.src = p.url; });
+    pushUndo();
+    IMG.bg = img; IMG.src = Object.assign({ kind:'pexels' }, p);
+    S.bg.ox = S.bg.oy = 0; S.bg.zoom = 1; $('#zoom').value = 100;
+    autoContrast(false);
+    renderResults(); fitCanvas();
+  } catch { toast('Couldn’t load that photo — try another'); }
+  finally { $('#loading').classList.remove('show'); }
+}
+$('#searchBtn').addEventListener('click', () => search(true));
+$('#q').addEventListener('keydown', e => { if (e.key === 'Enter') search(true); });
+$('#keyToggle').addEventListener('click', () => { $('#keyBox').hidden = !$('#keyBox').hidden; });
+function setKey(k){ apiKey = k.trim() || BUILT_IN_KEY; persist(); if (apiKey) { $('#keyBox').hidden = true; toast('Photo key saved'); if (!$('#q').value.trim()) $('#q').value = DEFAULT_QUERY[S.template]; search(true); } }
+$('#saveKey').addEventListener('click', () => setKey($('#apiKey').value));
+
+
+// ---------- own photo ----------
+function loadImageFile(file){
+  return new Promise((res, rej) => {
+    if (!file || !file.type.startsWith('image/')) return rej(new Error('not an image'));
+    const fr = new FileReader();
+    fr.onload = () => { const im = new Image(); im.onload = () => res({ img:im, data:fr.result }); im.onerror = rej; im.src = fr.result; };
+    fr.onerror = rej; fr.readAsDataURL(file);
+  });
+}
+async function setBg(file){
+  try {
+    const { img } = await loadImageFile(file);
+    pushUndo();
+    IMG.bg = img; IMG.src = { kind:'own', data: shrinkForStorage(img) };
+    S.bg.ox = S.bg.oy = 0; S.bg.zoom = 1; $('#zoom').value = 100;
+    autoContrast(false); fitCanvas(); toast('Photo added');
+  } catch { toast('That file isn’t an image'); }
+}
+// Own photos are stored in drafts as a 1600px JPEG so they fit in browser storage.
+function shrinkForStorage(img){
+  const max = 1600, s = Math.min(1, max / Math.max(img.naturalWidth, img.naturalHeight));
+  const c = document.createElement('canvas'); c.width = Math.round(img.naturalWidth*s); c.height = Math.round(img.naturalHeight*s);
+  c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+  return c.toDataURL('image/jpeg', 0.85);
+}
+$('#bgBtn').addEventListener('click', () => $('#bgFile').click());
+$('#bgFile').addEventListener('change', e => { if (e.target.files[0]) setBg(e.target.files[0]); e.target.value = ''; });
+const wrap = $('#wrap');
+['dragenter','dragover'].forEach(ev => wrap.addEventListener(ev, e => { e.preventDefault(); wrap.classList.add('drop'); }));
+['dragleave','drop'].forEach(ev => wrap.addEventListener(ev, e => { e.preventDefault(); wrap.classList.remove('drop'); }));
+wrap.addEventListener('drop', e => { const f = e.dataTransfer.files?.[0]; if (f) setBg(f); });
+document.addEventListener('paste', e => {
+  const tag = document.activeElement?.tagName; if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+  const item = [...(e.clipboardData?.items||[])].find(i => i.type.startsWith('image/'));
+  if (item) { e.preventDefault(); setBg(item.getAsFile()); }
+});
+
+// ---------- drafts ----------
+function loadDrafts(){ try { return JSON.parse(localStorage.getItem(LS.drafts)||'[]'); } catch { return []; } }
+function storeDrafts(list){
+  try { localStorage.setItem(LS.drafts, JSON.stringify(list)); return true; }
+  catch { toast('Browser storage is full — delete an old draft (ones with uploaded photos take the most room).'); return false; }
+}
+function draftName(){
+  if (S.template === 'headline' || S.template === 'event') return byId('headline')?.text || 'Headline';
+  if (S.template === 'review') return 'Review: ' + (byId('quote')?.text || '').replace(/^“/, '').slice(0, 40);
+  return 'Logo only';
+}
+function thumb(){
+  const c = document.createElement('canvas'); const s = 240 / Math.max(W(), H());
+  c.width = Math.round(W()*s); c.height = Math.round(H()*s);
+  const g = c.getContext('2d'); g.scale(s, s);
+  const sel = S.sel; S.sel = null; drawScene(g, W(), H(), true); S.sel = sel;
+  try { return c.toDataURL('image/jpeg', 0.7); } catch { return ''; }
+}
+function currentDraft(){
+  return { id: currentDraftId || ('d'+Date.now().toString(36)), name: draftName(), savedAt: Date.now(), thumb: thumb(),
+           state: { template:S.template, size:S.size, textPos:S.textPos, look:S.look, bg:clone(S.bg), els:clone(S.els) }, photo: IMG.src ? clone(IMG.src) : null };
+}
+function saveDraft(){
+  const d = currentDraft();
+  const list = loadDrafts().filter(x => x.id !== d.id);
+  list.unshift(d);
+  if (storeDrafts(list)) { currentDraftId = d.id; renderDrafts(); toast(`Saved “${d.name}”`); }
+}
+async function openDraft(d, asCopy){
+  pushUndo();
+  Object.assign(S, clone(d.state)); S.sel = null;
+  currentDraftId = asCopy ? null : d.id;
+  IMG.bg = null; IMG.src = null;
+  if (d.photo) {
+    $('#loading').classList.add('show');
+    try {
+      const img = new Image();
+      if (d.photo.kind === 'pexels') img.crossOrigin = 'anonymous';
+      await new Promise((res, rej) => { img.onload = res; img.onerror = rej; img.src = d.photo.kind === 'pexels' ? d.photo.url : d.photo.data; });
+      IMG.bg = img; IMG.src = clone(d.photo);
+    } catch { toast('The photo for this draft couldn’t be loaded'); }
+    finally { $('#loading').classList.remove('show'); }
+  }
+  syncControls(); renderInspector(); renderResults(); fitCanvas(); renderDrafts();
+  toast(asCopy ? 'Opened a copy — save it to keep it as its own draft' : `Opened “${d.name}”`);
+}
+function deleteDraft(id){
+  const list = loadDrafts(); const d = list.find(x => x.id === id);
+  if (!d || !confirm(`Delete draft “${d.name}”?`)) return;
+  storeDrafts(list.filter(x => x.id !== id)); if (currentDraftId === id) currentDraftId = null; renderDrafts();
+}
+function exportDraft(d){
+  const blob = new Blob([JSON.stringify(d)], { type:'application/json' });
+  saveBlob(blob, `draft-${d.name.toLowerCase().replace(/[^a-z0-9]+/g,'-').slice(0,40)}.json`);
+}
+$('#importBtn').addEventListener('click', () => $('#importFile').click());
+$('#importFile').addEventListener('change', async e => {
+  const f = e.target.files[0]; e.target.value = ''; if (!f) return;
+  try {
+    const d = JSON.parse(await f.text());
+    if (!d.state || !d.state.els) throw new Error('bad');
+    d.id = 'd'+Date.now().toString(36); d.savedAt = Date.now();
+    const list = loadDrafts(); list.unshift(d); storeDrafts(list); renderDrafts(); openDraft(d, false);
+  } catch { toast('That file isn’t a draft from this tool'); }
+});
+function renderDrafts(){
+  const box = $('#drafts'); box.innerHTML = '';
+  const list = loadDrafts();
+  $('#draftsHint').hidden = list.length > 0;
+  if (!list.length) { box.append(h('p',{class:'hint'},'No saved drafts yet. Press “Save draft” (or ⌘S) to keep what you’re working on.')); return; }
+  for (const d of list) {
+    const when = new Date(d.savedAt).toLocaleDateString(undefined, { month:'short', day:'numeric' }) + ' ' + new Date(d.savedAt).toLocaleTimeString(undefined, { hour:'numeric', minute:'2-digit' });
+    box.append(h('div',{class:'draft',style: d.id===currentDraftId ? 'border-color:var(--accent)' : ''},
+      h('img',{src:d.thumb,alt:''}),
+      h('div',{class:'meta'}, h('b',{}, d.name), h('span',{}, when + (d.id===currentDraftId ? ' · open' : ''))),
+      h('div',{class:'acts'},
+        h('button',{class:'btn sm',onclick:()=>openDraft(d,false)},'Open'),
+        h('button',{class:'btn sm',onclick:()=>openDraft(d,true)},'Copy'),
+        h('button',{class:'btn sm',onclick:()=>exportDraft(d),title:'Save as a file to send to someone'},'Export file'),
+        h('button',{class:'btn sm danger',onclick:()=>deleteDraft(d.id)},'Delete'))));
+  }
+}
+$('#saveBtn').addEventListener('click', saveDraft);
+
+// ---------- persistence (per device) ----------
+function persist(){
+  try { localStorage.setItem(LS.prefs, JSON.stringify({ template:S.template, size:S.size, textPos:S.textPos, look:S.look, apiKey })); } catch {}
+}
+function restore(){
+  let o = null; try { o = JSON.parse(localStorage.getItem(LS.prefs)||'null'); } catch {}
+  if (!o) return;
+  if (SIZES[o.size]) S.size = o.size;
+  if (['logo','headline','event','review'].includes(o.template)) S.template = o.template;
+  if (['tc','tl','tr','mid'].includes(o.textPos)) S.textPos = o.textPos;
+  if (LOOKS[o.look]) S.look = o.look;
+  if (typeof o.apiKey === 'string' && o.apiKey) apiKey = o.apiKey;
+}
+// A setup link (…/#key=XXXX) stores the key and cleans the address bar.
+function keyFromLink(){
+  const m = location.hash.match(/[#&]key=([A-Za-z0-9_-]+)/);
+  if (m) { apiKey = m[1]; persist(); history.replaceState(null, '', location.pathname + location.search); return true; }
+  return false;
+}
+
+// ---------- export ----------
+function filename(size){
+  const base = (S.template === 'headline' || S.template === 'event') ? (byId('headline')?.text || 'headline') : S.template === 'review' ? 'featured-review' : 'logo';
+  const slug = base.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,40) || 'graphic';
+  const [w,hh] = SIZES[size || S.size];
+  return `bakken-young-${slug}-${w}x${hh}.png`;
+}
+function renderBlob(){
+  const off = document.createElement('canvas'); off.width = W(); off.height = H();
+  drawScene(off.getContext('2d'), W(), H(), true);
+  return new Promise((r, j) => off.toBlob(b => b ? r(b) : j(new Error('blob')), 'image/png'));
+}
+function saveBlob(blob, name){
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; document.body.append(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+}
+$('#dlBtn').addEventListener('click', async () => {
+  const btn = $('#dlBtn'); btn.disabled = true; btn.textContent = 'Preparing…';
+  try {
+    await fontsReady();
+    let blob;
+    try { blob = await renderBlob(); } catch { toast('This photo can’t be exported from here — try picking it again or uploading it.'); return; }
+    saveBlob(blob, filename()); markUsed(); if (tab !== 'search') renderResults();
+  } finally { btn.disabled = false; btn.textContent = 'Download PNG'; }
+});
+
+// Re-lay the current design out for another size, carrying over text, colors and style.
+function carryStyle(from, to){
+  for (const el of to) {
+    const src = from.find(e => e.id === el.id); if (!src) continue;
+    if (el.type === 'text') Object.assign(el, { text:src.text, color:src.color, italic:src.italic, weight:src.weight, shadow:src.shadow, upper:src.upper, align:src.align, lh:src.lh, rules:!!src.rules, shade:clone(src.shade || NO_SHADE()) });
+    else if (el.type === 'logo') Object.assign(el, { shadow:src.shadow, shade:clone(src.shade) });
+    else if (el.type === 'box') Object.assign(el, { fill:src.fill, alpha:src.alpha, label:src.label, labelFill:src.labelFill, labelColor:src.labelColor });
+  }
+  return to;
+}
+$('#dlAllBtn').addEventListener('click', async () => {
+  if (!window.JSZip) { toast('The zip helper didn’t load — check the connection and reload.'); return; }
+  const btn = $('#dlAllBtn'); btn.disabled = true; btn.textContent = 'Preparing…';
+  const saved = snapshot(); const savedSel = S.sel; const w0 = W(), h0 = H();
+  try {
+    await fontsReady();
+    const zip = new JSZip();
+    const fromEls = clone(S.els), fromBg = clone(S.bg);
+    const extras = fromEls.filter(e => e.type === 'text' && !['headline','sub','quote','attr'].includes(e.id));
+    for (const size of Object.keys(SIZES)) {
+      S.size = size; S.sel = null;
+      layout(); carryStyle(fromEls, S.els);
+      const [w,hh] = SIZES[size];
+      for (const ex of extras) S.els.push(Object.assign(clone(ex), { x: ex.x/w0*w, y: ex.y/h0*hh, w: ex.w/w0*w, size: ex.size*Math.min(w/w0, hh/h0) }));
+      S.bg = Object.assign(clone(fromBg), { ox:0, oy:0, zoom:1 });
+      if (IMG.bg && !LOOKS[S.look].dark) autoContrast(false);
+      const blob = await renderBlob();
+      zip.file(filename(size), blob);
+    }
+    const out = await zip.generateAsync({ type:'blob' });
+    saveBlob(out, filename().replace(/-\d+x\d+\.png$/, '-all-sizes.zip'));
+    markUsed(); toast('4 sizes zipped');
+  } catch (err) { console.error(err); toast('Couldn’t build the zip: ' + (err.message || err)); }
+  finally {
+    Object.assign(S, JSON.parse(saved)); S.sel = savedSel;
+    syncControls(); renderInspector(); fitCanvas();
+    btn.disabled = false; btn.textContent = 'All sizes';
+  }
+});
+
+// ---------- Generate (randomizer) ----------
+// Photo searches per template, plus a seasonal set. Chosen at random, weighted by what has been downloaded before.
+const _m = new Date().getMonth();
+const SEASON = _m >= 8 && _m <= 10 ? ['autumn trees path','fall leaves forest','autumn lake morning','golden field autumn'] :
+               _m >= 11 || _m <= 1 ? ['winter snow trees','snowy forest morning','candle light winter window','frost branches sunlight'] :
+               _m <= 4 ? ['spring blossom tree','spring meadow flowers','tulips soft light','green field morning mist'] :
+                         ['summer field sunset','lake calm summer','wildflowers meadow','garden morning light'];
+// Weighted to match the 2026 set: hands, writing/planning, foliage, seniors, candles, a little bokeh.
+const HANDS   = [['hands holding comfort',3],['elderly hands together',3],['hands praying soft light',2],['hands planting seedling',2],['handshake warm light',2],['hands resting lap',2]];
+const WRITING = [['person writing notebook',3],['woman writing journal window',3],['person typing laptop desk',3],['hand writing planner calendar',2],['man writing letter desk',2]];
+const NATURE  = [['sunlight through leaves',3],['forest canopy looking up',3],['wildflower field sunset',2],['bleeding heart flowers',1],['garden path morning',2], ...SEASON.map(t => [t,1.5])];
+const SENIORS = [['senior woman smiling window',2],['older couple talking table',2],['grandmother reading book',2],['senior man porch morning',1]];
+const CANDLES = [['candle light soft',2],['candle flame dark background',2]];
+const BOKEH   = [['soft bokeh lights warm',1],['blurred lights evening',1]];
+const POOLS = {
+  logo:     [...NATURE, ...HANDS, ...WRITING.slice(0,3), ...CANDLES],
+  headline: [...HANDS, ...WRITING, ...NATURE, ...SENIORS, ...CANDLES, ...BOKEH],
+  event:    [...WRITING, ...HANDS, ...NATURE.slice(0,3), ...SENIORS.slice(0,2), ...CANDLES],
+  review:   [...NATURE, ...BOKEH, ...CANDLES],
+};
+function bump(kind, key){ if (!key) return; if (!learn[kind]) learn[kind] = {}; learn[kind][key] = (learn[kind][key]||0) + 1; try { localStorage.setItem(LEARN_KEY, JSON.stringify(learn)); } catch {} }
+function learnFromCurrent(){
+  bump('look', S.look); bump('fadePos', S.bg.fadePos);
+  if (S.template === 'headline' || S.template === 'event') bump('textPos', S.textPos);
+  const hl0 = byId('headline'); if (hl0) bump('rules', hl0.rules ? 'on' : 'off');
+  const sb0 = byId('sub'); if (sb0 && sb0.text && S.template === 'headline') { bump('sub', sb0.text.trim()); learn.subTopic = learn.subTopic || {}; learn.subTopic[sb0.text.trim()] = detectTopic(hl0?.text || '') || 'funeral'; }
+  const hl = byId('headline'); if (hl && hl.shade) bump('shade', hl.shade.style);
+  if (IMG.src?.term) bump('term', IMG.src.term);
+}
+// Weighted random: base weight × (1 + times it was chosen before), so favorites drift upward without locking in.
+function pick(options, kind){
+  const weights = options.map(([v,w]) => w * (1 + (learn[kind]?.[v]||0)));
+  let r = Math.random() * weights.reduce((a,b)=>a+b, 0);
+  for (let i=0;i<options.length;i++) { r -= weights[i]; if (r <= 0) return options[i][0]; }
+  return options[options.length-1][0];
+}
+// ---------- phrase bank (house voice, seeded from the 2026 posts) ----------
+const BANK = {
+  pre:      { label:'Pre-Planning',     heads:['Pre-Planning'],
+              subs:['a simple process','at your own pace','opens gentle conversation','can be joyful','planning ahead at your own pace','a quiet gift for the people you love','peace of mind, one conversation at a time','your wishes, written down','gentle planning, no pressure','decide today, rest easy tomorrow'] },
+  funeral:  { label:'Funeral Planning', heads:['Funeral Planning'],
+              subs:['bringing you relief','is easy with us','planting peace here','reflecting your loved one’s wishes','together, one step at a time','we walk with you','guided with care','a service that feels like them','here when you need us','every detail, handled gently'] },
+  cremation:{ label:'Cremation',        heads:['Cremation','Cremation Planning'],
+              subs:['memorable & simple','honoring your loved one','is thoughtful','is planning with mindfulness','we keep anxiety-free','simple, dignified, personal','with the same care','options explained gently','meaningful in every form'] },
+  grief:    { label:'Grief Support',    heads:['Grief Support','Self-Care for Grief','Grieving Together'],
+              subs:['you don’t have to carry it alone','gentle support, every week','a place to be heard','support for the days after','healing takes its own time','walking with you through loss','join us — in person or online','room for every feeling'] },
+  thanks:   { label:'Thank you',        heads:['Thank You','With Gratitude'],
+              subs:['for trusting us with your family','from our family to yours','your kind words mean so much','it is our honor to serve','grateful for the families we walk with'] },
+};
+const SEASONAL_LINES = {
+  spring:['spring organizing is Pre-Planning','new season, gentle plans','as the days grow longer','a season for fresh starts'],
+  summer:['summer evenings, quiet conversations','a good season to plan ahead','long days, lighter hearts'],
+  autumn:['as the season turns','fall can bring up fresh grief','gather, remember, rest','a season for reflection'],
+  winter:['a season for remembering','light in the long nights','holding space this holiday season','warmth in the quiet months'],
+};
+const SEASON_NAME = _m >= 8 && _m <= 10 ? 'autumn' : _m >= 11 || _m <= 1 ? 'winter' : _m <= 4 ? 'spring' : 'summer';
+let topic = 'any';
+function renderTopics(){
+  const box = $('#topicChips'); box.innerHTML = '';
+  for (const [k,l] of [['any','Any'],...Object.entries(BANK).map(([k,v]) => [k,v.label]),['seasonal','Seasonal']])
+    box.append(h('button',{class:'chip','aria-pressed':String(k===topic),onclick:()=>{ topic = k; renderTopics(); }}, l));
+}
+// Sublines the team has actually downloaded join the bank and get weighted up over time.
+function subsFor(key){
+  const base = BANK[key].subs.map(t => [t, 1]);
+  const learned = Object.keys(learn.sub || {}).filter(t => (learn.subTopic||{})[t] === key && !BANK[key].subs.includes(t)).map(t => [t, 1]);
+  return base.concat(learned);
+}
+function suggestText(key){
+  const k = key === 'any' ? pick(Object.keys(BANK).filter(x => x !== 'thanks').map(x => [x, x === 'grief' ? 2 : 3]), 'topic') : key;
+  if (k === 'seasonal') {
+    const line = pick(SEASONAL_LINES[SEASON_NAME].map(t => [t,1]), 'seasonal');
+    if (/pre-planning/i.test(line)) return { headline: line.replace(/\s*pre-planning$/i,''), sub: 'Pre-Planning', topic:'pre' };
+    const t2 = pick([['pre',3],['funeral',2],['grief',2]], 'topic');
+    return { headline: pick(BANK[t2].heads.map(x => [x,1]), 'head'), sub: line, topic: t2 };
+  }
+  return { headline: pick(BANK[k].heads.map(x => [x,1]), 'head'), sub: pick(subsFor(k), 'sub'), topic: k };
+}
+function detectTopic(t){
+  const x = t.toLowerCase();
+  if (/pre-?plan|plan(ning)? ahead|advance plan|my wishes|your wishes/.test(x)) return 'pre';
+  if (/cremat/.test(x)) return 'cremation';
+  if (/funeral plan|arrangement|memorial service|start planning|plan a service|when a death occurs|after a loss|decisions that|what needs to happen/.test(x)) return 'funeral';
+  if (/grie[fv]|mourn|self-?care|bereave|support group/.test(x)) return 'grief';
+  if (/honou?red|thank|grateful|review|testimonial|families share|kind words/.test(x)) return 'thanks';
+  return null;
+}
+// Reads a pasted caption: quoted title, dates/times, topic words → a ready brief.
+function analyzeCaption(txt){
+  const quoted = ((txt.match(/[“"]([^”"]{6,90})[”"]/) || [])[1] || '').replace(/[\s,.;:!]+$/, '');
+  const tp = detectTopic(txt);
+  const time = (txt.match(/\b\d{1,2}(:\d{2})?\s*(?:[–-]\s*\d{1,2}(:\d{2})?\s*)?(am|pm|a\.m\.|p\.m\.)\b/i) || [])[0] || '';
+  const date = (txt.match(/\b(?:(?:mon|tues|wednes|thurs|fri|satur|sun)day,?\s+)?(?:jan|feb|mar|apr|may|jun|jul|aug|sep|sept|oct|nov|dec)[a-z]*\.?\s+\d{1,2}(?:st|nd|rd|th)?(?:,?\s+\d{4})?\b/i) || [])[0] || (/\btonight\b/i.test(txt) ? 'Tonight' : /\btomorrow\b/i.test(txt) ? 'Tomorrow' : '');
+  const eventish = /webinar|join us|gather|rsvp|session|support group|in person|online|zoom|picnic|event/i.test(txt) && (time || date || /webinar|rsvp/i.test(txt));
+  const isReviewPost = /review|testimonial|families share|one family wrote|kind words/i.test(txt);
+  if (eventish) {
+    const title = quoted || (tp ? (BANK[tp].heads[0] + (/webinar/i.test(txt) ? ' Webinar' : /group/i.test(txt) ? ' Group' : '')) : 'Join Us');
+    const details = [date, time, /zoom|online|virtual/i.test(txt) ? 'via Zoom' : /in person/i.test(txt) ? 'in person' : ''].filter(Boolean).join('\n');
+    return { template:'event', headline:title, sub: details || 'Details in the caption', quote:'', attr:'' };
+  }
+  // blog shares stay logo-only (the photo carries the mood), matching the 2026 posts
+  if (/\bblog\b|read more/i.test(txt)) return { template:'logo', headline:'', sub:'', quote:'', attr:'' };
+  if (isReviewPost || tp === 'thanks') { const sgg = suggestText('thanks'); return { template:'headline', headline:sgg.headline, sub:sgg.sub, quote:'', attr:'' }; }
+  if (tp) { const sgg = suggestText(tp); return { template:'headline', headline:sgg.headline, sub:sgg.sub, quote:'', attr:'' }; }
+  // no clear topic (a blog share, a reflection): the photo carries it
+  return { template:'logo', headline:'', sub:'', quote:'', attr:'' };
+}
+function parseBrief(txt){
+  const wordsAll = txt.split(/\s+/).filter(Boolean).length;
+  const captionSignals = /https?:\/\/|read more|our new blog|learn more|\bblog\b|join us|invited|we’ll|we'll|our team|start here|find .* here/i.test(txt);
+  const firstPerson = /\b(we were treated|treated us|treated like family|my (mom|dad|mother|father)|our (mom|dad|mother|father|parents)|thank you|recommend|helped us|took care of us|handled everything)\b/i.test(txt);
+  if ((wordsAll > 25 && !firstPerson) || captionSignals) return analyzeCaption(txt);
+  return parseLines(txt);
+}
+function parseLines(txt){
+  const lines = txt.split('\n').map(l => l.trim()).filter(Boolean);
+  const attr = lines.find(l => /^[\u2014\u2013-]\s*/.test(l));
+  const body = lines.filter(l => l !== attr);
+  const joined = body.join(' ');
+  const words = joined.split(/\s+/).filter(Boolean).length;
+  const quoted = /^[\u201C"']/.test(joined) || /[\u201D"']$/.test(joined);
+  const eventish = /(\d{1,2}:\d{2}|\b\d{1,2}\s*(am|pm)\b|\b(mon|tues|wednes|thurs|fri|satur|sun)day\b|\b(jan|feb|mar|apr|may|jun|jul|aug|sep|sept|oct|nov|dec)[a-z]*\.?\s+\d{1,2}|\b\d{1,2}(st|nd|rd|th)\b|\brsvp\b|\bzoom\b|\bjoin us\b)/i.test(body.slice(1).join(' '));
+  let template = !lines.length ? 'logo' : (quoted || (words > 16 && !eventish)) ? 'review' : eventish ? 'event' : 'headline';
+  return { template, headline: body[0] || '', sub: template === 'event' ? body.slice(1).join('\n') : body.slice(1).join(' '), quote: joined, attr: attr || '\u2014 from a client' };
+}
+async function randomPhoto(template){
+  const opts = POOLS[template];
+  // Starred favorites are the curated library: use one about a third of the time when there are enough.
+  const favs = Object.values(photoMem.favs).filter(p => !photoMem.used[p.id] && p.id !== IMG.src?.id);
+  if (favs.length >= 3 && Math.random() < 0.35) { const p = favs[Math.floor(Math.random()*favs.length)]; return Object.assign({ term:'favorites' }, p); }
+  for (let attempt = 0; attempt < 4; attempt++) {
+    const term = pick(opts, 'term');
+    const r0 = Math.random(); const pg = r0 < 0.65 ? 1 : r0 < 0.9 ? 2 : 3; // first page is far more on-topic
+    let photos = [];
+    try { photos = await fetchPhotos(term, pg); } catch (e) { if (/rejected/.test(e.message)) throw e; }
+    if (!photos.length && pg > 1) { try { photos = await fetchPhotos(term, 1); } catch {} }
+    if (!photos.length) continue;
+    // keep only photos that pass the rules AND whose description matches the search, then pick from the top few
+    const vetted = screen(photos, term).filter(p => p.alt && relevant(p.alt, term));
+    if (!vetted.length) continue;
+    const fresh = vetted.filter(p => !photoMem.used[p.id] && p.id !== IMG.src?.id);
+    const list = (fresh.length ? fresh : vetted).slice(0, 10);
+    const p = list[Math.floor(Math.random()*list.length)];
+    // show the search she'd have typed, so "Show more" and the results grid stay in sync
+    $('#q').value = term; lastQuery = term; page = pg; results = screen(photos, null); results.more = photos.length === 18; setTab('search'); renderResults();
+    $('#rstatus').textContent = `${photos.length} photos for “${term}”`;
+    return Object.assign({ term }, p);
+  }
+  throw new Error('Couldn\u2019t find a photo that passes the rules \u2014 try Generate again');
+}
+function randomStyle(lum){
+  const bright = lum > 0.6;
+  const had = new Set(S.els.map(e => e.id));
+  S.look = pick([['classic', 17], ['gold', 1], ['green', bright ? 4 : 0.02]], 'look');
+  if (S.template === 'headline') S.textPos = pick([['tc', 4], ['tl', 3], ['tr', 3], ['mid', 1]], 'textPos');
+  if (S.template === 'event') S.textPos = pick([['tc', 6], ['mid', 1]], 'textPos');
+  templateDefaults(); layout();
+  S.els = S.els.filter(e => had.has(e.id) || !['headline','sub','quote','attr','logo','box'].includes(e.id));
+  if (S.template !== 'review') {
+    S.bg.fadePos = pick([['none', 7], ['bottom', 2], ['both', 1]], 'fadePos');
+    S.bg.fadeSize = 0.4 + Math.random()*0.3;
+  }
+  const hl = byId('headline'), sb = byId('sub');
+  if (hl) {
+    const style = pick([['none', 8], ['glow', 2]], 'shade');
+    hl.shade = { style, color:'#000000', alpha:0.35, size: 0.6 + Math.random()*0.6 };
+    if (sb && style !== 'none') sb.shade = { style, color:'#000000', alpha:0.35, size: hl.shade.size };
+    hl.rules = hl.align === 'center' && pick([['off', 4], ['on', 1]], 'rules') === 'on';
+  }
+  const box = byId('box');
+  if (box) { const g = pick([['green', 3], ['plum', 1]], 'boxColor'); if (g === 'plum') { box.fill = '#592231'; box.labelFill = '#f0ad54'; } else { box.fill = '#1f3a26'; box.labelFill = '#719587'; } }
+  const logo = byId('logo');
+  if (logo) logo.shade = { style: pick([['none', 6], ['glow', 3]], 'logoShade'), color:'#000000', alpha:0.35, size: 0.4 + Math.random()*0.4 };
+  autoContrast(false);
+}
+async function loadPhotoRec(p){
+  const img = new Image(); img.crossOrigin = 'anonymous';
+  await new Promise((res, rej) => { img.onload = res; img.onerror = rej; img.src = p.url; });
+  IMG.bg = img; IMG.src = Object.assign({ kind:'pexels' }, p);
+  S.bg.ox = S.bg.oy = 0; S.bg.zoom = 1;
+}
+let genBusy = false;
+async function generate(){
+  if (genBusy) return; genBusy = true;
+  const btn = $('#genGo'); btn.disabled = true; $('#genStatus').textContent = 'Building…';
+  try {
+    let brief = parseBrief($('#genText').value);
+    if (brief.template === 'logo' && !$('#genText').value.trim() && topic !== 'any') { const sgg = suggestText(topic); brief = { template:'headline', headline:sgg.headline, sub:sgg.sub, quote:'', attr:'' }; }
+    const forced = document.querySelector('#genTpl button[aria-pressed="true"]').dataset.v;
+    pushUndo();
+    S.template = forced === 'auto' ? brief.template : forced;
+    layout();
+    const set = (id, v) => { const el = byId(id); if (el && v) el.text = v; };
+    if (S.template === 'headline' || S.template === 'event') { set('headline', brief.headline || 'Here for You'); set('sub', brief.sub); }
+    if (S.template === 'review') { set('quote', brief.quote); set('attr', brief.attr); }
+    const p = await randomPhoto(S.template);
+    await loadPhotoRec(p);
+    randomStyle(measureLum());
+    if ((S.template === 'headline' || S.template === 'event') && !brief.sub) S.els = S.els.filter(e => e.id !== 'sub');
+    currentDraftId = null;
+    $('#gen').hidden = true;
+    syncControls(); renderInspector(); renderResults(); fitCanvas(); persist();
+    toast('Generated — press Generate again for another, or tweak this one');
+  } catch (err) {
+    console.error(err); $('#genStatus').textContent = 'Couldn’t generate: ' + (err.message || err);
+  } finally { btn.disabled = false; genBusy = false; }
+}
+async function shufflePhoto(){
+  if (genBusy) return; genBusy = true;
+  $('#loading').classList.add('show');
+  try { pushUndo(); const p = await randomPhoto(S.template); await loadPhotoRec(p); autoContrast(false); syncControls(); renderResults(); fitCanvas(); }
+  catch (err) { toast(err.message || String(err)); }
+  finally { $('#loading').classList.remove('show'); genBusy = false; }
+}
+function shuffleLook(){
+  pushUndo(); randomStyle(measureLum()); syncControls(); renderInspector(); render(); persist();
+}
+$('#genBtn').addEventListener('click', () => { $('#genStatus').textContent = ''; renderTopics(); $('#gen').hidden = false; setTimeout(() => $('#genText').focus(), 0); });
+$('#suggestBtn').addEventListener('click', () => { const sgg = suggestText(topic); $('#genText').value = sgg.headline + '\n' + sgg.sub; $('#genStatus').textContent = 'Press Suggest again for another, or edit it, then Generate.'; });
+$('#genCancel').addEventListener('click', () => { $('#gen').hidden = true; });
+$('#genGo').addEventListener('click', generate);
+$('#genText').addEventListener('keydown', e => { if ((e.metaKey||e.ctrlKey) && e.key === 'Enter') generate(); });
+$('#genTpl').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; document.querySelectorAll('#genTpl button').forEach(x => x.setAttribute('aria-pressed', String(x === b))); });
+$('#shufPhoto').addEventListener('click', shufflePhoto);
+$('#shufLook').addEventListener('click', shuffleLook);
+
+// ---------- misc ----------
+let toastT = 0;
+function toast(msg){ const t = $('#toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), 3200); }
+async function fontsReady(){
+  try { await Promise.all(['italic 600 40px','600 40px','700 40px','500 40px','400 40px','italic 500 40px','italic 700 40px'].map(f => document.fonts.load(`${f} "Cormorant Garamond"`))); } catch {}
+}
+
+// ---------- boot ----------
+(async () => {
+  restore(); loadPhotoMem();
+  const fromLink = keyFromLink();
+  await new Promise(res => { const im = new Image(); im.onload = () => { IMG.logo = im; res(); }; im.onerror = res; im.src = LOGO_SRC; });
+  renderLooks(); templateDefaults(); layout(); syncControls(); fitCanvas(); renderDrafts();
+  $('#apiKey').value = apiKey; $('#q').value = DEFAULT_QUERY[S.template]; search(true);
+  await fontsReady(); render();
+  try { document.fonts.ready.then(render); } catch {}
+})();
+})();
+</script>
+<script src="../clients.js"></script>
+<script>
+// Client switcher — independent of the graphics app above.
+(() => {
+  const sel = document.getElementById('profileSel'); if (!sel) return;
+  const here = location.pathname.replace(/\/+$/, '').split('/').pop();
+  const list = (window.BI_CLIENTS || []).slice();
+  if (list.length) {
+    sel.innerHTML = '';
+    for (const c of list) { const o = document.createElement('option'); o.value = c.slug; o.textContent = c.name; if (c.slug === here) o.selected = true; sel.append(o); }
+    const all = document.createElement('option'); all.value = '__all'; all.textContent = 'All clients\u2026'; sel.append(all);
+  }
+  sel.addEventListener('change', () => { const v = sel.value; if (v === '__all') location.href = '../'; else if (v !== here) location.href = '../' + v + '/'; });
+})();
+</script>
+</body>
+</html>

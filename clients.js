@@ -8,5 +8,14 @@ window.BI_CLIENTS = [
     accent: '#19441f',
     accent2: '#719587',
     logo: 'bakken-young/logo.png'
+  },
+  {
+    slug: 'mcmillan',
+    name: 'McMillan',
+    full: 'McMillan Precision Electric Motors',
+    tagline: 'Social graphics',
+    accent: '#034226',
+    accent2: '#006c40',
+    logo: 'mcmillan/logo.png'
   }
 ];
