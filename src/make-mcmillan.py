@@ -168,7 +168,16 @@ rep("""        <button data-v="headline" aria-pressed="false">Headline</button>
         <button data-v="review" aria-pressed="false">Review</button>""",
 """        <button data-v="headline" aria-pressed="false">Headline</button>
         <button data-v="event" aria-pressed="false">Event</button>
+        <button data-v="collage" aria-pressed="false">Collage</button>
         <button data-v="review" aria-pressed="false">Quote</button>""")
+# template tiles: add Collage
+rep("""        <button class="tile" data-t="review" aria-pressed="false">""",
+"""        <button class="tile" data-t="collage" aria-pressed="false">
+          <svg viewBox="0 0 44 44"><rect x="2" y="2" width="40" height="40" rx="4" fill="#046b3f"/><rect x="5" y="5" width="16" height="16" fill="#8fb3a0"/><rect x="23" y="5" width="16" height="16" fill="#6f9a86"/><rect x="5" y="23" width="16" height="16" fill="#6f9a86"/><rect x="23" y="23" width="16" height="16" fill="#8fb3a0"/><rect x="13" y="18" width="18" height="8" rx="1" fill="#fff"/></svg>Collage</button>
+        <button class="tile" data-t="review" aria-pressed="false">""")
+rep(".tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}", ".tiles{display:grid;grid-template-columns:repeat(5,1fr);gap:5px}")
+rep(".tile svg{width:38px;height:38px;display:block}", ".tile svg{width:34px;height:34px;display:block}")
+rep(".tile{border:1px solid var(--line-strong);border-radius:8px;background:var(--panel-2);padding:8px 6px;", ".tile{border:1px solid var(--line-strong);border-radius:8px;background:var(--panel-2);padding:7px 3px;")
 rep('<p>Type what it should say — first line is the headline, the next line the subline. Add a date or time and it becomes an event. Paste a client\'s quote for a review. Leave it blank for logo only. Keep pressing Generate until you like one, then tweak.</p>',
     '<p>Type the headline (first line) and an optional subline. A value like <b>INTEGRITY:</b> plus its explanation becomes a statement card. Add a date or time for an event. Leave it blank for logo only. Keep pressing Generate until you like one, then tweak.</p>')
 rep('placeholder="Pre-Planning&#10;a simple process&#10;&#10;…or paste the whole caption here"', 'placeholder="QUALITY:&#10;Investing in people, systems, and testing so motors do their job quietly for years.&#10;&#10;…or paste the whole caption here"')
@@ -182,6 +191,8 @@ rep("function setTemplate(t){\n  pushUndo(); S.template = t; templateDefaults();
     """async function setTemplate(t){
   pushUndo(); S.template = t;
   // house rule: logo-only lives on photos, never on plain green art
+  if (t === 'collage') { if (await randomBackground('collage', {}) === 'none') { toast('A collage needs at least 3 library photos'); S.template = 'logo'; } }
+  else if (S.bg.kind === 'collage') { S.bg.kind = 'art'; S.bg.cells = null; }
   if (t === 'logo' && S.bg.kind === 'art') {
     const r = await randomBackground('logo', {});
     if (r === 'none') toast('Logo-only graphics use a photo \\u2014 the library is empty, so upload one below');
@@ -237,6 +248,9 @@ rep("""  IMG.bg = null; IMG.src = null;
   } catch { toast('An image for this draft couldn’t be loaded'); }
   finally { $('#loading').classList.remove('show'); }""")
 rep("  return `bakken-young-${slug}-${w}x${hh}.png`;", "  return `mcmillan-${slug}-${w}x${hh}.png`;")
+rep("  if (['logo','headline','event','review'].includes(o.template)) S.template = o.template;", "  if (['logo','headline','event','review','collage'].includes(o.template)) S.template = o.template;")
+rep("  return 'Logo only';\n}", "  return S.template === 'collage' ? 'Collage' : 'Logo only';\n}")
+rep(": S.template === 'review' ? 'featured-review' : 'logo';", ": S.template === 'review' ? 'quote' : S.template === 'collage' ? 'collage' : 'logo';")
 
 # ================= generator =================
 rep_between("// ---------- Generate (randomizer) ----------", "// ---------- misc ----------", blk('generate.js'))
@@ -255,7 +269,7 @@ rep("""  restore(); loadPhotoMem();
   renderLooks(); templateDefaults(); layout(); syncControls(); fitCanvas(); renderDrafts();
   loadLibrary();""")
 
-rep("(IMG.src?.kind === 'pexels' ? ` · Photo: ${IMG.src.photographer} / Pexels` : '')", "(IMG.src?.kind === 'lib' ? ` · ${IMG.src.file}` : IMG.src?.kind === 'art' ? ` · ${ART[IMG.src.art] || 'Green art'}` : '')")
+rep("(IMG.src?.kind === 'pexels' ? ` · Photo: ${IMG.src.photographer} / Pexels` : '')", "(S.bg.kind === 'collage' ? ' · Collage' : S.bg.kind === 'photo' && IMG.src?.kind === 'lib' ? ` · ${IMG.src.file}` : S.bg.kind === 'art' ? ` · ${ART[S.bg.art] || 'Green art'}` : '')")
 for bad in ['Bakken', 'funeral', 'Funeral', 'cremat', 'by-prefs', 'by-drafts', 'by-photos', 'by-learn', 'Cormorant', 'Pre-Planning', 'apiKey', 'fetchPhotos', 'BLOCK_WORDS', 'keyFromLink', 'DEFAULT_QUERY', 'Cinzel', 'pexels']:
     assert bad not in s, ('leftover', bad, [s[max(0,m.start()-60):m.start()+40] for m in re.finditer(re.escape(bad), s)][:2])
 (ROOT / 'src/template-mcmillan.html').write_text(s)

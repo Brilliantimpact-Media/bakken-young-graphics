@@ -74,9 +74,9 @@ input[type=color]{width:34px;height:28px;padding:0;border:1px solid var(--line-s
 .btn.block{width:100%}
 .btn[disabled]{opacity:.45;cursor:default}
 
-.tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
-.tile{border:1px solid var(--line-strong);border-radius:8px;background:var(--panel-2);padding:8px 6px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;font-size:11px;font-weight:600}
-.tile svg{width:38px;height:38px;display:block}
+.tiles{display:grid;grid-template-columns:repeat(5,1fr);gap:5px}
+.tile{border:1px solid var(--line-strong);border-radius:8px;background:var(--panel-2);padding:7px 3px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;font-size:11px;font-weight:600}
+.tile svg{width:34px;height:34px;display:block}
 .tile[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft);box-shadow:inset 0 0 0 1px var(--accent)}
 .seg{display:flex;border:1px solid var(--line-strong);border-radius:7px;overflow:hidden}
 .seg button{flex:1;padding:6px 4px;border:0;background:var(--panel);cursor:pointer;font-size:12px}
@@ -192,6 +192,8 @@ canvas#c.dragging{cursor:grabbing}
           <svg viewBox="0 0 44 44"><rect x="2" y="2" width="40" height="40" rx="4" fill="#046b3f"/><rect x="14" y="7" width="16" height="5" rx="1.5" fill="#fff"/><rect x="8" y="26" width="28" height="5" rx="1.5" fill="#fff"/><rect x="12" y="33" width="20" height="3" rx="1.5" fill="#fff" opacity=".85"/></svg>Headline</button>
         <button class="tile" data-t="event" aria-pressed="false">
           <svg viewBox="0 0 44 44"><rect x="2" y="2" width="40" height="40" rx="4" fill="#046b3f"/><rect x="10" y="8" width="24" height="5" rx="1.5" fill="#fff"/><rect x="13" y="16" width="18" height="3" rx="1.5" fill="#fff" opacity=".85"/><rect x="15" y="21" width="14" height="3" rx="1.5" fill="#fff" opacity=".85"/><rect x="14" y="32" width="16" height="5" rx="1.5" fill="#fff"/></svg>Event</button>
+        <button class="tile" data-t="collage" aria-pressed="false">
+          <svg viewBox="0 0 44 44"><rect x="2" y="2" width="40" height="40" rx="4" fill="#046b3f"/><rect x="5" y="5" width="16" height="16" fill="#8fb3a0"/><rect x="23" y="5" width="16" height="16" fill="#6f9a86"/><rect x="5" y="23" width="16" height="16" fill="#6f9a86"/><rect x="23" y="23" width="16" height="16" fill="#8fb3a0"/><rect x="13" y="18" width="18" height="8" rx="1" fill="#fff"/></svg>Collage</button>
         <button class="tile" data-t="review" aria-pressed="false">
           <svg viewBox="0 0 44 44"><rect x="2" y="2" width="40" height="40" rx="4" fill="#046b3f"/><rect x="6" y="6" width="32" height="24" rx="2" fill="#034226" opacity=".9"/><rect x="14" y="4" width="16" height="4" rx="1" fill="#00d66b"/><rect x="9" y="12" width="26" height="2" fill="#fff"/><rect x="9" y="16" width="26" height="2" fill="#fff"/><rect x="9" y="20" width="18" height="2" fill="#fff"/><rect x="6" y="33" width="14" height="5" rx="1.5" fill="#fff"/></svg>Review</button>
       </div>
@@ -317,6 +319,7 @@ canvas#c.dragging{cursor:grabbing}
         <button data-v="logo" aria-pressed="false">Logo only</button>
         <button data-v="headline" aria-pressed="false">Headline</button>
         <button data-v="event" aria-pressed="false">Event</button>
+        <button data-v="collage" aria-pressed="false">Collage</button>
         <button data-v="review" aria-pressed="false">Quote</button>
       </div></div>
     <div class="actions"><span class="status" id="genStatus"></span><button class="btn link" id="genCancel">Cancel</button><button class="btn gen" id="genGo">Generate</button></div>
@@ -385,14 +388,14 @@ function layout(){
   const logoVariant = whiteBand ? 'color' : 'full';
   const logoAt = (cx, y, v) => logoEl({ x: cx - logoW/2, y, w: logoW, variant: v || 'full' });
 
-  if (S.template === 'logo') {
-    if (S.bg.kind === 'collage') {
-      // colour logo on a small white plate over the gutters, like their collage posts
-      const lw = logoW*0.78, lh = lw*0.21;
-      const cy = (S.bg.grid || '2x2') === '2x2' ? h/2 : h*0.55;
-      els.push(logoEl({ x:(w-lw)/2, y:cy - lh/2, w:lw, variant:'color', shade:{ style:'box', color:'#ffffff', alpha:1, size:0.28 } }));
-    }
-    else if (fr) els.push(logoAt(w/2, fr.y + fr.h/2 - logoH/2, logoVariant));
+  if (S.template === 'collage') {
+    // colour logo on a small white plate over the gutters, like their collage posts
+    const lw = logoW*0.78, lh = lw*0.21;
+    const cy = (S.bg.grid || '2x2') === '2x2' ? h/2 : h*0.55;
+    els.push(logoEl({ x:(w-lw)/2, y:cy - lh/2, w:lw, variant:'color', shade:{ style:'box', color:'#ffffff', alpha:1, size:0.28 } }));
+  }
+  else if (S.template === 'logo') {
+    if (fr) els.push(logoAt(w/2, fr.y + fr.h/2 - logoH/2, logoVariant));
     else els.push(logoAt(w/2, h - logoH - 0.07*h));
   }
   else if (S.template === 'headline' || S.template === 'event') {
@@ -464,7 +467,7 @@ function templateDefaults(){
   // Art backgrounds need no darkening; photos get a light tint. Bands are chosen by the user or the generator.
   S.bg.fadePos = 'none'; S.bg.fade = 0.45; S.bg.fadeSize = 0.5;
   S.bg.dim = S.bg.kind === 'photo' ? (S.template === 'review' ? 0.35 : 0.22) : 0;
-  if (S.bg.kind === 'collage') S.frame = 'none';
+  if (S.bg.kind === 'collage' || S.template === 'collage') S.frame = 'none';
   const L = LOOKS[S.look];
   if (L.dim !== null && S.bg.kind === 'photo') S.bg.dim = L.dim;
 }
@@ -730,7 +733,7 @@ function fitCanvas(){
   const cw = Math.round(w*s)+'px', ch = Math.round(h*s)+'px';
   if (cv.style.width !== cw) cv.style.width = cw;
   if (cv.style.height !== ch) cv.style.height = ch;
-  $('#dims').textContent = `${w} × ${h} px` + (IMG.src?.kind === 'lib' ? ` · ${IMG.src.file}` : IMG.src?.kind === 'art' ? ` · ${ART[IMG.src.art] || 'Green art'}` : '');
+  $('#dims').textContent = `${w} × ${h} px` + (S.bg.kind === 'collage' ? ' · Collage' : S.bg.kind === 'photo' && IMG.src?.kind === 'lib' ? ` · ${IMG.src.file}` : S.bg.kind === 'art' ? ` · ${ART[S.bg.art] || 'Green art'}` : '');
   render();
 }
 let fitRaf = 0;
@@ -869,6 +872,8 @@ $('#undoBtn').disabled = true;
 async function setTemplate(t){
   pushUndo(); S.template = t;
   // house rule: logo-only lives on photos, never on plain green art
+  if (t === 'collage') { if (await randomBackground('collage', {}) === 'none') { toast('A collage needs at least 3 library photos'); S.template = 'logo'; } }
+  else if (S.bg.kind === 'collage') { S.bg.kind = 'art'; S.bg.cells = null; }
   if (t === 'logo' && S.bg.kind === 'art') {
     const r = await randomBackground('logo', {});
     if (r === 'none') toast('Logo-only graphics use a photo \u2014 the library is empty, so upload one below');
@@ -1118,7 +1123,8 @@ async function usePhoto(p){
       addProduct(p, im);
     } else {
       IMG.bg = im; IMG.src = Object.assign({ kind:'lib' }, p);
-      S.bg.kind = 'photo'; S.bg.ox = S.bg.oy = 0; S.bg.zoom = 1; $('#zoom').value = 100;
+      S.bg.kind = 'photo'; S.bg.cells = null; S.bg.ox = S.bg.oy = 0; S.bg.zoom = 1; $('#zoom').value = 100;
+      if (S.template === 'collage') S.template = 'logo';
       templateDefaults(); layout(); autoContrast(false);
     }
     syncControls(); renderInspector(); renderResults(); fitCanvas();
@@ -1141,7 +1147,7 @@ function addProduct(p, im){
 function setArt(style, newSeed){
   pushUndo();
   S.bg.kind = 'art'; S.bg.cells = null; S.bg.art = style || S.bg.art || 'gradient';
-  if (S.template === 'logo') {
+  if (S.template === 'logo' || S.template === 'collage') {
     const sgg = suggestText('quality');
     S.template = 'headline'; S.els = [text('headline', sgg.headline)]; if (sgg.sub) S.els.push(text('sub', sgg.sub));
     toast('Green art always carries a message \u2014 added a headline you can edit');
@@ -1172,7 +1178,7 @@ async function makeCollage(kind){
 }
 $('#collageBtn').addEventListener('click', async () => {
   pushUndo();
-  if (await makeCollage(libKind)) { S.frame = 'none'; templateDefaults(); layout(); syncControls(); renderInspector(); renderResults(); fitCanvas(); persist(); }
+  if (await makeCollage(libKind)) { S.template = 'collage'; S.frame = 'none'; templateDefaults(); layout(); syncControls(); renderInspector(); renderResults(); fitCanvas(); persist(); }
 });
 
 // ---------- own photo ----------
@@ -1221,7 +1227,7 @@ function storeDrafts(list){
 function draftName(){
   if (S.template === 'headline' || S.template === 'event') return byId('headline')?.text || 'Headline';
   if (S.template === 'review') return 'Review: ' + (byId('quote')?.text || '').replace(/^“/, '').slice(0, 40);
-  return 'Logo only';
+  return S.template === 'collage' ? 'Collage' : 'Logo only';
 }
 function thumb(){
   const c = document.createElement('canvas'); const s = 240 / Math.max(W(), H());
@@ -1303,13 +1309,13 @@ function restore(){
   let o = null; try { o = JSON.parse(localStorage.getItem(LS.prefs)||'null'); } catch {}
   if (!o) return;
   if (SIZES[o.size]) S.size = o.size;
-  if (['logo','headline','event','review'].includes(o.template)) S.template = o.template;
+  if (['logo','headline','event','review','collage'].includes(o.template)) S.template = o.template;
   if (['tc','tl','bc','mid'].includes(o.textPos)) S.textPos = o.textPos;
   if (LOOKS[o.look]) S.look = o.look;
 }
 // ---------- export ----------
 function filename(size){
-  const base = (S.template === 'headline' || S.template === 'event') ? (byId('headline')?.text || 'headline') : S.template === 'review' ? 'featured-review' : 'logo';
+  const base = (S.template === 'headline' || S.template === 'event') ? (byId('headline')?.text || 'headline') : S.template === 'review' ? 'quote' : S.template === 'collage' ? 'collage' : 'logo';
   const slug = base.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,40) || 'graphic';
   const [w,hh] = SIZES[size || S.size];
   return `mcmillan-${slug}-${w}x${hh}.png`;
@@ -1507,11 +1513,14 @@ async function randomBackground(template, brief){
   const photos = LIB.filter(p => p.kind !== 'product' && !photoMem.used[p.id] && p.id !== IMG.src?.id);
   const anyPhotos = LIB.filter(p => p.kind !== 'product');
   const pool = photos.length ? photos : anyPhotos;
+  if (template === 'collage') {
+    if (anyPhotos.length < 3) return 'none';
+    const groups = ['event','application','team','shop'].filter(k => anyPhotos.filter(p => p.kind === k).length >= 3);
+    await makeCollage(groups.length ? groups[Math.floor(Math.random()*groups.length)] : 'all');
+    return 'collage';
+  }
   if (template === 'logo') {
     if (!anyPhotos.length) return 'none';               // caller converts to a headline on art
-    const groups = ['event','application','team','shop'].filter(k => anyPhotos.filter(p => p.kind === k).length >= 3);
-    const useCollage = anyPhotos.length >= 3 && pick([['collage', 6], ['photo', 4]], 'logoBg') === 'collage';
-    if (useCollage && await makeCollage(groups.length ? groups[Math.floor(Math.random()*groups.length)] : 'all')) return 'collage';
     const prefer = pool.filter(p => ['event','application','team'].includes(p.kind));
     const from = prefer.length ? prefer : pool;
     const p = from[Math.floor(Math.random()*from.length)];
@@ -1540,7 +1549,7 @@ async function maybeAddProduct(){
   const el = byId('product');
   const hl = byId('headline'); const statement = hl && /^[A-Z][A-Z &]+:$/.test(hl.text.trim());
   const roomBelow = (S.template === 'headline' || S.template === 'event') && (S.textPos === 'tc' || S.textPos === 'tl') && !statement;
-  if (!prods.length || !roomBelow || S.bg.kind === 'photo' || S.frame !== 'none') { if (el) S.els = S.els.filter(e => e.id !== 'product'); return; }
+  if (!prods.length || !roomBelow || S.bg.kind !== 'art' || S.frame !== 'none') { if (el) S.els = S.els.filter(e => e.id !== 'product'); return; }
   if (Math.random() < (S.bg.art === 'circuit' ? 0.7 : 0.35)) {
     const p = prods[Math.floor(Math.random()*prods.length)];
     const im = await libImage(p.url); addProduct(p, im);
@@ -1581,7 +1590,7 @@ async function generate(){
     if (S.template === 'review') { S.els.push(text('quote', brief.quote)); S.els.push(text('attr', brief.attr)); }
     layout();
     const bgKind = await randomBackground(S.template, brief);
-    if (S.template === 'logo' && bgKind === 'none') {
+    if ((S.template === 'logo' || S.template === 'collage') && bgKind === 'none') {
       // no photos to lean on: art needs words, so turn it into a headline card
       const sgg = suggestText(topic === 'any' ? 'quality' : topic);
       S.template = 'headline'; S.els = [text('headline', sgg.headline)]; if (sgg.sub) S.els.push(text('sub', sgg.sub));

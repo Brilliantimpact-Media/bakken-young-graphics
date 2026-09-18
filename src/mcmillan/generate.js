@@ -131,11 +131,14 @@ async function randomBackground(template, brief){
   const photos = LIB.filter(p => p.kind !== 'product' && !photoMem.used[p.id] && p.id !== IMG.src?.id);
   const anyPhotos = LIB.filter(p => p.kind !== 'product');
   const pool = photos.length ? photos : anyPhotos;
+  if (template === 'collage') {
+    if (anyPhotos.length < 3) return 'none';
+    const groups = ['event','application','team','shop'].filter(k => anyPhotos.filter(p => p.kind === k).length >= 3);
+    await makeCollage(groups.length ? groups[Math.floor(Math.random()*groups.length)] : 'all');
+    return 'collage';
+  }
   if (template === 'logo') {
     if (!anyPhotos.length) return 'none';               // caller converts to a headline on art
-    const groups = ['event','application','team','shop'].filter(k => anyPhotos.filter(p => p.kind === k).length >= 3);
-    const useCollage = anyPhotos.length >= 3 && pick([['collage', 6], ['photo', 4]], 'logoBg') === 'collage';
-    if (useCollage && await makeCollage(groups.length ? groups[Math.floor(Math.random()*groups.length)] : 'all')) return 'collage';
     const prefer = pool.filter(p => ['event','application','team'].includes(p.kind));
     const from = prefer.length ? prefer : pool;
     const p = from[Math.floor(Math.random()*from.length)];
@@ -164,7 +167,7 @@ async function maybeAddProduct(){
   const el = byId('product');
   const hl = byId('headline'); const statement = hl && /^[A-Z][A-Z &]+:$/.test(hl.text.trim());
   const roomBelow = (S.template === 'headline' || S.template === 'event') && (S.textPos === 'tc' || S.textPos === 'tl') && !statement;
-  if (!prods.length || !roomBelow || S.bg.kind === 'photo' || S.frame !== 'none') { if (el) S.els = S.els.filter(e => e.id !== 'product'); return; }
+  if (!prods.length || !roomBelow || S.bg.kind !== 'art' || S.frame !== 'none') { if (el) S.els = S.els.filter(e => e.id !== 'product'); return; }
   if (Math.random() < (S.bg.art === 'circuit' ? 0.7 : 0.35)) {
     const p = prods[Math.floor(Math.random()*prods.length)];
     const im = await libImage(p.url); addProduct(p, im);
@@ -205,7 +208,7 @@ async function generate(){
     if (S.template === 'review') { S.els.push(text('quote', brief.quote)); S.els.push(text('attr', brief.attr)); }
     layout();
     const bgKind = await randomBackground(S.template, brief);
-    if (S.template === 'logo' && bgKind === 'none') {
+    if ((S.template === 'logo' || S.template === 'collage') && bgKind === 'none') {
       // no photos to lean on: art needs words, so turn it into a headline card
       const sgg = suggestText(topic === 'any' ? 'quality' : topic);
       S.template = 'headline'; S.els = [text('headline', sgg.headline)]; if (sgg.sub) S.els.push(text('sub', sgg.sub));

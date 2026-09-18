@@ -76,7 +76,8 @@ async function usePhoto(p){
       addProduct(p, im);
     } else {
       IMG.bg = im; IMG.src = Object.assign({ kind:'lib' }, p);
-      S.bg.kind = 'photo'; S.bg.ox = S.bg.oy = 0; S.bg.zoom = 1; $('#zoom').value = 100;
+      S.bg.kind = 'photo'; S.bg.cells = null; S.bg.ox = S.bg.oy = 0; S.bg.zoom = 1; $('#zoom').value = 100;
+      if (S.template === 'collage') S.template = 'logo';
       templateDefaults(); layout(); autoContrast(false);
     }
     syncControls(); renderInspector(); renderResults(); fitCanvas();
@@ -99,7 +100,7 @@ function addProduct(p, im){
 function setArt(style, newSeed){
   pushUndo();
   S.bg.kind = 'art'; S.bg.cells = null; S.bg.art = style || S.bg.art || 'gradient';
-  if (S.template === 'logo') {
+  if (S.template === 'logo' || S.template === 'collage') {
     const sgg = suggestText('quality');
     S.template = 'headline'; S.els = [text('headline', sgg.headline)]; if (sgg.sub) S.els.push(text('sub', sgg.sub));
     toast('Green art always carries a message \u2014 added a headline you can edit');
@@ -130,5 +131,5 @@ async function makeCollage(kind){
 }
 $('#collageBtn').addEventListener('click', async () => {
   pushUndo();
-  if (await makeCollage(libKind)) { S.frame = 'none'; templateDefaults(); layout(); syncControls(); renderInspector(); renderResults(); fitCanvas(); persist(); }
+  if (await makeCollage(libKind)) { S.template = 'collage'; S.frame = 'none'; templateDefaults(); layout(); syncControls(); renderInspector(); renderResults(); fitCanvas(); persist(); }
 });
