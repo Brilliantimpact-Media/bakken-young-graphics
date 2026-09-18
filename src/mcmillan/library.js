@@ -1,0 +1,108 @@
+// ---------- McMillan image library (their own photos; no stock search) ----------
+// mcmillan/library/manifest.json lists every image: { "images": [ { "file": "shop-01.jpg", "kind": "shop", "tags": ["winding"] } ] }
+// kinds: product (cutout on white/transparent), shop, team, event, application, other
+const KINDS = { all:'All', product:'Products', shop:'Shop', team:'Team', event:'Events', application:'Applications', other:'Other' };
+let LIB = [];            // [{file, kind, tags, url, id}]
+let libKind = 'all';
+IMG.lib = {};            // url -> Image (loaded on demand)
+function loadPhotoMem(){ try { const o = JSON.parse(localStorage.getItem(LS.photos)||'null'); if (o && o.used) photoMem = o; } catch {} }
+function savePhotoMem(){ try { localStorage.setItem(LS.photos, JSON.stringify(photoMem)); } catch {} }
+async function loadLibrary(){
+  try {
+    const r = await fetch('library/manifest.json', { cache:'no-store' });
+    if (!r.ok) throw new Error('no manifest');
+    const j = await r.json();
+    LIB = (j.images || []).map(x => ({ id:x.file, file:x.file, kind:x.kind || 'other', tags:x.tags || [], url:'library/' + x.file, tiny:'library/' + (x.thumb || x.file), photographer:'McMillan' }));
+  } catch { LIB = []; }
+  renderResults();
+}
+function libImage(url){
+  return new Promise((res, rej) => {
+    if (IMG.lib[url]) return res(IMG.lib[url]);
+    const im = new Image(); im.onload = () => { IMG.lib[url] = im; res(im); }; im.onerror = rej; im.src = url;
+  });
+}
+function markUsed(){
+  learnFromCurrent();
+  const rec = IMG.src && IMG.src.kind === 'lib' ? IMG.src : null;
+  if (!rec) return;
+  const r = photoMem.used[rec.id] || Object.assign({}, rec, { count:0 });
+  r.count = (r.count||0) + 1; r.lastUsed = Date.now();
+  photoMem.used[rec.id] = r;
+  const ids = Object.keys(photoMem.used).sort((a,b) => photoMem.used[b].lastUsed - photoMem.used[a].lastUsed);
+  ids.slice(80).forEach(id => delete photoMem.used[id]);
+  savePhotoMem();
+}
+function toggleFav(rec){
+  if (photoMem.favs[rec.id]) delete photoMem.favs[rec.id]; else photoMem.favs[rec.id] = Object.assign({}, rec, { addedAt:Date.now() });
+  savePhotoMem(); renderResults();
+}
+function usedLabel(id){ const r = photoMem.used[id]; return r ? 'Used ' + new Date(r.lastUsed).toLocaleDateString(undefined, { month:'short', year:'2-digit' }) : ''; }
+let tab = 'lib';
+function setTab(t){ tab = t; document.querySelectorAll('#tabs button').forEach(b => b.setAttribute('aria-selected', String(b.dataset.tab === t))); }
+$('#tabs').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; setTab(b.dataset.tab); renderResults(); });
+function renderKindChips(){
+  const box = $('#kindChips'); box.innerHTML = '';
+  const present = new Set(LIB.map(p => p.kind));
+  for (const [k,l] of Object.entries(KINDS)) { if (k !== 'all' && !present.has(k)) continue; box.append(h('button',{class:'chip','aria-pressed':String(k===libKind),onclick:()=>{ libKind = k; renderResults(); }}, l)); }
+}
+function renderResults(){
+  const box = $('#results'); box.innerHTML = '';
+  let list;
+  if (tab === 'favs') { list = Object.values(photoMem.favs).sort((a,b) => b.addedAt - a.addedAt); $('#rstatus').textContent = list.length ? `${list.length} favorite${list.length===1?'':'s'}` : 'No favorites yet — hover an image and click ☆.'; }
+  else if (tab === 'recent') { list = Object.values(photoMem.used).sort((a,b) => b.lastUsed - a.lastUsed); $('#rstatus').textContent = list.length ? 'Images you’ve downloaded graphics with, newest first' : 'Nothing yet — images show up here after you download a graphic using them.'; }
+  else {
+    renderKindChips();
+    list = LIB.filter(p => libKind === 'all' || p.kind === libKind);
+    $('#rstatus').textContent = LIB.length ? `${list.length} image${list.length===1?'':'s'} in the McMillan library` : 'The image library is empty — ask Alexia to add McMillan’s photos. You can still upload one below.';
+  }
+  $('#kindChips').hidden = tab !== 'lib';
+  for (const p of list) {
+    const d = h('div',{class:'res',title:(p.tags||[]).join(', ') || p.file,'aria-pressed':String(IMG.src?.id===p.id || byId('product')?.src === p.url),role:'button',tabindex:'0',onclick:()=>usePhoto(p),onkeydown:e=>{ if (e.key==='Enter') usePhoto(p); }},
+      h('img',{src:p.tiny,alt:'',loading:'lazy'}),
+      h('button',{class:'star',title:photoMem.favs[p.id]?'Remove from favorites':'Add to favorites','aria-pressed':String(!!photoMem.favs[p.id]),onclick:e=>{ e.stopPropagation(); toggleFav(p); }}, photoMem.favs[p.id] ? '★' : '☆'));
+    if (p.kind === 'product') d.append(h('span',{class:'used'}, 'Product'));
+    else { const u = usedLabel(p.id); if (u) d.append(h('span',{class:'used'}, u)); }
+    box.append(d);
+  }
+}
+// Clicking a library image: products become a cutout on top of the art; everything else becomes the background.
+async function usePhoto(p){
+  $('#loading').classList.add('show');
+  try {
+    const im = await libImage(p.url);
+    pushUndo();
+    if (p.kind === 'product') {
+      addProduct(p, im);
+    } else {
+      IMG.bg = im; IMG.src = Object.assign({ kind:'lib' }, p);
+      S.bg.kind = 'photo'; S.bg.ox = S.bg.oy = 0; S.bg.zoom = 1; $('#zoom').value = 100;
+      templateDefaults(); layout(); autoContrast(false);
+    }
+    syncControls(); renderInspector(); renderResults(); fitCanvas();
+  } catch { toast('Couldn’t load that image'); }
+  finally { $('#loading').classList.remove('show'); }
+}
+function addProduct(p, im){
+  const w = W(), h = H(); const aspect = im.naturalHeight / im.naturalWidth;
+  let el = byId('product');
+  if (!el) { el = { id:'product', type:'image', src:p.url, x:0, y:0, w:0, shadow:true }; S.els.push(el); }
+  el.src = p.url;
+  // default: large, lower half, leaving the top for the headline
+  el.w = Math.min(0.62*w, (0.5*h)/aspect); el.x = (w - el.w)/2; el.y = h - el.w*aspect - 0.16*h;
+  if (S.bg.kind !== 'photo') { /* keep art */ } else { S.bg.kind = 'art'; }
+  // logo stays on top of the image stack
+  const li = S.els.findIndex(e => e.type === 'logo'); if (li >= 0) { const l = S.els.splice(li,1)[0]; S.els.push(l); }
+}
+function setArt(style, newSeed){
+  pushUndo();
+  S.bg.kind = 'art'; S.bg.art = style || S.bg.art || 'gradient';
+  if (newSeed || !S.bg.seed) S.bg.seed = Math.floor(Math.random()*100000) + 1;
+  IMG.src = { kind:'art', art:S.bg.art, seed:S.bg.seed };
+  templateDefaults(); layout(); syncControls(); renderInspector(); renderResults(); render(); persist();
+}
+function renderArtChips(){
+  const box = $('#artChips'); box.innerHTML = '';
+  for (const [k,l] of Object.entries(ART)) box.append(h('button',{class:'chip','aria-pressed':String(S.bg.kind !== 'photo' && S.bg.art === k),onclick:()=>setArt(k, true)}, l));
+  box.append(h('button',{class:'btn sm',title:'Same style, different variation',onclick:()=>setArt(S.bg.art, true)}, '↻ Variation'));
+}

@@ -15,7 +15,9 @@ def build_mcmillan():
     src = ROOT/'src/template-mcmillan.html'
     if not src.exists(): print('mcmillan      (no template yet)'); return
     tpl = src.read_text()
-    html = tpl.replace('__LOGO_B64__', b64(ROOT/'assets/mcmillan/logo-white.png')).replace('__MARK_B64__', b64(ROOT/'assets/mcmillan/mark-white.png'))
+    html = (tpl.replace('__LOGO_B64__', b64(ROOT/'assets/mcmillan/logo-white.png'))
+               .replace('__MARK_B64__', b64(ROOT/'assets/mcmillan/mark-white.png'))
+               .replace('__LOGOC_B64__', b64(ROOT/'assets/mcmillan/logo-color.png')))
     (ROOT/'mcmillan').mkdir(exist_ok=True)
     (ROOT/'mcmillan/index.html').write_text(html); print('mcmillan      ok')
 

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>McMillan Graphics</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;1,500;1,600&family=Nunito+Sans:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800;900&family=Open+Sans:wght@400;500;600;700&family=Nunito+Sans:wght@400;600;700&display=swap">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <style>
 :root{
@@ -37,10 +37,10 @@ a{color:var(--accent)}
 
 .top{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px 20px;border-bottom:1px solid var(--line);background:var(--panel)}
 .brand{display:flex;align-items:baseline;gap:10px}
-.brand h1{margin:0;font:600 20px/1 "Cinzel","Montserrat",Georgia,serif;letter-spacing:.01em}
+.brand h1{margin:0;font:800 17px/1 "Montserrat",sans-serif;letter-spacing:.02em;text-transform:uppercase}
 .brand .home{color:var(--muted);text-decoration:none;font-size:22px;line-height:1;padding:0 4px;border-radius:6px}
 .brand .home:hover{background:var(--panel-2);color:var(--ink)}
-.brand .profile{font:600 20px/1 "Cinzel","Montserrat",Georgia,serif;letter-spacing:.01em;border:0;background:transparent;color:var(--ink);padding:4px 26px 4px 4px;border-radius:6px;cursor:pointer;-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%2366706a' stroke-width='1.6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center}
+.brand .profile{font:800 17px/1 "Montserrat",sans-serif;letter-spacing:.02em;text-transform:uppercase;border:0;background:transparent;color:var(--ink);padding:4px 26px 4px 4px;border-radius:6px;cursor:pointer;-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%2366706a' stroke-width='1.6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center}
 .brand .profile:hover{background-color:var(--panel-2)}
 .brand span{color:var(--muted);font-size:12px;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap}
 .top-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
@@ -92,7 +92,7 @@ input[type=color]{width:34px;height:28px;padding:0;border:1px solid var(--line-s
 .looks{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}
 .look{border:1px solid var(--line-strong);border-radius:8px;padding:6px 8px;cursor:pointer;display:flex;align-items:center;gap:8px;background:var(--panel-2);font-size:12px;font-weight:600;text-align:left}
 .look[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent);background:var(--accent-soft)}
-.look i{width:26px;height:26px;border-radius:5px;flex:0 0 auto;display:grid;place-items:center;font:700 13px "Cinzel",serif;border:1px solid rgba(0,0,0,.15)}
+.look i{width:26px;height:26px;border-radius:5px;flex:0 0 auto;display:grid;place-items:center;font:800 12px "Montserrat",sans-serif;border:1px solid rgba(0,0,0,.15)}
 
 .chips{display:flex;flex-wrap:wrap;gap:6px}
 .chip{border:1px solid var(--line-strong);background:var(--panel);border-radius:999px;padding:4px 10px;font-size:12px;cursor:pointer}
@@ -140,7 +140,7 @@ canvas#c.dragging{cursor:grabbing}
 .kbd{font-family:ui-monospace,Menlo,monospace;font-size:11px;background:var(--panel-2);border:1px solid var(--line-strong);border-radius:4px;padding:1px 4px}
 .setup{position:fixed;inset:0;background:rgba(0,0,0,.55);display:grid;place-items:center;z-index:20;padding:16px}
 .setup > div{background:var(--panel);color:var(--ink);border-radius:12px;padding:22px 24px;max-width:460px;width:100%;box-shadow:var(--shadow)}
-.setup h2{margin:0 0 6px;font:700 22px/1.1 "Cinzel",serif}
+.setup h2{margin:0 0 6px;font:800 20px/1.1 "Montserrat",sans-serif}
 .setup p{margin:0 0 12px;color:var(--muted);font-size:13px;line-height:1.5}
 .setup .field{margin-bottom:12px}
 .setup textarea{min-height:110px}
@@ -187,13 +187,13 @@ canvas#c.dragging{cursor:grabbing}
       <h2>Template</h2>
       <div class="tiles" id="tiles">
         <button class="tile" data-t="logo" aria-pressed="false">
-          <svg viewBox="0 0 44 44"><rect x="2" y="2" width="40" height="40" rx="4" fill="#586e63"/><rect x="12" y="29" width="20" height="7" rx="1.5" fill="#fff"/></svg>Logo only</button>
+          <svg viewBox="0 0 44 44"><rect x="2" y="2" width="40" height="40" rx="4" fill="#046b3f"/><rect x="12" y="29" width="20" height="7" rx="1.5" fill="#fff"/></svg>Logo only</button>
         <button class="tile" data-t="headline" aria-pressed="false">
-          <svg viewBox="0 0 44 44"><rect x="2" y="2" width="40" height="40" rx="4" fill="#586e63"/><rect x="14" y="7" width="16" height="5" rx="1.5" fill="#fff"/><rect x="8" y="26" width="28" height="5" rx="1.5" fill="#fff"/><rect x="12" y="33" width="20" height="3" rx="1.5" fill="#fff" opacity=".85"/></svg>Headline</button>
+          <svg viewBox="0 0 44 44"><rect x="2" y="2" width="40" height="40" rx="4" fill="#046b3f"/><rect x="14" y="7" width="16" height="5" rx="1.5" fill="#fff"/><rect x="8" y="26" width="28" height="5" rx="1.5" fill="#fff"/><rect x="12" y="33" width="20" height="3" rx="1.5" fill="#fff" opacity=".85"/></svg>Headline</button>
         <button class="tile" data-t="event" aria-pressed="false">
-          <svg viewBox="0 0 44 44"><rect x="2" y="2" width="40" height="40" rx="4" fill="#586e63"/><rect x="10" y="8" width="24" height="5" rx="1.5" fill="#fff"/><rect x="13" y="16" width="18" height="3" rx="1.5" fill="#fff" opacity=".85"/><rect x="15" y="21" width="14" height="3" rx="1.5" fill="#fff" opacity=".85"/><rect x="14" y="32" width="16" height="5" rx="1.5" fill="#fff"/></svg>Event</button>
+          <svg viewBox="0 0 44 44"><rect x="2" y="2" width="40" height="40" rx="4" fill="#046b3f"/><rect x="10" y="8" width="24" height="5" rx="1.5" fill="#fff"/><rect x="13" y="16" width="18" height="3" rx="1.5" fill="#fff" opacity=".85"/><rect x="15" y="21" width="14" height="3" rx="1.5" fill="#fff" opacity=".85"/><rect x="14" y="32" width="16" height="5" rx="1.5" fill="#fff"/></svg>Event</button>
         <button class="tile" data-t="review" aria-pressed="false">
-          <svg viewBox="0 0 44 44"><rect x="2" y="2" width="40" height="40" rx="4" fill="#586e63"/><rect x="6" y="6" width="32" height="24" rx="2" fill="#034226" opacity=".9"/><rect x="14" y="4" width="16" height="4" rx="1" fill="#00d66b"/><rect x="9" y="12" width="26" height="2" fill="#fff"/><rect x="9" y="16" width="26" height="2" fill="#fff"/><rect x="9" y="20" width="18" height="2" fill="#fff"/><rect x="6" y="33" width="14" height="5" rx="1.5" fill="#fff"/></svg>Review</button>
+          <svg viewBox="0 0 44 44"><rect x="2" y="2" width="40" height="40" rx="4" fill="#046b3f"/><rect x="6" y="6" width="32" height="24" rx="2" fill="#034226" opacity=".9"/><rect x="14" y="4" width="16" height="4" rx="1" fill="#00d66b"/><rect x="9" y="12" width="26" height="2" fill="#fff"/><rect x="9" y="16" width="26" height="2" fill="#fff"/><rect x="9" y="20" width="18" height="2" fill="#fff"/><rect x="6" y="33" width="14" height="5" rx="1.5" fill="#fff"/></svg>Review</button>
       </div>
       <div class="row" style="margin-top:10px"><label for="size">Size</label>
         <select id="size">
@@ -204,10 +204,18 @@ canvas#c.dragging{cursor:grabbing}
         </select></div>
       <div class="row" id="textPosRow"><label>Text</label>
         <div class="seg" id="textPos">
-          <button data-v="tl" aria-pressed="true">Top left</button>
-          <button data-v="tc" aria-pressed="false">Top</button>
-          <button data-v="tr" aria-pressed="false">Top right</button>
+          <button data-v="tc" aria-pressed="true">Top</button>
           <button data-v="mid" aria-pressed="false">Middle</button>
+          <button data-v="bc" aria-pressed="false">Bottom</button>
+          <button data-v="tl" aria-pressed="false">Top left</button>
+        </div></div>
+      <div class="row" id="frameRow"><label>Band</label>
+        <div class="seg" id="frameSeg">
+          <button data-v="none" aria-pressed="true">None</button>
+          <button data-v="top" aria-pressed="false">Green top</button>
+          <button data-v="bottom" aria-pressed="false">Green btm</button>
+          <button data-v="wtop" aria-pressed="false">White top</button>
+          <button data-v="wbottom" aria-pressed="false">White btm</button>
         </div></div>
     </div>
 
@@ -222,38 +230,28 @@ canvas#c.dragging{cursor:grabbing}
     </div>
 
     <div class="sec">
-      <h2>Background photo <button class="btn link" id="keyToggle">Change key</button></h2>
-      <div id="keyBox" hidden>
-        <div class="note" style="margin:0 0 8px">
-          <b>Photo key</b> — photos come from Pexels (free for commercial use). A team key is built in; paste a different one here only if you need to.
-        </div>
-        <div class="search"><input type="password" id="apiKey" placeholder="Paste Pexels API key" autocomplete="off"><button class="btn sm" id="saveKey">Save</button></div>
-      </div>
-      <div class="search"><input type="text" id="q" placeholder="Search photos: electric motor, machine shop, engineer…"><button class="btn sm" id="searchBtn">Search</button></div>
-      <div class="tabs" id="tabs">
-        <button data-tab="search" aria-selected="true">Results</button>
+      <h2>Background</h2>
+      <div class="subh" style="margin-top:0">Green art</div>
+      <div class="chips" id="artChips"></div>
+      <div class="subh">McMillan images</div>
+      <div class="tabs" id="tabs" style="margin-top:0">
+        <button data-tab="lib" aria-selected="true">Library</button>
         <button data-tab="favs" aria-selected="false">Favorites</button>
         <button data-tab="recent" aria-selected="false">Recently used</button>
       </div>
+      <div class="chips" id="kindChips" style="margin-top:8px"></div>
       <div class="results" id="results"></div>
       <div class="results-status" id="rstatus"></div>
       <div class="row" style="margin-top:10px">
         <input type="file" id="bgFile" accept="image/*" hidden>
-        <button class="btn sm" id="bgBtn">Upload my own photo…</button>
-        <button class="btn sm" id="rulesToggle">Photo rules</button>
+        <button class="btn sm" id="bgBtn">Upload a photo…</button>
       </div>
-      <div id="rulesBox" hidden>
-        <div class="note" style="margin-top:8px">
-          <b>Photos are screened automatically.</b> Anything described with animals, hospitals or illness, money, parties, alcohol, babies, costumes, rust, fire, smoke or broken equipment is skipped, and Generate only uses photos whose description matches what it searched for. Starred favorites are picked first.
-        </div>
-        <div class="field" style="margin-top:8px"><label for="avoidWords">Also avoid (comma-separated)</label><input type="text" id="avoidWords" placeholder="e.g. rust, wind turbine, robot"></div>
-        <p class="hint" id="skippedNote"></p>
-      </div>
-      <p class="hint" style="margin-top:6px">You can also drag a photo onto the canvas or paste one (⌘V). Drag the photo on the canvas to reposition it.</p>
+      <p class="hint" style="margin-top:6px">Click a library image to use it as the background; product shots are placed on top of the green art. You can also drag a photo onto the canvas or paste one (⌘V).</p>
     </div>
 
     <div class="sec">
-      <h2>Photo adjustments <button class="btn link" id="autoBtn" title="Set Darken and Fade based on how bright the photo is behind the logo and text">Auto-adjust</button></h2>
+      <h2>Photo adjustments <button class="btn link" id="autoBtn" title="Set Darken based on how bright the photo is behind the logo and text">Auto-adjust</button></h2>
+      <p class="hint" id="adjHint" hidden>These apply when a photo is the background.</p>
       <div class="row"><label for="dim">Darken</label><input type="range" id="dim" min="0" max="70" value="15"></div>
       <div class="row"><label for="zoom">Zoom</label><input type="range" id="zoom" min="100" max="300" value="100"></div>
       <div class="row"><label></label><button class="btn sm" id="bgReset">Re-center photo</button></div>
@@ -277,8 +275,9 @@ canvas#c.dragging{cursor:grabbing}
       <span class="hint">Click anything on the graphic to select it. Drag to move · corners to resize · <span class="kbd">←↑↓→</span> nudge · <span class="kbd">⌫</span> remove</span>
       <span class="spacer"></span>
       <button class="btn sm gen" id="genBtn" title="Build a complete graphic from your text with a random photo, look and layout">✨ Generate</button>
-      <button class="btn sm" id="shufPhoto" title="Keep the layout, try a different photo">Shuffle photo</button>
+      <button class="btn sm" id="shufPhoto" title="Keep the text, try a different background">Shuffle background</button>
       <button class="btn sm" id="shufLook" title="Keep the photo, try a different look and layout">Shuffle look</button>
+      <button class="btn sm" id="addProduct" title="Place a product shot from the library on the graphic">+ Product</button>
       <button class="btn sm" id="addText">+ Add text</button>
     </div>
     <div class="canvas-wrap" id="wrap">
@@ -307,17 +306,17 @@ canvas#c.dragging{cursor:grabbing}
 <div class="setup" id="gen" hidden>
   <div>
     <h2>Generate a graphic</h2>
-    <p>Type what it should say — first line is the headline, the next line the subline. Add a date or time and it becomes an event. Paste a client's quote for a review. Leave it blank for logo only. Keep pressing Generate until you like one, then tweak.</p>
+    <p>Type the headline (first line) and an optional subline. A value like <b>INTEGRITY:</b> plus its explanation becomes a statement card. Add a date or time for an event. Leave it blank for logo only. Keep pressing Generate until you like one, then tweak.</p>
     <div class="chips" id="topicChips" style="margin-bottom:6px"></div>
     <div class="row" style="margin-bottom:8px"><button class="btn sm" id="suggestBtn" title="Write a headline and subline in the house voice">✎ Suggest text</button><span class="hint">or paste the post's caption and it will pull the headline, topic and any date out of it</span></div>
-    <div class="field"><textarea id="genText" placeholder="Motor Rewinding&#10;restored to factory specifications&#10;&#10;…or paste the whole caption here"></textarea></div>
+    <div class="field"><textarea id="genText" placeholder="QUALITY:&#10;Investing in people, systems, and testing so motors do their job quietly for years.&#10;&#10;…or paste the whole caption here"></textarea></div>
     <div class="row" style="margin-bottom:0"><label>Template</label>
       <div class="seg" id="genTpl">
         <button data-v="auto" aria-pressed="true">Auto</button>
         <button data-v="logo" aria-pressed="false">Logo only</button>
         <button data-v="headline" aria-pressed="false">Headline</button>
         <button data-v="event" aria-pressed="false">Event</button>
-        <button data-v="review" aria-pressed="false">Review</button>
+        <button data-v="review" aria-pressed="false">Quote</button>
       </div></div>
     <div class="actions"><span class="status" id="genStatus"></span><button class="btn link" id="genCancel">Cancel</button><button class="btn gen" id="genGo">Generate</button></div>
   </div>
@@ -328,112 +327,151 @@ canvas#c.dragging{cursor:grabbing}
 'use strict';
 const $ = s => document.querySelector(s);
 const SIZES = { square:[1080,1080], landscape:[1200,630], portrait:[1080,1350], story:[1080,1920] };
-const SERIF = '"Cinzel", "Montserrat", Georgia, serif';
-const SANS = '"Montserrat", "Nunito Sans", Arial, sans-serif';
+const SERIF = '"Montserrat", "Open Sans", Arial, sans-serif';
+const SANS = '"Open Sans", "Montserrat", Arial, sans-serif';
 const COLORS = [
   ['#ffffff','White'],['#00d66b','Bright green'],['#006c40','McMillan green'],['#034226','Deep green'],['#586e63','Slate'],['#1f1f1f','Charcoal'],['#e9eeeb','Light gray']
 ];
 const SHADE_COLORS = [['#000000','Black'],['#034226','Deep green'],['#006c40','McMillan green'],['#586e63','Slate'],['#ffffff','White']];
-const LS = { prefs:'mcm-prefs-v1', drafts:'mcm-drafts-v1', photos:'mcm-photos-v1' };
+const LS = { prefs:'mcm-prefs-v2', drafts:'mcm-drafts-v1', photos:'mcm-photos-v1' };
 const LOGO_SRC = 'data:image/png;base64,__LOGO_B64__';
 const MARK_SRC = 'data:image/png;base64,__MARK_B64__';
-const DEFAULT_QUERY = { logo:'industrial electric motor', headline:'engineer inspecting machine', event:'manufacturing plant floor', review:'industrial workshop dark' };
+const LOGOC_SRC = 'data:image/png;base64,__LOGOC_B64__';
 const NO_SHADE = () => ({ style:'none', color:'#000000', alpha:0.35, size:0.5 });
 
 // Looks: text colors + photo treatment. `dark` = dark text meant for light photos.
 const LOOKS = {
-  classic: { label:'White on photo',   accent:'#ffffff', text:'#ffffff', shadow:true,  dim:null, fade:null,   shade:{style:'none',color:'#000000',alpha:0.35}, swatch:['#2b3a33','#fff'] },
-  bright:  { label:'Bright green',     accent:'#00d66b', text:'#ffffff', shadow:true,  dim:null, fade:null,   shade:{style:'none',color:'#000000',alpha:0.35}, swatch:['#2b3a33','#00d66b'] },
-  panel:   { label:'Green panel',      accent:'#ffffff', text:'#ffffff', shadow:false, dim:0.15, fade:null,   shade:{style:'box',color:'#034226',alpha:0.85}, swatch:['#034226','#fff'], panel:true },
-  green:   { label:'Green on light',   accent:'#034226', text:'#006c40', shadow:false, dim:0,    fade:'none', shade:{style:'none',color:'#000000',alpha:0.3}, dark:true, swatch:['#e9eeeb','#034226'] },
+  white:  { label:'White text',          accent:'#ffffff', text:'#ffffff', shadow:true,  dim:null, fade:null, swatch:['#046b3f','#fff'] },
+  bright: { label:'Bright green title',  accent:'#00d66b', text:'#ffffff', shadow:true,  dim:null, fade:null, swatch:['#06301c','#00d66b'] },
 };
 
 // ---------- state ----------
-let S = { template:'headline', size:'square', textPos:'tl', look:'classic',
-          bg:{zoom:1, ox:0, oy:0, dim:0.35, fadePos:'none', fade:0.45, fadeSize:0.55, fadeColor:'#000000'}, els:[], sel:null };
-const IMG = { bg:null, logo:null, src:null }; // src: {kind:'pexels',id,url,tiny,photographer,alt} | {kind:'own',data}
+let S = { template:'headline', size:'square', textPos:'tc', look:'white', frame:'none', bandColor:'#034226',
+          bg:{kind:'art', art:'gradient', seed:7, zoom:1, ox:0, oy:0, dim:0, fadePos:'none', fade:0.45, fadeSize:0.5, fadeColor:'#000000'}, els:[], sel:null };
+const IMG = { bg:null, logo:null, mark:null, logoColor:null, src:null, lib:{} }; // src: {kind:'lib',id,url,...} | {kind:'own',data} | {kind:'art',art,seed}
 let undo = [];
 let bokehCache = null, bokehKey = '';
-const BUILT_IN_KEY = 'dMBOWE33ohoJ8Weu0lSEIQhWNDpSnHnC3n9Vkhs3l7I4cfYOKDJgZ7Tf';
-let page = 1, lastQuery = '', results = [], apiKey = BUILT_IN_KEY, tab = 'search';
+let page = 1, lastQuery = '', results = [];
 let photoMem = { used:{}, favs:{} };
 let currentDraftId = null;
 
 const W = () => SIZES[S.size][0], H = () => SIZES[S.size][1];
 const byId = id => S.els.find(e => e.id === id);
 const U = () => Math.min(W(), H()) / 1080;
-function logoAspect(el){ const v = (el && el.variant) || 'full'; const im = v === 'mark' ? IMG.mark : IMG.logo; return im ? im.naturalHeight / im.naturalWidth : (v === 'mark' ? 0.58 : 0.21); }
+function logoImg(el){ const v = (el && el.variant) || 'full'; return v === 'mark' ? IMG.mark : v === 'color' ? IMG.logoColor : IMG.logo; }
+function logoAspect(el){ const im = logoImg(el); return im ? im.naturalHeight / im.naturalWidth : ((el && el.variant) === 'mark' ? 0.58 : 0.21); }
 const clone = o => JSON.parse(JSON.stringify(o));
 
 function text(id, str, o){
-  return Object.assign({ id, type:'text', text:str, x:0, y:0, w:800, size:60, italic:false, weight:700, color:'#ffffff', align:'center', lh:1.12, shadow:true, upper:false, ls:0, font:'serif', shade:NO_SHADE() }, o);
+  return Object.assign({ id, type:'text', text:str, x:0, y:0, w:800, size:60, italic:false, weight:800, color:'#ffffff', align:'center', lh:1.12, shadow:true, upper:false, ls:0, font:'serif', shade:NO_SHADE() }, o);
 }
-function logoEl(o){ return Object.assign({ id:'logo', type:'logo', variant:'full', shadow:true, shade:{style:'none', color:'#000000', alpha:0.35, size:0.5} }, o); }
+function logoEl(o){ return Object.assign({ id:'logo', type:'logo', variant:'full', shadow:false, shade:NO_SHADE() }, o); }
 
 function layout(){
   const w = W(), h = H(), u = U();
   const wide = w > h;
   const els = [];
-  // Starting rules for McMillan: logo bottom-left, caps headline upper-left, tracked sans subline.
-  const logoW = wide ? 0.30*w : 0.40*w;
+  const fr = frameRect(w, h);
+  const onArt = S.bg.kind !== 'photo';
+  // House rules (July–Sept 2026 posts): bold sans headline, sentence case; logo wordmark bottom-center;
+  // text either top-center, dead-center (statements), or bottom-center with the logo up top.
+  const logoW = wide ? 0.28*w : 0.36*w;
   const logoH = logoW * 0.21;
   const m = 0.07*w;
-  const bottomLogo = () => logoEl({ x:m, y:h - logoH - 0.07*h, w:logoW });
-  const pos = S.textPos || 'tl';
+  const pos = S.textPos || 'tc';
+  const whiteBand = fr && fr.white;
+  const textColor = whiteBand ? '#034226' : '#ffffff';
+  const logoVariant = whiteBand ? 'color' : 'full';
+  const logoAt = (cx, y, v) => logoEl({ x: cx - logoW/2, y, w: logoW, variant: v || 'full' });
 
   if (S.template === 'logo') {
-    els.push(bottomLogo());
+    if (fr) els.push(logoAt(w/2, fr.y + fr.h/2 - logoH/2, logoVariant));
+    else els.push(logoAt(w/2, h - logoH - 0.07*h));
   }
   else if (S.template === 'headline' || S.template === 'event') {
     const isEvent = S.template === 'event';
-    const hl = byId('headline')?.text ?? (isEvent ? 'Open House' : 'Built to Last');
-    const sb = byId('sub')?.text ?? (isEvent ? 'Thursday, May 14\n10 AM \u2013 2 PM' : 'precision motors, repaired and rebuilt');
-    const hsize = (isEvent ? 62 : 66)*u*(wide? .9:1), ssize = (isEvent ? 34 : 30)*u*(wide? .9:1);
-    const corner = pos === 'tl' || pos === 'tr';
-    const tw = corner ? 0.62*w : 0.84*w;
-    const tx = pos === 'tl' ? m : pos === 'tr' ? w - m - tw : (w - tw)/2;
-    const align = pos === 'tl' ? 'left' : pos === 'tr' ? 'right' : 'center';
-    const sLines = Math.max(1, sb.split('\n').length);
-    const block = hsize*1.15 + ssize*1.3*sLines;
-    let y = pos === 'mid' ? (h - block)/2 - 0.04*h : 0.09*h;
-    els.push(text('headline', hl, { x:tx, y, w:tw, size:hsize, weight:700, align, lh:1.08, upper:true, ls:0.02 }));
-    y += hsize*1.2 + 0.01*h;
-    els.push(text('sub', sb, { x:tx, y, w:tw, size:ssize, weight:600, align, lh:1.35, font:'sans', upper:true, ls:0.12 }));
-    els.push(bottomLogo());
+    const hl = byId('headline')?.text ?? (isEvent ? 'Open House' : 'Proven before it ships.');
+    const sb = byId('sub')?.text ?? (isEvent ? 'Thursday, May 14\n10 AM – 2 PM' : '');
+    const statement = /^[A-Z][A-Z &]+:$/.test(hl.trim());
+    const hsize = (statement ? 82 : isEvent ? 68 : 64)*u*(wide? .9:1), ssize = (statement ? 36 : isEvent ? 40 : 34)*u*(wide? .9:1);
+    const tw = 0.86*w, tx = (w - tw)/2;
+    const sLines = sb ? Math.max(1, sb.split('\n').length) : 0;
+    const hLines = Math.ceil(hl.length / 22);
+    const block = hsize*1.12*hLines + (sLines ? 0.02*h + ssize*1.35*sLines : 0);
+    if (fr && whiteBand) {
+      // white band: green headline with the color logo beneath it, both inside the band (photo fills the rest)
+      const hs = Math.min(hsize, fr.h*0.3), lw = logoW*0.85, lh = lw*0.21;
+      const inner = hs*1.15 + (sb ? ssize*0.9*1.3*sLines + 0.01*h : 0) + 0.02*h + lh;
+      let y = fr.y + (fr.h - inner)/2;
+      els.push(text('headline', hl, { x:tx, y, w:tw, size:hs, weight:800, align:'center', lh:1.1, color:textColor, shadow:false }));
+      y += hs*1.15;
+      if (sb) { els.push(text('sub', sb, { x:tx, y, w:tw, size:ssize*0.9, weight:500, align:'center', lh:1.3, font:'sans', color:'#006c40', shadow:false })); y += ssize*0.9*1.3*sLines + 0.01*h; }
+      els.push(logoEl({ x:(w-lw)/2, y:y + 0.02*h, w:lw, variant:'color' }));
+    } else if (fr) {
+      // green band: headline inside the band, white logo on the photo half
+      const hs = Math.min(hsize, fr.h*0.42);
+      const inner = hs*1.15 + (sb ? ssize*0.9*1.3*sLines : 0);
+      const bandTextY = fr.y + (fr.h - inner)/2;
+      els.push(text('headline', hl, { x:tx, y:bandTextY, w:tw, size:hs, weight:800, align:'center', lh:1.1, color:textColor, shadow:false }));
+      if (sb) els.push(text('sub', sb, { x:tx, y:bandTextY + hs*1.15, w:tw, size:ssize*0.9, weight:500, align:'center', lh:1.3, font:'sans', color:textColor, shadow:false }));
+      if (fr.top) els.push(logoAt(w/2, h - logoH - 0.06*h, 'full'));
+      else els.push(logoAt(w/2, 0.06*h, 'full'));
+    } else if (pos === 'mid') {
+      let y = (h - block)/2 - 0.03*h;
+      els.push(text('headline', hl, { x:tx, y, w:tw, size:hsize, weight:800, align:'center', lh:1.1, upper:statement, shadow:!onArt }));
+      if (sb) els.push(text('sub', sb, { x:tx, y:y + hsize*1.12*hLines + 0.02*h, w:tw, size:ssize, weight:600, align:'center', lh:1.35, font:'sans', shadow:!onArt }));
+      els.push(logoAt(w/2, h - logoH - 0.07*h));
+    } else if (pos === 'bc') {
+      els.push(logoAt(w/2, 0.07*h));
+      let y = h - 0.09*h - block;
+      els.push(text('headline', hl, { x:tx, y, w:tw, size:hsize, weight:800, align:'center', lh:1.1, upper:statement, shadow:!onArt }));
+      if (sb) els.push(text('sub', sb, { x:tx, y:y + hsize*1.12*hLines + 0.02*h, w:tw, size:ssize, weight:600, align:'center', lh:1.35, font:'sans', shadow:!onArt }));
+    } else if (pos === 'tl') {
+      const tw2 = 0.7*w;
+      els.push(text('headline', hl, { x:m, y:0.08*h, w:tw2, size:hsize, weight:800, align:'left', lh:1.08, upper:statement, shadow:!onArt }));
+      if (sb) els.push(text('sub', sb, { x:m, y:0.08*h + hsize*1.12*hLines + 0.02*h, w:tw2, size:ssize, weight:600, align:'left', lh:1.35, font:'sans', shadow:!onArt }));
+      els.push(logoAt(w/2, h - logoH - 0.07*h));
+    } else {
+      els.push(text('headline', hl, { x:tx, y:0.08*h, w:tw, size:hsize, weight:800, align:'center', lh:1.1, upper:statement, shadow:!onArt }));
+      if (sb) els.push(text('sub', sb, { x:tx, y:0.08*h + hsize*1.12*hLines + 0.02*h, w:tw, size:ssize, weight:600, align:'center', lh:1.35, font:'sans', shadow:!onArt }));
+      els.push(logoAt(w/2, h - logoH - 0.07*h));
+    }
   }
   else if (S.template === 'review') {
-    const q = byId('quote')?.text ?? '\u201CMcMillan rebuilt our 200 HP motor in four days and it has run flawlessly since. Their team knows what downtime costs and they treat it that way.\u201D';
-    const a = byId('attr')?.text ?? '\u2014 Plant Manager, Midwest Foods';
-    const bx = 0.07*w, bw = 0.86*w, by = wide ? 0.10*h : 0.08*h, bh = wide ? 0.66*h : 0.58*h;
-    els.push({ id:'box', type:'box', x:bx, y:by, w:bw, h:bh, fill:'#034226', alpha:0.88, label:'CUSTOMER REVIEW', labelFill:'#00d66b', labelColor:'#034226', kids:['quote','attr'] });
+    const q = byId('quote')?.text ?? '“McMillan has been a dependable partner for our motor programs — realistic lead times, consistent quality, and people who pick up the phone.”';
+    const a = byId('attr')?.text ?? '— OEM engineering manager';
+    const bx = 0.07*w, bw = 0.86*w, by = wide ? 0.10*h : 0.09*h, bh = wide ? 0.66*h : 0.58*h;
+    els.push({ id:'box', type:'box', x:bx, y:by, w:bw, h:bh, fill:'#034226', alpha:0.9, label:'CUSTOMER FEEDBACK', labelFill:'#00d66b', labelColor:'#034226', kids:['quote','attr'] });
     const pad = 0.05*w;
-    els.push(text('quote', q, { x:bx+pad, y:by + (wide? 0.13*h : 0.09*h), w:bw-pad*2, size:40*u*(wide? .8:1), weight:500, align:'left', italic:false, shadow:false, lh:1.3, font:'sans' }));
-    els.push(text('attr', a, { x:bx+pad, y:by+bh - (wide? 0.14*h : 0.09*h), w:bw-pad*2, size:26*u*(wide? .8:1), weight:600, align:'right', italic:false, shadow:false, font:'sans', upper:true, ls:0.08, color:'#00d66b' }));
-    els.push(bottomLogo());
+    els.push(text('quote', q, { x:bx+pad, y:by + (wide? 0.13*h : 0.09*h), w:bw-pad*2, size:40*u*(wide? .8:1), weight:600, align:'left', italic:false, shadow:false, lh:1.3, font:'sans' }));
+    els.push(text('attr', a, { x:bx+pad, y:by+bh - (wide? 0.14*h : 0.09*h), w:bw-pad*2, size:26*u*(wide? .8:1), weight:600, align:'right', italic:false, shadow:false, font:'sans', color:'#00d66b' }));
+    els.push(logoAt(w/2, h - logoH - 0.06*h));
   }
+  // keep a product cutout the user placed (or the generator added)
+  const prod = byId('product'); if (prod) els.push(prod);
   S.els = els;
   S.sel = null;
   applyLook(false);
 }
 function templateDefaults(){
-  // Industrial photos tend to be dark already: moderate tint plus a bottom fade behind the logo.
-  S.bg.fadePos = S.template === 'review' ? 'none' : 'bottom'; S.bg.fade = 0.5; S.bg.fadeSize = 0.5;
-  S.bg.dim = S.template === 'review' ? 0.35 : S.template === 'logo' ? 0.2 : 0.4;
+  // Art backgrounds need no darkening; photos get a light tint. Bands are chosen by the user or the generator.
+  S.bg.fadePos = 'none'; S.bg.fade = 0.45; S.bg.fadeSize = 0.5;
+  S.bg.dim = S.bg.kind === 'photo' ? (S.template === 'review' ? 0.35 : 0.22) : 0;
   const L = LOOKS[S.look];
-  if (L.dim !== null) S.bg.dim = L.dim;
-  if (L.fade) S.bg.fadePos = L.fade;
+  if (L.dim !== null && S.bg.kind === 'photo') S.bg.dim = L.dim;
 }
-// Apply the current look's colors to the text/logo elements. Review box text stays white (it sits on plum).
+// Apply the look: white or bright-green title. Text inside a white band or the quote box is left alone.
 function applyLook(withPhoto){
   const L = LOOKS[S.look];
+  const fr = frameRect(W(), H());
   for (const el of S.els) {
-    if (el.type === 'text') {
-      const inBox = el.id === 'quote' || el.id === 'attr';
-      if (!inBox) { el.color = el.id === 'headline' ? L.accent : L.text; el.shadow = L.shadow; }
-      if (!inBox && (el.id === 'headline' || el.id === 'sub')) el.shade = L.panel ? { style:'box', color:L.shade.color, alpha:L.shade.alpha, size:0.45 } : NO_SHADE();
-    }
+    if (el.type !== 'text') continue;
+    if (el.id === 'quote' || el.id === 'attr') continue;
+    if (fr && fr.white) continue;
+    el.color = el.id === 'headline' ? L.accent : L.text;
+    if (S.bg.kind === 'photo' && !fr) el.shadow = L.shadow;
   }
-  if (withPhoto) { templateDefaults(); if (IMG.bg && !L.dark) autoContrast(false); }
+  if (withPhoto) { templateDefaults(); if (IMG.bg && S.bg.kind === 'photo') autoContrast(false); }
 }
 
 // ---------- text measuring ----------
@@ -462,6 +500,7 @@ function bbox(ctx, el){
     return { x:el.x, y:el.y, w:el.w, h:Math.max(1, lines.length) * el.size * el.lh };
   }
   if (el.type === 'logo') return { x:el.x, y:el.y, w:el.w, h:el.w*logoAspect(el) };
+  if (el.type === 'image') return { x:el.x, y:el.y, w:el.w, h:el.w*imageAspect(el) };
   return { x:el.x, y:el.y, w:el.w, h:el.h };
 }
 // Visible extent of a text block (the widest line), so shading hugs the words rather than the whole text box.
@@ -475,49 +514,89 @@ function textExtent(ctx, el){
 }
 
 // ---------- drawing ----------
-function drawBokeh(w, h){
-  const key = w+'x'+h;
-  if (bokehCache && bokehKey === key) return bokehCache;
-  const c = document.createElement('canvas'); c.width = w; c.height = h;
-  const g = c.getContext('2d');
-  const grad = g.createLinearGradient(0,0,w,h);
-  grad.addColorStop(0,'#1c2a24'); grad.addColorStop(.5,'#3a4a44'); grad.addColorStop(1,'#0f1f18');
-  g.fillStyle = grad; g.fillRect(0,0,w,h);
-  let seed = 7; const rnd = () => (seed = (seed*16807) % 2147483647) / 2147483647;
-  for (let i=0;i<70;i++){
-    const r = (0.03+rnd()*0.11)*Math.max(w,h), x = rnd()*w, y = rnd()*h;
-    const rg = g.createRadialGradient(x,y,r*0.2,x,y,r);
-    const a = 0.10+rnd()*0.25;
-    rg.addColorStop(0,`rgba(180,200,190,${a*0.5})`); rg.addColorStop(0.85,`rgba(180,200,190,${a*0.3})`); rg.addColorStop(1,'rgba(180,200,190,0)');
-    g.fillStyle = rg; g.beginPath(); g.arc(x,y,r,0,Math.PI*2); g.fill();
+// ---------- McMillan backgrounds: generated green art, or a library / uploaded photo ----------
+const ART = { texture:'Textured green', gradient:'Green gradient', circuit:'Circuit board', dark:'Deep green' };
+const artCache = new Map();
+function seeded(seed){ let s = (Math.abs(seed)*9301+49297) % 233280; return () => (s = (s*9301+49297) % 233280) / 233280; }
+function makeArt(style, seed, w, h){
+  const key = style+'|'+seed+'|'+w+'x'+h; if (artCache.has(key)) return artCache.get(key);
+  const c = document.createElement('canvas'); c.width = w; c.height = h; const g = c.getContext('2d'); const rnd = seeded(seed);
+  if (style === 'gradient' || style === 'texture') {
+    const cx = w*(0.3+rnd()*0.4), cy = h*(0.25+rnd()*0.35);
+    const rg = g.createRadialGradient(cx,cy,0,cx,cy,Math.max(w,h)*0.95);
+    rg.addColorStop(0,'#0e8a50'); rg.addColorStop(0.5,'#046b3f'); rg.addColorStop(1,'#03331e');
+    g.fillStyle = rg; g.fillRect(0,0,w,h);
+    // diagonal light streak, like the "INTEGRITY / QUALITY" posts
+    g.save(); g.globalAlpha = 0.14 + rnd()*0.08; g.translate(w/2,h/2); g.rotate(-0.55 - rnd()*0.3);
+    const lg = g.createLinearGradient(0,-h*0.3,0,h*0.3); lg.addColorStop(0,'rgba(255,255,255,0)'); lg.addColorStop(0.5,'rgba(255,255,255,1)'); lg.addColorStop(1,'rgba(255,255,255,0)');
+    g.fillStyle = lg; g.fillRect(-w,-h*0.25,w*2,h*0.5); g.restore();
+  } else if (style === 'dark') {
+    const lg = g.createLinearGradient(0,0,w,h); lg.addColorStop(0,'#075a34'); lg.addColorStop(1,'#021a10'); g.fillStyle = lg; g.fillRect(0,0,w,h);
+  } else {
+    const lg = g.createLinearGradient(0,0,0,h); lg.addColorStop(0,'#0b5a35'); lg.addColorStop(0.5,'#06301c'); lg.addColorStop(1,'#031a0f'); g.fillStyle = lg; g.fillRect(0,0,w,h);
   }
-  bokehCache = c; bokehKey = key; return c;
+  if (style === 'texture') {
+    const n = Math.round(w*h/160);
+    for (let i=0;i<n;i++){ const x = rnd()*w, y = rnd()*h, r = rnd()*1.8+0.4, a = rnd()*0.22; g.fillStyle = rnd()<0.55 ? `rgba(0,0,0,${a})` : `rgba(190,235,205,${a*0.6})`; g.fillRect(x,y,r,r); }
+    for (let i=0;i<50;i++){ const x = rnd()*w, y = rnd()*h, r = (0.04+rnd()*0.22)*w; const rg = g.createRadialGradient(x,y,0,x,y,r); const dark = rnd()<0.6; rg.addColorStop(0, dark?'rgba(0,20,10,0.28)':'rgba(120,220,160,0.10)'); rg.addColorStop(1,'rgba(0,0,0,0)'); g.fillStyle = rg; g.fillRect(x-r,y-r,r*2,r*2); }
+  }
+  if (style === 'circuit') {
+    const unit = Math.round(w/26);
+    g.lineCap = 'round'; g.lineJoin = 'round';
+    for (let i=0;i<80;i++){
+      let x = Math.round(rnd()*w/unit)*unit, y = Math.round(rnd()*h/unit)*unit; const len = 3+Math.floor(rnd()*7);
+      const bright = rnd() < 0.25;
+      g.strokeStyle = bright ? 'rgba(0,214,107,0.55)' : 'rgba(0,214,107,0.15)'; g.lineWidth = bright ? unit*0.09 : unit*0.06;
+      g.shadowColor = bright ? 'rgba(0,214,107,0.6)' : 'transparent'; g.shadowBlur = bright ? unit*0.4 : 0;
+      g.beginPath(); g.moveTo(x,y);
+      let dir = Math.floor(rnd()*4);
+      for (let k=0;k<len;k++){ if (rnd()<0.35) dir = (dir + (rnd()<0.5?1:3)) % 4; const d = unit*(1+Math.floor(rnd()*3)); x += dir===0?d:dir===2?-d:0; y += dir===1?d:dir===3?-d:0; g.lineTo(x,y); }
+      g.stroke();
+      g.shadowBlur = 0; g.fillStyle = bright ? 'rgba(0,214,107,0.85)' : 'rgba(0,214,107,0.35)'; g.beginPath(); g.arc(x,y,unit*0.13,0,Math.PI*2); g.fill();
+    }
+    for (let i=0;i<70;i++){ const x = rnd()*w, y = rnd()*h, r = (0.008+rnd()*0.03)*w; const rg = g.createRadialGradient(x,y,0,x,y,r); const a = 0.08+rnd()*0.3; rg.addColorStop(0,`rgba(140,255,190,${a})`); rg.addColorStop(1,'rgba(140,255,190,0)'); g.fillStyle = rg; g.fillRect(x-r,y-r,r*2,r*2); }
+  }
+  const vg = g.createRadialGradient(w/2,h/2,Math.min(w,h)*0.35,w/2,h/2,Math.max(w,h)*0.8); vg.addColorStop(0,'rgba(0,0,0,0)'); vg.addColorStop(1,'rgba(0,0,0,0.42)'); g.fillStyle = vg; g.fillRect(0,0,w,h);
+  if (artCache.size > 16) artCache.delete(artCache.keys().next().value);
+  artCache.set(key, c); return c;
 }
 function drawPhoto(ctx, w, h, bg){
-  const img = IMG.bg || drawBokeh(w,h);
-  const iw = img.naturalWidth || img.width, ih = img.naturalHeight || img.height;
-  const s = Math.max(w/iw, h/ih) * bg.zoom;
-  const dw = iw*s, dh = ih*s;
+  if (bg.kind !== 'photo' || !IMG.bg) { ctx.drawImage(makeArt(bg.art || 'gradient', bg.seed || 1, w, h), 0, 0); return; }
+  const img = IMG.bg; const iw = img.naturalWidth || img.width, ih = img.naturalHeight || img.height;
+  const s = Math.max(w/iw, h/ih) * bg.zoom; const dw = iw*s, dh = ih*s;
   ctx.drawImage(img, (w-dw)/2 + bg.ox, (h-dh)/2 + bg.oy, dw, dh);
 }
 function hexA(hex, a){ const n = parseInt(hex.slice(1),16); return `rgba(${n>>16&255},${n>>8&255},${n&255},${a})`; }
+// Frames: the solid green or white band McMillan uses to hold the headline (and sometimes the logo).
+const FRAMES = { none:'None', top:'Green top', bottom:'Green bottom', wtop:'White top', wbottom:'White bottom' };
+function frameRect(w, h){
+  const f = S.frame || 'none'; if (f === 'none') return null;
+  const bh = h * (S.bandH || (f.startsWith('w') ? 0.30 : 0.24));
+  return { f, white: f.startsWith('w'), x:0, y: (f === 'top' || f === 'wtop') ? 0 : h - bh, w, h: bh, top: f === 'top' || f === 'wtop' };
+}
 function drawBackground(ctx, w, h){
   drawPhoto(ctx, w, h, S.bg);
-  if (S.bg.dim > 0) { ctx.fillStyle = `rgba(0,0,0,${S.bg.dim})`; ctx.fillRect(0,0,w,h); }
-  const f = S.bg.fade, p = S.bg.fadePos, col = S.bg.fadeColor || '#000000', size = h * (S.bg.fadeSize ?? 0.55);
-  if (f > 0 && p !== 'none') {
-    if (p === 'bottom' || p === 'both') {
-      const g = ctx.createLinearGradient(0, h - size, 0, h);
-      g.addColorStop(0, hexA(col, 0)); g.addColorStop(1, hexA(col, f));
-      ctx.fillStyle = g; ctx.fillRect(0,0,w,h);
-    }
-    if (p === 'top' || p === 'both') {
-      const g = ctx.createLinearGradient(0, size, 0, 0);
-      g.addColorStop(0, hexA(col, 0)); g.addColorStop(1, hexA(col, f*0.85));
-      ctx.fillStyle = g; ctx.fillRect(0,0,w,h);
+  if (S.bg.kind === 'photo') {
+    if (S.bg.dim > 0) { ctx.fillStyle = `rgba(0,0,0,${S.bg.dim})`; ctx.fillRect(0,0,w,h); }
+    const f = S.bg.fade, p = S.bg.fadePos, col = S.bg.fadeColor || '#000000', size = h * (S.bg.fadeSize ?? 0.55);
+    if (f > 0 && p !== 'none') {
+      if (p === 'bottom' || p === 'both') { const g = ctx.createLinearGradient(0, h - size, 0, h); g.addColorStop(0, hexA(col, 0)); g.addColorStop(1, hexA(col, f)); ctx.fillStyle = g; ctx.fillRect(0,0,w,h); }
+      if (p === 'top' || p === 'both') { const g = ctx.createLinearGradient(0, size, 0, 0); g.addColorStop(0, hexA(col, 0)); g.addColorStop(1, hexA(col, f*0.85)); ctx.fillStyle = g; ctx.fillRect(0,0,w,h); }
     }
   }
+  const fr = frameRect(w, h);
+  if (fr) { ctx.fillStyle = fr.white ? '#ffffff' : (S.bandColor || '#034226'); ctx.fillRect(fr.x, fr.y, fr.w, fr.h); }
 }
+// Foreground image (a product cutout from the library) — drawn like a logo, movable and resizable.
+function drawImageEl(ctx, el){
+  const im = IMG.lib[el.src]; if (!im) return;
+  const h = el.w * (im.naturalHeight / im.naturalWidth);
+  ctx.save();
+  if (el.shadow !== false) { ctx.shadowColor = 'rgba(0,0,0,.5)'; ctx.shadowBlur = el.w*0.05; ctx.shadowOffsetY = el.w*0.02; }
+  ctx.drawImage(im, el.x, el.y, el.w, h);
+  ctx.restore();
+}
+function imageAspect(el){ const im = IMG.lib[el.src]; return im ? im.naturalHeight / im.naturalWidth : 1; }
 // Soft feathered rectangle: solid in the middle, fading out at all four edges.
 function softRect(ctx, x, y, w, h, color, alpha){
   if (w < 2 || h < 2) return;
@@ -552,7 +631,7 @@ function drawLogo(ctx, el){
   drawShade(ctx, el.shade, { x:el.x, y:el.y, w:el.w, h });
   ctx.save();
   if (el.shadow !== false) { ctx.shadowColor = 'rgba(0,0,0,.55)'; ctx.shadowBlur = el.w*0.035; ctx.shadowOffsetY = el.w*0.006; }
-  const im = el.variant === 'mark' ? IMG.mark : IMG.logo;
+  const im = logoImg(el);
   if (im) ctx.drawImage(im, el.x, el.y, el.w, h);
   ctx.restore();
 }
@@ -597,6 +676,7 @@ function drawScene(ctx, w, h, forExport){
     if (el.type === 'box') drawBox(ctx, el);
     else if (el.type === 'text') drawText(ctx, el);
     else if (el.type === 'logo') drawLogo(ctx, el);
+    else if (el.type === 'image') drawImageEl(ctx, el);
   }
   if (!forExport && S.sel) {
     const el = byId(S.sel); if (!el) return;
@@ -625,7 +705,7 @@ function fitCanvas(){
   const cw = Math.round(w*s)+'px', ch = Math.round(h*s)+'px';
   if (cv.style.width !== cw) cv.style.width = cw;
   if (cv.style.height !== ch) cv.style.height = ch;
-  $('#dims').textContent = `${w} × ${h} px` + (IMG.src?.kind === 'pexels' ? ` · Photo: ${IMG.src.photographer} / Pexels` : '');
+  $('#dims').textContent = `${w} × ${h} px` + (IMG.src?.kind === 'lib' ? ` · ${IMG.src.file}` : IMG.src?.kind === 'art' ? ` · ${ART[IMG.src.art] || 'Green art'}` : '');
   render();
 }
 let fitRaf = 0;
@@ -651,7 +731,7 @@ function measureLum(){
   return cnt ? tot/cnt : 0.5;
 }
 function autoContrast(announce){
-  if (!IMG.bg) return;
+  if (S.bg.kind !== 'photo' || !IMG.bg) { S.bg.dim = 0; syncControls(); render(); return; }
   const L = LOOKS[S.look];
   const lum = measureLum();
   if (L.dark) {
@@ -659,7 +739,7 @@ function autoContrast(announce){
   } else {
     // bright photo → more darkening & fade; dark photo → almost none
     // house style: a uniform tint of roughly 25-50% depending on how bright the photo is
-    S.bg.dim = Math.round(Math.min(0.5, Math.max(0.2, 0.15 + lum * 0.5)) * 100) / 100;
+    S.bg.dim = Math.round(Math.min(0.45, Math.max(0.1, 0.05 + lum * 0.5)) * 100) / 100;
     S.bg.fade = Math.round(Math.min(0.7, Math.max(0.3, 0.25 + lum * 0.5)) * 100) / 100;
   }
   syncControls(); render();
@@ -722,7 +802,7 @@ cv.addEventListener('pointermove', e => {
     el.x = ax <= b0.x+1 ? ax : ax-nw;
     el.y = ay <= b0.y+1 ? ay : ay-nh;
     if (el.type === 'text') { el.w = drag.w0*f; el.size = Math.max(8, drag.size0*f); }
-    else if (el.type === 'logo') el.w = drag.w0*f;
+    else if (el.type === 'logo' || el.type === 'image') el.w = drag.w0*f;
     else { el.w = drag.w0*f; el.h = drag.h0*f; }
   }
   render();
@@ -749,7 +829,7 @@ document.addEventListener('keydown', e => {
 });
 
 // ---------- undo ----------
-function snapshot(){ return JSON.stringify({ template:S.template, size:S.size, textPos:S.textPos, look:S.look, bg:S.bg, els:S.els }); }
+function snapshot(){ return JSON.stringify({ template:S.template, size:S.size, textPos:S.textPos, look:S.look, frame:S.frame, bandColor:S.bandColor, bg:S.bg, els:S.els }); }
 function pushUndo(){ undo.push(snapshot()); if (undo.length > 60) undo.shift(); $('#undoBtn').disabled = false; }
 function doUndo(){
   const snap = undo.pop(); if (!snap) return;
@@ -762,13 +842,13 @@ $('#undoBtn').disabled = true;
 
 // ---------- controls ----------
 function setTemplate(t){
-  pushUndo(); S.template = t; templateDefaults(); layout(); if (IMG.bg && !LOOKS[S.look].dark) autoContrast(false);
+  pushUndo(); S.template = t; templateDefaults(); layout(); if (IMG.bg && S.bg.kind === 'photo') autoContrast(false);
   syncControls(); renderInspector(); render();
-  if (apiKey) { $('#q').value = DEFAULT_QUERY[t]; search(true); }
 }
 $('#tiles').addEventListener('click', e => { const b = e.target.closest('.tile'); if (b) { setTemplate(b.dataset.t); persist(); } });
 $('#size').addEventListener('change', e => { pushUndo(); S.size = e.target.value; S.bg.ox = S.bg.oy = 0; layout(); renderInspector(); fitCanvas(); persist(); });
 $('#textPos').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; pushUndo(); S.textPos = b.dataset.v; templateDefaults(); layout(); syncControls(); renderInspector(); render(); persist(); });
+$('#frameSeg').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; pushUndo(); S.frame = b.dataset.v; templateDefaults(); layout(); syncControls(); renderInspector(); render(); persist(); });
 $('#fadePos').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; S.bg.fadePos = b.dataset.v; syncControls(); render(); });
 $('#resetBtn').addEventListener('click', () => { pushUndo(); S.bg.ox = S.bg.oy = 0; S.bg.zoom = 1; templateDefaults(); layout(); syncControls(); renderInspector(); render(); toast('Layout reset'); });
 $('#dim').addEventListener('input', e => { S.bg.dim = e.target.value/100; render(); });
@@ -795,7 +875,12 @@ function syncControls(){
   document.querySelectorAll('#textPos button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === S.textPos)));
   document.querySelectorAll('#fadePos button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === S.bg.fadePos)));
   document.querySelectorAll('#looks .look').forEach((b,i) => b.setAttribute('aria-pressed', String(Object.keys(LOOKS)[i] === S.look)));
-  $('#textPosRow').style.display = (S.template === 'headline' || S.template === 'event') ? '' : 'none';
+  $('#textPosRow').style.display = (S.template === 'headline' || S.template === 'event') && (S.frame||'none') === 'none' ? '' : 'none';
+  document.querySelectorAll('#frameSeg button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === (S.frame||'none'))));
+  renderArtChips();
+  const isPhoto = S.bg.kind === 'photo';
+  ['dim','zoom','fade','fadeSize'].forEach(id => { const n = document.getElementById(id); if (n) n.closest('.row').style.opacity = isPhoto ? '' : '.4'; });
+  $('#adjHint').hidden = isPhoto;
   $('#size').value = S.size;
   $('#dim').value = Math.round(S.bg.dim*100);
   $('#fade').value = Math.round(S.bg.fade*100);
@@ -884,17 +969,22 @@ function renderInspector(){
     box.append(row('Weight', seg([[400,'Light'],[600,'Medium'],[700,'Bold']], ()=>el.weight, v=>el.weight=v)));
     box.append(chk('Soft shadow (helps on busy photos)', ()=>el.shadow, v=>el.shadow=v));
     box.append(chk('ALL CAPS', ()=>el.upper, v=>el.upper=v));
-    box.append(row('Font', seg([['serif','McMillan serif'],['sans','Clean sans']], ()=>el.font||'serif', v=>el.font=v)));
+    box.append(row('Font', seg([['serif','Bold (Montserrat)'],['sans','Regular (Open Sans)']], ()=>el.font||'serif', v=>el.font=v)));
     box.append(row('Tracking', h('input',{type:'range',min:0,max:30,value:Math.round((el.ls||0)*100),oninput:change(e=>{guard();el.ls=e.target.value/100;})})));
     if (el.align === 'center') box.append(chk('Divider lines beside first line', ()=>!!el.rules, v=>el.rules=v));
     shadeControls('this text');
   }
   else if (el.type === 'logo') {
-    box.append(row('Logo', seg([['full','Full logo'],['mark','M mark']], ()=>el.variant||'full', v=>el.variant=v)));
+    box.append(row('Logo', seg([['full','White'],['color','Color'],['mark','M mark']], ()=>el.variant||'full', v=>el.variant=v)));
     box.append(row('Width', h('input',{type:'range',id:'insp-width',min:Math.round(W()*0.1),max:Math.round(W()*0.95),value:Math.round(el.w),oninput:change(e=>{guard();el.w=+e.target.value;})})));
     box.append(chk('Drop shadow', ()=>el.shadow!==false, v=>el.shadow=v));
     shadeControls('logo');
     box.append(h('p',{class:'hint',style:'margin-top:8px'},'Tip: “Auto-adjust” in Photo adjustments sets Darken/Fade for this photo.'));
+  }
+  else if (el.type === 'image') {
+    box.append(h('p',{class:'hint',style:'margin-bottom:8px'}, 'Product image from the McMillan library. Drag to move, corners to resize.'));
+    box.append(row('Width', h('input',{type:'range',id:'insp-width',min:Math.round(W()*0.1),max:W(),value:Math.round(el.w),oninput:change(e=>{guard();el.w=+e.target.value;})})));
+    box.append(chk('Drop shadow', ()=>el.shadow!==false, v=>el.shadow=v));
   }
   else if (el.type === 'box') {
     box.append(h('div',{class:'field'}, h('label',{},'Label'), h('input',{type:'text',value:el.label,oninput:change(e=>{guard();el.label=e.target.value;})})));
@@ -919,138 +1009,114 @@ $('#addText').addEventListener('click', () => {
   setTimeout(() => { const t = $('#insp-text'); if (t) { t.focus(); t.select(); } }, 0);
 });
 
-// ---------- photo memory (favorites + recently used) ----------
+// ---------- McMillan image library (their own photos; no stock search) ----------
+// mcmillan/library/manifest.json lists every image: { "images": [ { "file": "shop-01.jpg", "kind": "shop", "tags": ["winding"] } ] }
+// kinds: product (cutout on white/transparent), shop, team, event, application, other
+const KINDS = { all:'All', product:'Products', shop:'Shop', team:'Team', event:'Events', application:'Applications', other:'Other' };
+let LIB = [];            // [{file, kind, tags, url, id}]
+let libKind = 'all';
+IMG.lib = {};            // url -> Image (loaded on demand)
 function loadPhotoMem(){ try { const o = JSON.parse(localStorage.getItem(LS.photos)||'null'); if (o && o.used) photoMem = o; } catch {} }
 function savePhotoMem(){ try { localStorage.setItem(LS.photos, JSON.stringify(photoMem)); } catch {} }
-function photoRec(p){ return { id:p.id, tiny:p.src?.tiny || p.tiny, url:p.src?.large2x || p.url, photographer:p.photographer, alt:p.alt||'' }; }
+async function loadLibrary(){
+  try {
+    const r = await fetch('library/manifest.json', { cache:'no-store' });
+    if (!r.ok) throw new Error('no manifest');
+    const j = await r.json();
+    LIB = (j.images || []).map(x => ({ id:x.file, file:x.file, kind:x.kind || 'other', tags:x.tags || [], url:'library/' + x.file, tiny:'library/' + (x.thumb || x.file), photographer:'McMillan' }));
+  } catch { LIB = []; }
+  renderResults();
+}
+function libImage(url){
+  return new Promise((res, rej) => {
+    if (IMG.lib[url]) return res(IMG.lib[url]);
+    const im = new Image(); im.onload = () => { IMG.lib[url] = im; res(im); }; im.onerror = rej; im.src = url;
+  });
+}
 function markUsed(){
   learnFromCurrent();
-  if (IMG.src?.kind !== 'pexels') return;
-  const r = photoMem.used[IMG.src.id] || Object.assign({}, IMG.src, { count:0 });
+  const rec = IMG.src && IMG.src.kind === 'lib' ? IMG.src : null;
+  if (!rec) return;
+  const r = photoMem.used[rec.id] || Object.assign({}, rec, { count:0 });
   r.count = (r.count||0) + 1; r.lastUsed = Date.now();
-  photoMem.used[IMG.src.id] = r;
-  // keep the 60 most recent
+  photoMem.used[rec.id] = r;
   const ids = Object.keys(photoMem.used).sort((a,b) => photoMem.used[b].lastUsed - photoMem.used[a].lastUsed);
-  ids.slice(60).forEach(id => delete photoMem.used[id]);
+  ids.slice(80).forEach(id => delete photoMem.used[id]);
   savePhotoMem();
 }
 function toggleFav(rec){
   if (photoMem.favs[rec.id]) delete photoMem.favs[rec.id]; else photoMem.favs[rec.id] = Object.assign({}, rec, { addedAt:Date.now() });
   savePhotoMem(); renderResults();
 }
-function usedLabel(id){
-  const r = photoMem.used[id]; if (!r) return '';
-  return 'Used ' + new Date(r.lastUsed).toLocaleDateString(undefined, { month:'short', year:'2-digit' });
-}
-
-// ---------- photo screening ----------
-const LEARN_KEY = 'mcm-learn-v1';
-let learn = { term:{}, look:{}, textPos:{}, shade:{}, fadePos:{} };
-try { const o = JSON.parse(localStorage.getItem(LEARN_KEY)||'null'); if (o && o.term) learn = o; } catch {}
-// Pexels matches loosely, so every result is checked against its own description before it can be used.
-const BLOCK_WORDS = [
-  'cat','kitten','dog','puppy','pet','bird','horse','cow','goat','sheep','pig','chicken','duck','rabbit','fish','insect','butterfly','squirrel','deer','wildlife','zoo','animal',
-  'hospital','patient','sick','ill','illness','disease','nurse','doctor','medical','medicine','pill','syringe','iv','oxygen','wheelchair','bandage','clinic','surgery','stethoscope','mask','dying','death','dead','corpse','coffin','casket','grave','cemetery','graveyard','tombstone','headstone','skull','skeleton','bone','blood',
-  'bed','bedroom','pillow','sleeping','asleep','nap','lying','rust','broken','fire','explosion','smoke','pollution','garbage','trash','chainsaw','lawn','garden','yard','feet','sandal','flip flop','barefoot','home repair','diy',
-  'money','cash','coin','wallet','purse','credit card','bucket','motorcycle','bicycle','airplane','smartphone','headphones','gun','knife','weapon','toy car','model',
-  'party','birthday','balloon','confetti','beer','wine','cocktail','alcohol','bar','cigarette','smoking','vape','bikini','swimsuit','gym','fitness','workout','yoga','selfie','dance','concert','festival',
-  'baby','infant','newborn','toddler','kid','kids','child','children','boy','girl','teen','student','classroom','school',
-  'halloween','costume','clown','zombie','mannequin','doll','toy','cartoon','graffiti','tattoo',
-];
-const STOP = new Set(['a','an','the','of','in','on','at','with','and','soft','light','warm','background','looking','up','through','dark','morning','evening','sunset','sunrise']);
-function userAvoid(){ return (learn.avoid || '').split(',').map(w => w.trim().toLowerCase()).filter(Boolean); }
-function blockedBy(alt){
-  const a = ' ' + (alt || '').toLowerCase().replace(/[^a-z0-9 ]+/g, ' ') + ' ';
-  for (const w of [...BLOCK_WORDS, ...userAvoid()]) if (a.includes(' ' + w + ' ') || a.includes(' ' + w + 's ')) return w;
-  return null;
-}
-function relevant(alt, term){
-  const a = (alt || '').toLowerCase();
-  const keys = term.toLowerCase().split(/\s+/).filter(k => k.length > 2 && !STOP.has(k));
-  return keys.some(k => a.includes(k.replace(/s$/, '')));
-}
-let lastSkipped = 0;
-function screen(list, term){
-  const ok = [];
-  lastSkipped = 0;
-  for (const p of list) { if (blockedBy(p.alt)) { lastSkipped++; continue; } ok.push(p); }
-  return term ? ok.filter(p => !p.alt || relevant(p.alt, term)).concat(ok.filter(p => p.alt && !relevant(p.alt, term))) : ok;
-}
-$('#rulesToggle').addEventListener('click', () => { $('#rulesBox').hidden = !$('#rulesBox').hidden; $('#avoidWords').value = learn.avoid || ''; });
-$('#avoidWords').addEventListener('change', e => { learn.avoid = e.target.value; try { localStorage.setItem(LEARN_KEY, JSON.stringify(learn)); } catch {} toast('Saved — applies to the next search'); });
-
-// ---------- photo search (Pexels) ----------
-function orientation(){ const [w,h] = SIZES[S.size]; return w > h ? 'landscape' : w < h ? 'portrait' : 'square'; }
-async function fetchPhotos(term, pg){
-  const url = `https://api.pexels.com/v1/search?query=${encodeURIComponent(term)}&per_page=18&page=${pg}&orientation=${orientation()}`;
-  const r = await fetch(url, { headers:{ Authorization: apiKey } });
-  if (r.status === 401) { $('#keyBox').hidden = false; throw new Error('The photo key was rejected'); }
-  if (!r.ok) throw new Error('HTTP '+r.status);
-  return (await r.json()).photos.map(photoRec);
-}
-async function search(fresh){
-  setTab('search');
-  if (!apiKey) { $('#keyBox').hidden = false; $('#apiKey').focus(); $('#rstatus').textContent = 'Add the photo key above to search.'; return; }
-  const base = $('#q').value.trim();
-  if (!base) { $('#rstatus').textContent = 'Type what you’re looking for, then press Search.'; $('#q').focus(); return; }
-  if (fresh || base !== lastQuery) { page = 1; results = []; }
-  lastQuery = base;
-  $('#rstatus').textContent = 'Searching…';
-  try {
-    const raw = await fetchPhotos(base, page);
-    const photos = screen(raw, null);
-    results = page === 1 ? photos : results.concat(photos);
-    results.more = raw.length === 18;
-    $('#skippedNote').textContent = lastSkipped ? `${lastSkipped} photo${lastSkipped===1?'':'s'} hidden by the photo rules on this page.` : '';
-    renderResults();
-    $('#rstatus').textContent = results.length ? `${results.length} photos for “${base}”` : 'No photos found — try different words.';
-  } catch (err) {
-    console.error('Photo search failed', err);
-    const isFile = location.protocol === 'file:';
-    const isSafari = /safari/i.test(navigator.userAgent) && !/chrome|crios|android/i.test(navigator.userAgent);
-    let why = 'Photo search couldn’t connect';
-    if (isFile && isSafari) why += ' — Safari blocks this when the file is opened directly. Open this file in Chrome instead.';
-    else if (isFile) why += ' — try opening the file in Chrome.';
-    else why += ' — check the internet connection and try again.';
-    $('#rstatus').textContent = why + ' (' + (err && err.message ? err.message : err) + ')';
-  }
-}
+function usedLabel(id){ const r = photoMem.used[id]; return r ? 'Used ' + new Date(r.lastUsed).toLocaleDateString(undefined, { month:'short', year:'2-digit' }) : ''; }
+let tab = 'lib';
 function setTab(t){ tab = t; document.querySelectorAll('#tabs button').forEach(b => b.setAttribute('aria-selected', String(b.dataset.tab === t))); }
 $('#tabs').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; setTab(b.dataset.tab); renderResults(); });
+function renderKindChips(){
+  const box = $('#kindChips'); box.innerHTML = '';
+  const present = new Set(LIB.map(p => p.kind));
+  for (const [k,l] of Object.entries(KINDS)) { if (k !== 'all' && !present.has(k)) continue; box.append(h('button',{class:'chip','aria-pressed':String(k===libKind),onclick:()=>{ libKind = k; renderResults(); }}, l)); }
+}
 function renderResults(){
   const box = $('#results'); box.innerHTML = '';
-  let list, more = false;
-  if (tab === 'favs') { list = Object.values(photoMem.favs).sort((a,b) => b.addedAt - a.addedAt); $('#rstatus').textContent = list.length ? `${list.length} favorite${list.length===1?'':'s'}` : 'No favorites yet — hover a photo and click ☆ to save it here.'; }
-  else if (tab === 'recent') { list = Object.values(photoMem.used).sort((a,b) => b.lastUsed - a.lastUsed); $('#rstatus').textContent = list.length ? 'Photos you’ve downloaded graphics with, newest first' : 'Nothing yet — photos show up here after you download a graphic using them.'; }
-  else { list = results; more = !!results.more; }
+  let list;
+  if (tab === 'favs') { list = Object.values(photoMem.favs).sort((a,b) => b.addedAt - a.addedAt); $('#rstatus').textContent = list.length ? `${list.length} favorite${list.length===1?'':'s'}` : 'No favorites yet — hover an image and click ☆.'; }
+  else if (tab === 'recent') { list = Object.values(photoMem.used).sort((a,b) => b.lastUsed - a.lastUsed); $('#rstatus').textContent = list.length ? 'Images you’ve downloaded graphics with, newest first' : 'Nothing yet — images show up here after you download a graphic using them.'; }
+  else {
+    renderKindChips();
+    list = LIB.filter(p => libKind === 'all' || p.kind === libKind);
+    $('#rstatus').textContent = LIB.length ? `${list.length} image${list.length===1?'':'s'} in the McMillan library` : 'The image library is empty — ask Alexia to add McMillan’s photos. You can still upload one below.';
+  }
+  $('#kindChips').hidden = tab !== 'lib';
   for (const p of list) {
-    const d = h('div',{class:'res',title:(p.alt||'')+' — '+p.photographer,'aria-pressed':String(IMG.src?.id===p.id),role:'button',tabindex:'0',onclick:()=>usePhoto(p),onkeydown:e=>{ if (e.key==='Enter') usePhoto(p); }},
-      h('img',{src:p.tiny,alt:p.alt||'',loading:'lazy'}),
+    const d = h('div',{class:'res',title:(p.tags||[]).join(', ') || p.file,'aria-pressed':String(IMG.src?.id===p.id || byId('product')?.src === p.url),role:'button',tabindex:'0',onclick:()=>usePhoto(p),onkeydown:e=>{ if (e.key==='Enter') usePhoto(p); }},
+      h('img',{src:p.tiny,alt:'',loading:'lazy'}),
       h('button',{class:'star',title:photoMem.favs[p.id]?'Remove from favorites':'Add to favorites','aria-pressed':String(!!photoMem.favs[p.id]),onclick:e=>{ e.stopPropagation(); toggleFav(p); }}, photoMem.favs[p.id] ? '★' : '☆'));
-    const u = usedLabel(p.id); if (u) d.append(h('span',{class:'used'}, u));
+    if (p.kind === 'product') d.append(h('span',{class:'used'}, 'Product'));
+    else { const u = usedLabel(p.id); if (u) d.append(h('span',{class:'used'}, u)); }
     box.append(d);
   }
-  if (more) box.append(h('button',{class:'more',onclick:()=>{ page++; search(false); }},'Show more'));
 }
+// Clicking a library image: products become a cutout on top of the art; everything else becomes the background.
 async function usePhoto(p){
   $('#loading').classList.add('show');
   try {
-    const img = new Image(); img.crossOrigin = 'anonymous';
-    await new Promise((res, rej) => { img.onload = res; img.onerror = rej; img.src = p.url; });
+    const im = await libImage(p.url);
     pushUndo();
-    IMG.bg = img; IMG.src = Object.assign({ kind:'pexels' }, p);
-    S.bg.ox = S.bg.oy = 0; S.bg.zoom = 1; $('#zoom').value = 100;
-    autoContrast(false);
-    renderResults(); fitCanvas();
-  } catch { toast('Couldn’t load that photo — try another'); }
+    if (p.kind === 'product') {
+      addProduct(p, im);
+    } else {
+      IMG.bg = im; IMG.src = Object.assign({ kind:'lib' }, p);
+      S.bg.kind = 'photo'; S.bg.ox = S.bg.oy = 0; S.bg.zoom = 1; $('#zoom').value = 100;
+      templateDefaults(); layout(); autoContrast(false);
+    }
+    syncControls(); renderInspector(); renderResults(); fitCanvas();
+  } catch { toast('Couldn’t load that image'); }
   finally { $('#loading').classList.remove('show'); }
 }
-$('#searchBtn').addEventListener('click', () => search(true));
-$('#q').addEventListener('keydown', e => { if (e.key === 'Enter') search(true); });
-$('#keyToggle').addEventListener('click', () => { $('#keyBox').hidden = !$('#keyBox').hidden; });
-function setKey(k){ apiKey = k.trim() || BUILT_IN_KEY; persist(); if (apiKey) { $('#keyBox').hidden = true; toast('Photo key saved'); if (!$('#q').value.trim()) $('#q').value = DEFAULT_QUERY[S.template]; search(true); } }
-$('#saveKey').addEventListener('click', () => setKey($('#apiKey').value));
-
+function addProduct(p, im){
+  const w = W(), h = H(); const aspect = im.naturalHeight / im.naturalWidth;
+  let el = byId('product');
+  if (!el) { el = { id:'product', type:'image', src:p.url, x:0, y:0, w:0, shadow:true }; S.els.push(el); }
+  el.src = p.url;
+  // default: large, lower half, leaving the top for the headline
+  el.w = Math.min(0.62*w, (0.5*h)/aspect); el.x = (w - el.w)/2; el.y = h - el.w*aspect - 0.16*h;
+  if (S.bg.kind !== 'photo') { /* keep art */ } else { S.bg.kind = 'art'; }
+  // logo stays on top of the image stack
+  const li = S.els.findIndex(e => e.type === 'logo'); if (li >= 0) { const l = S.els.splice(li,1)[0]; S.els.push(l); }
+}
+function setArt(style, newSeed){
+  pushUndo();
+  S.bg.kind = 'art'; S.bg.art = style || S.bg.art || 'gradient';
+  if (newSeed || !S.bg.seed) S.bg.seed = Math.floor(Math.random()*100000) + 1;
+  IMG.src = { kind:'art', art:S.bg.art, seed:S.bg.seed };
+  templateDefaults(); layout(); syncControls(); renderInspector(); renderResults(); render(); persist();
+}
+function renderArtChips(){
+  const box = $('#artChips'); box.innerHTML = '';
+  for (const [k,l] of Object.entries(ART)) box.append(h('button',{class:'chip','aria-pressed':String(S.bg.kind !== 'photo' && S.bg.art === k),onclick:()=>setArt(k, true)}, l));
+  box.append(h('button',{class:'btn sm',title:'Same style, different variation',onclick:()=>setArt(S.bg.art, true)}, '↻ Variation'));
+}
 
 // ---------- own photo ----------
 function loadImageFile(file){
@@ -1066,8 +1132,8 @@ async function setBg(file){
     const { img } = await loadImageFile(file);
     pushUndo();
     IMG.bg = img; IMG.src = { kind:'own', data: shrinkForStorage(img) };
-    S.bg.ox = S.bg.oy = 0; S.bg.zoom = 1; $('#zoom').value = 100;
-    autoContrast(false); fitCanvas(); toast('Photo added');
+    S.bg.kind = 'photo'; S.bg.ox = S.bg.oy = 0; S.bg.zoom = 1; $('#zoom').value = 100;
+    templateDefaults(); layout(); autoContrast(false); syncControls(); renderInspector(); fitCanvas(); toast('Photo added');
   } catch { toast('That file isn’t an image'); }
 }
 // Own photos are stored in drafts as a 1600px JPEG so they fit in browser storage.
@@ -1109,7 +1175,7 @@ function thumb(){
 }
 function currentDraft(){
   return { id: currentDraftId || ('d'+Date.now().toString(36)), name: draftName(), savedAt: Date.now(), thumb: thumb(),
-           state: { template:S.template, size:S.size, textPos:S.textPos, look:S.look, bg:clone(S.bg), els:clone(S.els) }, photo: IMG.src ? clone(IMG.src) : null };
+           state: { template:S.template, size:S.size, textPos:S.textPos, look:S.look, frame:S.frame, bandColor:S.bandColor, bg:clone(S.bg), els:clone(S.els) }, photo: IMG.src ? clone(IMG.src) : null };
 }
 function saveDraft(){
   const d = currentDraft();
@@ -1122,16 +1188,14 @@ async function openDraft(d, asCopy){
   Object.assign(S, clone(d.state)); S.sel = null;
   currentDraftId = asCopy ? null : d.id;
   IMG.bg = null; IMG.src = null;
-  if (d.photo) {
-    $('#loading').classList.add('show');
-    try {
-      const img = new Image();
-      if (d.photo.kind === 'pexels') img.crossOrigin = 'anonymous';
-      await new Promise((res, rej) => { img.onload = res; img.onerror = rej; img.src = d.photo.kind === 'pexels' ? d.photo.url : d.photo.data; });
-      IMG.bg = img; IMG.src = clone(d.photo);
-    } catch { toast('The photo for this draft couldn’t be loaded'); }
-    finally { $('#loading').classList.remove('show'); }
-  }
+  $('#loading').classList.add('show');
+  try {
+    if (d.photo && d.photo.kind === 'lib') { IMG.bg = await libImage(d.photo.url); IMG.src = clone(d.photo); }
+    else if (d.photo && d.photo.kind === 'own') { const img = new Image(); await new Promise((res, rej) => { img.onload = res; img.onerror = rej; img.src = d.photo.data; }); IMG.bg = img; IMG.src = clone(d.photo); }
+    else if (d.photo) IMG.src = clone(d.photo);
+    const pr = byId('product'); if (pr) await libImage(pr.src);
+  } catch { toast('An image for this draft couldn’t be loaded'); }
+  finally { $('#loading').classList.remove('show'); }
   syncControls(); renderInspector(); renderResults(); fitCanvas(); renderDrafts();
   toast(asCopy ? 'Opened a copy — save it to keep it as its own draft' : `Opened “${d.name}”`);
 }
@@ -1175,24 +1239,16 @@ $('#saveBtn').addEventListener('click', saveDraft);
 
 // ---------- persistence (per device) ----------
 function persist(){
-  try { localStorage.setItem(LS.prefs, JSON.stringify({ template:S.template, size:S.size, textPos:S.textPos, look:S.look, apiKey })); } catch {}
+  try { localStorage.setItem(LS.prefs, JSON.stringify({ template:S.template, size:S.size, textPos:S.textPos, look:S.look })); } catch {}
 }
 function restore(){
   let o = null; try { o = JSON.parse(localStorage.getItem(LS.prefs)||'null'); } catch {}
   if (!o) return;
   if (SIZES[o.size]) S.size = o.size;
   if (['logo','headline','event','review'].includes(o.template)) S.template = o.template;
-  if (['tc','tl','tr','mid'].includes(o.textPos)) S.textPos = o.textPos;
+  if (['tc','tl','bc','mid'].includes(o.textPos)) S.textPos = o.textPos;
   if (LOOKS[o.look]) S.look = o.look;
-  if (typeof o.apiKey === 'string' && o.apiKey) apiKey = o.apiKey;
 }
-// A setup link (…/#key=XXXX) stores the key and cleans the address bar.
-function keyFromLink(){
-  const m = location.hash.match(/[#&]key=([A-Za-z0-9_-]+)/);
-  if (m) { apiKey = m[1]; persist(); history.replaceState(null, '', location.pathname + location.search); return true; }
-  return false;
-}
-
 // ---------- export ----------
 function filename(size){
   const base = (S.template === 'headline' || S.template === 'event') ? (byId('headline')?.text || 'headline') : S.template === 'review' ? 'featured-review' : 'logo';
@@ -1243,8 +1299,9 @@ $('#dlAllBtn').addEventListener('click', async () => {
       layout(); carryStyle(fromEls, S.els);
       const [w,hh] = SIZES[size];
       for (const ex of extras) S.els.push(Object.assign(clone(ex), { x: ex.x/w0*w, y: ex.y/h0*hh, w: ex.w/w0*w, size: ex.size*Math.min(w/w0, hh/h0) }));
+      const pr = byId('product'), pr0 = fromEls.find(e => e.id === 'product'); if (pr && pr0) { pr.w = pr0.w/w0*w; pr.x = pr0.x/w0*w; pr.y = pr0.y/h0*hh; }
       S.bg = Object.assign(clone(fromBg), { ox:0, oy:0, zoom:1 });
-      if (IMG.bg && !LOOKS[S.look].dark) autoContrast(false);
+      if (IMG.bg && S.bg.kind === 'photo') autoContrast(false);
       const blob = await renderBlob();
       zip.file(filename(size), blob);
     }
@@ -1259,58 +1316,54 @@ $('#dlAllBtn').addEventListener('click', async () => {
   }
 });
 
-// ---------- Generate (randomizer) ----------
-// Photo searches per template, plus a seasonal set. Chosen at random, weighted by what has been downloaded before.
+// ---------- Generate (randomizer) — McMillan ----------
 const _m = new Date().getMonth();
-const SEASON = [];
-// Starting pools for McMillan (industrial / B2B). Calibrate against their past posts.
-const MOTORS   = [['industrial electric motor',3],['electric motor closeup',3],['copper winding coil',2],['motor stator rotor',2],['industrial pump motor',2]];
-const SHOP     = [['industrial workshop machinery',3],['machine shop lathe',2],['cnc machine precision',2],['metal grinding sparks',2],['industrial workshop dark',2],['welding sparks industrial',1]];
-const PEOPLE   = [['engineer inspecting machine',3],['technician industrial equipment',3],['engineer hard hat factory',2],['worker safety glasses machine',2],['engineer tablet factory floor',2],['handshake industrial',1]];
-const PLANT    = [['manufacturing plant floor',3],['factory interior industrial',2],['industrial facility exterior',1],['warehouse industrial shelves',1],['power plant turbine',1]];
-const DETAIL   = [['gears machinery closeup',2],['industrial bearings steel',2],['electrical control panel',2],['steel texture dark',1],['brushed metal background',1],['blueprint engineering drawing',1]];
-const POOLS = {
-  logo:     [...MOTORS, ...SHOP, ...DETAIL, ...PLANT.slice(0,2)],
-  headline: [...MOTORS, ...SHOP, ...PEOPLE, ...PLANT, ...DETAIL],
-  event:    [...PLANT, ...PEOPLE, ...SHOP.slice(0,3)],
-  review:   [...DETAIL, ...SHOP.slice(0,4), ...MOTORS.slice(0,2)],
-};
+const LEARN_KEY = 'mcm-learn-v1';
+let learn = { look:{}, textPos:{}, frame:{}, art:{}, bgKind:{}, sub:{}, subTopic:{} };
+try { const o = JSON.parse(localStorage.getItem(LEARN_KEY)||'null'); if (o && o.look) learn = o; } catch {}
 function bump(kind, key){ if (!key) return; if (!learn[kind]) learn[kind] = {}; learn[kind][key] = (learn[kind][key]||0) + 1; try { localStorage.setItem(LEARN_KEY, JSON.stringify(learn)); } catch {} }
 function learnFromCurrent(){
-  bump('look', S.look); bump('fadePos', S.bg.fadePos);
+  bump('look', S.look); bump('frame', S.frame || 'none'); bump('bgKind', S.bg.kind || 'art');
+  if (S.bg.kind !== 'photo') bump('art', S.bg.art);
   if (S.template === 'headline' || S.template === 'event') bump('textPos', S.textPos);
-  const hl0 = byId('headline'); if (hl0) bump('rules', hl0.rules ? 'on' : 'off');
-  const sb0 = byId('sub'); if (sb0 && sb0.text && S.template === 'headline') { bump('sub', sb0.text.trim()); learn.subTopic = learn.subTopic || {}; learn.subTopic[sb0.text.trim()] = detectTopic(hl0?.text || '') || 'custom'; }
-  const hl = byId('headline'); if (hl && hl.shade) bump('shade', hl.shade.style);
-  if (IMG.src?.term) bump('term', IMG.src.term);
+  const hl0 = byId('headline'), sb0 = byId('sub');
+  if (sb0 && sb0.text && S.template === 'headline') { bump('sub', sb0.text.trim()); learn.subTopic = learn.subTopic || {}; learn.subTopic[sb0.text.trim()] = detectTopic((hl0?.text || '') + ' ' + sb0.text) || 'quality'; }
 }
-// Weighted random: base weight × (1 + times it was chosen before), so favorites drift upward without locking in.
+// Weighted random: base weight × (1 + times chosen before), so what gets downloaded drifts upward.
 function pick(options, kind){
   const weights = options.map(([v,w]) => w * (1 + (learn[kind]?.[v]||0)));
   let r = Math.random() * weights.reduce((a,b)=>a+b, 0);
   for (let i=0;i<options.length;i++) { r -= weights[i]; if (r <= 0) return options[i][0]; }
   return options[options.length-1][0];
 }
-// ---------- phrase bank (house voice, seeded from the 2026 posts) ----------
+
+// ---------- phrase bank: McMillan's voice, seeded from the July–September 2026 posts ----------
 const BANK = {
-  repair:  { label:'Motor Repair',      heads:['Motor Repair','Emergency Repair','Back Online Fast'],
-             subs:['back up and running fast','downtime costs \u2014 we move quickly','diagnosed, repaired, tested','24/7 emergency service','we fix what stops production'] },
-  rewind:  { label:'Rewinding',         heads:['Motor Rewinding','Rebuilt Right','Rewound to Spec'],
-             subs:['restored to factory specifications','precision rewinding, every time','tested before it leaves our shop','longer life, lower energy use','quality you can measure'] },
-  custom:  { label:'Custom Motors',     heads:['Custom Motors','Built to Spec','Engineered for You'],
-             subs:['designed around your application','precision electric motors since day one','from prototype to production','when off-the-shelf won\u2019t do','built to your exact requirements'] },
-  maint:   { label:'Maintenance',       heads:['Preventive Maintenance','Predictive Service','Keep It Running'],
-             subs:['catch problems before downtime','scheduled service, fewer surprises','vibration analysis & testing','protect your equipment investment','planned today, running tomorrow'] },
-  team:    { label:'Team & Hiring',     heads:['We\u2019re Hiring','Meet the Team','Skilled Hands'],
-             subs:['join the McMillan team','careers in precision manufacturing','experience that shows in the work','apprentice to expert','people who take pride in the craft'] },
-  thanks:  { label:'Thank you',         heads:['Thank You','Trusted Partners'],
-             subs:['for trusting us with your equipment','proud to keep your plant running','partners in uptime','your business means a great deal to us'] },
+  values:  { label:'Values',        heads:['INTEGRITY:','QUALITY:','EXCELLENCE:','POSITIVE ATTITUDE & DOER:','RELIABILITY:','PARTNERSHIP:'],
+             subs:{ 'INTEGRITY:':['Telling the truth about what we can do and when we can deliver it.','Saying what we’ll do, then doing it.'],
+                    'QUALITY:':['Investing in people, systems, and testing so motors do their job quietly for years.','Built to run, not to be replaced.'],
+                    'EXCELLENCE:':['Asking “What will this have to survive in the field?” and designing accordingly.','Good enough isn’t.'],
+                    'POSITIVE ATTITUDE & DOER:':['Showing up as partners who help when things get hard, not just when they go to plan.'],
+                    'RELIABILITY:':['Motors that start every time, for years, without a phone call.','Tested here before it ships anywhere.'],
+                    'PARTNERSHIP:':['Being the supplier you can call when something changes.','Locked lead times, stocking agreements, real people.'] } },
+  quality: { label:'Quality & trust', heads:['Proven before it ships.','Quality you can trust','Built. Tested. Trusted.','Built Here. Tested Here. Trusted Everywhere.','Reliability pays for itself','Dependability goes beyond delivery.'],
+             subs:['Every motor tested before it leaves the plant.','Precision electric motors since 1976.','Made in the USA, tested in-house.','Consistency you can plan production around.'] },
+  partner: { label:'Partnership',    heads:['More than a motor vendor','Partnership is part of the performance.','Realistic lead times matter.','Start the conversation.','Frustrated with your motor supplier?','What do you value most in your motor supplier?'],
+             subs:['Locked lead times. Stocking agreements. Someone to call.','A partner in uptime, not just a line item.','Let’s talk about your program.','Real people who understand your application.'] },
+  design:  { label:'Engineering',    heads:['Application drives the design','Great motor programs start before production','The problem isn’t always the motor.','One speed is rarely enough','Variable-speed EC motors give designers more room to work'],
+             subs:['Custom-engineered for your application.','Design support from prototype to production.','Right motor, right spec, first time.','We engineer around what the motor has to survive.'] },
+  cost:    { label:'Cost & supply',  heads:['The cheapest motor isn’t always the most cost efficient choice.','The real cost of a foreign motor','Supply chain integrity','Protect margins while expectations rise'],
+             subs:['Freight, tariffs, buffer inventory, downtime — add it up.','Total cost of ownership, not unit price.','American-made components you can trace.','Fewer surprises between order and delivery.'] },
+  comply:  { label:'Compliance',     heads:['UFLPA and Section 307 of the Tariff Act Compliant','UL 5VA Testing Compliant','Made in the USA','Set your products apart with American-made components'],
+             subs:['Documentation ready when your customers ask.','Compliance built into the process, not bolted on.','Traceable, tested, certified.'] },
+  heritage:{ label:'Heritage & team', heads:['Over 150 million motors sold since 1976','Powering people’s lives.','50 years of precision','Meet the people behind the motors'],
+             subs:['Family-owned. Precision-built. Since 1976.','Fifty years of motors that just work.','The team that builds, tests, and ships every motor.'] },
 };
 const SEASONAL_LINES = {
-  spring:['spring shutdown season \u2014 book service now','plan maintenance before the busy season','a good time for a motor check-up'],
-  summer:['summer heat is hard on motors','keep cool: preventive service season','beat the heat with a tune-up'],
-  autumn:['year-end maintenance season','schedule before the holiday shutdown','prepare your plant for winter'],
-  winter:['cold starts are tough on motors','winter reliability, guaranteed','plan next year\u2019s service now'],
+  spring:['Spring build season is here — lock in lead times now.','Plan the second half now, while capacity is open.'],
+  summer:['Heat is hard on motors — spec for the conditions.','Mid-year is the time to firm up Q4 programs.'],
+  autumn:['Year-end programs start with locked lead times.','Plan next year’s motor program before the rush.'],
+  winter:['Cold starts, tight schedules — reliability matters most now.','New year, new programs: let’s talk lead times.'],
 };
 const SEASON_NAME = _m >= 8 && _m <= 10 ? 'autumn' : _m >= 11 || _m <= 1 ? 'winter' : _m <= 4 ? 'spring' : 'summer';
 let topic = 'any';
@@ -1319,123 +1372,122 @@ function renderTopics(){
   for (const [k,l] of [['any','Any'],...Object.entries(BANK).map(([k,v]) => [k,v.label]),['seasonal','Seasonal']])
     box.append(h('button',{class:'chip','aria-pressed':String(k===topic),onclick:()=>{ topic = k; renderTopics(); }}, l));
 }
-// Sublines the team has actually downloaded join the bank and get weighted up over time.
-function subsFor(key){
-  const base = BANK[key].subs.map(t => [t, 1]);
-  const learned = Object.keys(learn.sub || {}).filter(t => (learn.subTopic||{})[t] === key && !BANK[key].subs.includes(t)).map(t => [t, 1]);
-  return base.concat(learned);
+function subsFor(key, head){
+  const b = BANK[key];
+  const base = Array.isArray(b.subs) ? b.subs : (b.subs[head] || []);
+  const learned = Object.keys(learn.sub || {}).filter(t => (learn.subTopic||{})[t] === key && !base.includes(t));
+  return base.concat(learned).map(t => [t, 1]);
 }
 function suggestText(key){
-  const k = key === 'any' ? pick(Object.keys(BANK).filter(x => x !== 'thanks').map(x => [x, x === 'team' ? 1 : 3]), 'topic') : key;
+  const k = key === 'any' ? pick(Object.keys(BANK).map(x => [x, x === 'values' ? 4 : x === 'heritage' ? 1 : 3]), 'topic') : key;
   if (k === 'seasonal') {
     const line = pick(SEASONAL_LINES[SEASON_NAME].map(t => [t,1]), 'seasonal');
-    const t2 = pick([['maint',4],['repair',2],['rewind',1]], 'topic');
+    const t2 = pick([['partner',3],['quality',2]], 'topic');
     return { headline: pick(BANK[t2].heads.map(x => [x,1]), 'head'), sub: line, topic: t2 };
   }
-  return { headline: pick(BANK[k].heads.map(x => [x,1]), 'head'), sub: pick(subsFor(k), 'sub'), topic: k };
+  const head = pick(BANK[k].heads.map(x => [x,1]), 'head');
+  const subs = subsFor(k, head);
+  // statements always carry their explanation; other topics get a subline about half the time
+  const sub = (k === 'values' || Math.random() < 0.5) && subs.length ? pick(subs, 'sub') : '';
+  return { headline: head, sub, topic: k };
 }
 function detectTopic(t){
   const x = t.toLowerCase();
-  if (/rewind|rewound|rebuil|refurbish|restor/.test(x)) return 'rewind';
-  if (/emergency|repair|fix|breakdown|failed|failure|down\b|downtime|troubleshoot/.test(x)) return 'repair';
-  if (/custom|engineer(ed)? to|built to|prototype|design(ed)? for|spec\b|specification/.test(x)) return 'custom';
-  if (/maintenance|preventive|predictive|vibration|inspection|service plan|check-?up|tune-?up/.test(x)) return 'maint';
-  if (/hiring|career|join our team|apprentice|employee|meet the team|welcome .* to the team/.test(x)) return 'team';
-  if (/thank|grateful|appreciate|review|testimonial|partner/.test(x)) return 'thanks';
+  if (/uflpa|section 307|tariff act|ul 5va|ul-5va|compliant|compliance|certif|made in the usa|american-made/.test(x)) return 'comply';
+  if (/cheapest|cost of ownership|foreign motor|tariff|freight|supply chain|margin|price/.test(x)) return 'cost';
+  if (/integrity|excellence|positive attitude|doer|our values|core value/.test(x)) return 'values';
+  if (/lead ?time|supplier|vendor|partner|stocking|conversation|call us|let’s connect|let's connect|frustrated/.test(x)) return 'partner';
+  if (/application|design|engineer|ec motor|variable-speed|one speed|program|spec|prototype/.test(x)) return 'design';
+  if (/anniversary|since 1976|150 million|history|team|picnic|employee|people behind/.test(x)) return 'heritage';
+  if (/quality|tested|proven|reliab|trust|built here|dependab/.test(x)) return 'quality';
   return null;
 }
-// Reads a pasted caption: quoted title, dates/times, topic words → a ready brief.
 function analyzeCaption(txt){
   const quoted = ((txt.match(/[“"]([^”"]{6,90})[”"]/) || [])[1] || '').replace(/[\s,.;:!]+$/, '');
   const tp = detectTopic(txt);
   const time = (txt.match(/\b\d{1,2}(:\d{2})?\s*(?:[–-]\s*\d{1,2}(:\d{2})?\s*)?(am|pm|a\.m\.|p\.m\.)\b/i) || [])[0] || '';
-  const date = (txt.match(/\b(?:(?:mon|tues|wednes|thurs|fri|satur|sun)day,?\s+)?(?:jan|feb|mar|apr|may|jun|jul|aug|sep|sept|oct|nov|dec)[a-z]*\.?\s+\d{1,2}(?:st|nd|rd|th)?(?:,?\s+\d{4})?\b/i) || [])[0] || (/\btonight\b/i.test(txt) ? 'Tonight' : /\btomorrow\b/i.test(txt) ? 'Tomorrow' : '');
-  const eventish = /open house|trade show|expo|booth|webinar|join us|rsvp|visit us|tour|training|seminar|event/i.test(txt) && (time || date || /open house|trade show|expo|booth|rsvp/i.test(txt));
-  const isReviewPost = /review|testimonial|customer wrote|kind words|five stars|5 stars/i.test(txt);
+  const date = (txt.match(/\b(?:(?:mon|tues|wednes|thurs|fri|satur|sun)day,?\s+)?(?:jan|feb|mar|apr|may|jun|jul|aug|sep|sept|oct|nov|dec)[a-z]*\.?\s+\d{1,2}(?:st|nd|rd|th)?(?:,?\s+\d{4})?\b/i) || [])[0] || '';
+  const eventish = /open house|trade show|expo|booth|webinar|join us|rsvp|visit us|tour|training|seminar|picnic/i.test(txt) && (time || date || /open house|trade show|expo|booth|rsvp/i.test(txt));
   if (eventish) {
-    const title = quoted || (/open house/i.test(txt) ? 'Open House' : /trade show|expo|booth/i.test(txt) ? 'See Us at the Show' : /training|seminar/i.test(txt) ? 'Training Session' : 'Join Us');
+    const title = quoted || (/open house/i.test(txt) ? 'Open House' : /trade show|expo|booth/i.test(txt) ? 'See us at the show' : /picnic/i.test(txt) ? 'Company Picnic' : 'Join us');
     const boothM = txt.match(/booth\s*#?\s*([A-Za-z0-9-]+)/i);
-    const details = [date, time, boothM ? 'Booth ' + boothM[1] : '', /zoom|online|virtual/i.test(txt) ? 'online' : ''].filter(Boolean).join('\n');
+    const details = [date, time, boothM ? 'Booth ' + boothM[1] : ''].filter(Boolean).join('\n');
     return { template:'event', headline:title, sub: details || 'Details in the caption', quote:'', attr:'' };
   }
-  if (isReviewPost || tp === 'thanks') { const sgg = suggestText('thanks'); return { template:'headline', headline:sgg.headline, sub:sgg.sub, quote:'', attr:'' }; }
+  const isQuote = /customer (said|wrote)|testimonial|review|feedback from/i.test(txt) && quoted;
+  if (isQuote) return { template:'review', headline:'', sub:'', quote:'“' + quoted + '”', attr:'— a McMillan customer' };
+  if (quoted && quoted.length < 60) { const sgg = tp ? suggestText(tp) : { sub:'' }; return { template:'headline', headline:quoted, sub:sgg.sub || '', quote:'', attr:'' }; }
   if (tp) { const sgg = suggestText(tp); return { template:'headline', headline:sgg.headline, sub:sgg.sub, quote:'', attr:'' }; }
-  // no clear topic (a blog share, a reflection): the photo carries it
   return { template:'logo', headline:'', sub:'', quote:'', attr:'' };
 }
 function parseBrief(txt){
   const wordsAll = txt.split(/\s+/).filter(Boolean).length;
-  const captionSignals = /https?:\/\/|read more|our new blog|learn more|\bblog\b|join us|invited|we’ll|we'll|our team|start here|find .* here/i.test(txt);
-  const firstPerson = /\b(they (fixed|rebuilt|repaired|rewound)|our (plant|line|motor|equipment)|saved us|got us (back )?running|thank you|recommend|helped us|great to work with)\b/i.test(txt);
-  if ((wordsAll > 25 && !firstPerson) || captionSignals) return analyzeCaption(txt);
+  const captionSignals = /https?:\/\/|read more|learn more|\bblog\b|join us|our team|link in bio|#\w+/i.test(txt);
+  const firstPerson = /\b(they (fixed|rebuilt|repaired|delivered)|our (plant|line|program)|saved us|great to work with|recommend)\b/i.test(txt);
+  if ((wordsAll > 28 && !firstPerson) || captionSignals) return analyzeCaption(txt);
   return parseLines(txt);
 }
 function parseLines(txt){
   const lines = txt.split('\n').map(l => l.trim()).filter(Boolean);
-  const attr = lines.find(l => /^[\u2014\u2013-]\s*/.test(l));
+  const attr = lines.find(l => /^[—–-]\s*/.test(l));
   const body = lines.filter(l => l !== attr);
   const joined = body.join(' ');
   const words = joined.split(/\s+/).filter(Boolean).length;
-  const quoted = /^[\u201C"']/.test(joined) || /[\u201D"']$/.test(joined);
-  const eventish = /(\d{1,2}:\d{2}|\b\d{1,2}\s*(am|pm)\b|\b(mon|tues|wednes|thurs|fri|satur|sun)day\b|\b(jan|feb|mar|apr|may|jun|jul|aug|sep|sept|oct|nov|dec)[a-z]*\.?\s+\d{1,2}|\b\d{1,2}(st|nd|rd|th)\b|\brsvp\b|\bzoom\b|\bjoin us\b)/i.test(body.slice(1).join(' '));
-  let template = !lines.length ? 'logo' : (quoted || (words > 16 && !eventish)) ? 'review' : eventish ? 'event' : 'headline';
-  return { template, headline: body[0] || '', sub: template === 'event' ? body.slice(1).join('\n') : body.slice(1).join(' '), quote: joined, attr: attr || '\u2014 a McMillan customer' };
+  const quoted = /^[“"']/.test(joined) || /[”"']$/.test(joined);
+  const eventish = /(\d{1,2}:\d{2}|\b\d{1,2}\s*(am|pm)\b|\b(mon|tues|wednes|thurs|fri|satur|sun)day\b|\b(jan|feb|mar|apr|may|jun|jul|aug|sep|sept|oct|nov|dec)[a-z]*\.?\s+\d{1,2}|\b\d{1,2}(st|nd|rd|th)\b|\brsvp\b|\bbooth\b)/i.test(body.slice(1).join(' '));
+  const template = !lines.length ? 'logo' : (quoted || (words > 20 && !eventish)) ? 'review' : eventish ? 'event' : 'headline';
+  return { template, headline: body[0] || '', sub: template === 'event' ? body.slice(1).join('\n') : body.slice(1).join(' '), quote: joined, attr: attr || '— a McMillan customer' };
 }
-async function randomPhoto(template){
-  const opts = POOLS[template];
-  // Starred favorites are the curated library: use one about a third of the time when there are enough.
-  const favs = Object.values(photoMem.favs).filter(p => !photoMem.used[p.id] && p.id !== IMG.src?.id);
-  if (favs.length >= 3 && Math.random() < 0.35) { const p = favs[Math.floor(Math.random()*favs.length)]; return Object.assign({ term:'favorites' }, p); }
-  for (let attempt = 0; attempt < 4; attempt++) {
-    const term = pick(opts, 'term');
-    const r0 = Math.random(); const pg = r0 < 0.65 ? 1 : r0 < 0.9 ? 2 : 3; // first page is far more on-topic
-    let photos = [];
-    try { photos = await fetchPhotos(term, pg); } catch (e) { if (/rejected/.test(e.message)) throw e; }
-    if (!photos.length && pg > 1) { try { photos = await fetchPhotos(term, 1); } catch {} }
-    if (!photos.length) continue;
-    // keep only photos that pass the rules AND whose description matches the search, then pick from the top few
-    const vetted = screen(photos, term).filter(p => p.alt && relevant(p.alt, term));
-    if (!vetted.length) continue;
-    const fresh = vetted.filter(p => !photoMem.used[p.id] && p.id !== IMG.src?.id);
-    const list = (fresh.length ? fresh : vetted).slice(0, 10);
-    const p = list[Math.floor(Math.random()*list.length)];
-    // show the search she'd have typed, so "Show more" and the results grid stay in sync
-    $('#q').value = term; lastQuery = term; page = pg; results = screen(photos, null); results.more = photos.length === 18; setTab('search'); renderResults();
-    $('#rstatus').textContent = `${photos.length} photos for “${term}”`;
-    return Object.assign({ term }, p);
+
+// Background choice: generated art (always available) or a photo from the library when there is one.
+async function randomBackground(template, brief){
+  const statement = brief && /^[A-Z][A-Z &]+:$/.test((brief.headline||'').trim());
+  const photos = LIB.filter(p => p.kind !== 'product' && !photoMem.used[p.id] && p.id !== IMG.src?.id);
+  const anyPhotos = LIB.filter(p => p.kind !== 'product');
+  const pool = photos.length ? photos : anyPhotos;
+  const wantPhoto = pool.length && !statement && pick([['photo', template === 'logo' ? 8 : 5], ['art', 4]], 'bgKind') === 'photo';
+  if (wantPhoto) {
+    const favs = pool.filter(p => photoMem.favs[p.id]);
+    const from = favs.length >= 3 && Math.random() < 0.35 ? favs : pool;
+    const p = from[Math.floor(Math.random()*from.length)];
+    const im = await libImage(p.url);
+    IMG.bg = im; IMG.src = Object.assign({ kind:'lib' }, p);
+    S.bg.kind = 'photo'; S.bg.ox = S.bg.oy = 0; S.bg.zoom = 1;
+    return 'photo';
   }
-  throw new Error('Couldn\u2019t find a photo that passes the rules \u2014 try Generate again');
+  S.bg.kind = 'art';
+  S.bg.art = pick([['texture', 3], ['gradient', 3], ['circuit', template === 'headline' ? 4 : 2], ['dark', 1]], 'art');
+  S.bg.seed = Math.floor(Math.random()*100000) + 1;
+  IMG.src = { kind:'art', art:S.bg.art, seed:S.bg.seed };
+  return 'art';
+}
+async function maybeAddProduct(){
+  const prods = LIB.filter(p => p.kind === 'product');
+  const el = byId('product');
+  if (!prods.length || S.template === 'review' || S.bg.kind === 'photo') { if (el) S.els = S.els.filter(e => e.id !== 'product'); return; }
+  if (Math.random() < (S.bg.art === 'circuit' ? 0.7 : 0.35)) {
+    const p = prods[Math.floor(Math.random()*prods.length)];
+    const im = await libImage(p.url); addProduct(p, im);
+  } else if (el) S.els = S.els.filter(e => e.id !== 'product');
 }
 function randomStyle(lum){
-  const bright = lum > 0.6;
   const had = new Set(S.els.map(e => e.id));
-  S.look = pick([['classic', 6], ['bright', 5], ['panel', 3], ['green', bright ? 3 : 0.02]], 'look');
-  if (S.template === 'headline') S.textPos = pick([['tl', 5], ['tc', 2], ['tr', 1], ['mid', 1]], 'textPos');
-  if (S.template === 'event') S.textPos = pick([['tc', 6], ['mid', 1]], 'textPos');
+  const onPhoto = S.bg.kind === 'photo';
+  S.look = pick([['white', 7], ['bright', 2]], 'look');
+  // bands only make sense over a photo
+  S.frame = onPhoto ? pick([['none', 5], ['top', 2], ['bottom', 1.5], ['wtop', 1.5], ['wbottom', 1.5]], 'frame') : 'none';
+  if (S.template === 'headline') {
+    const hl = byId('headline'); const statement = hl && /^[A-Z][A-Z &]+:$/.test(hl.text.trim());
+    S.textPos = statement ? 'mid' : pick([['tc', 5], ['mid', 2], ['bc', 2], ['tl', 1]], 'textPos');
+  }
+  if (S.template === 'event') S.textPos = pick([['tc', 5], ['mid', 2]], 'textPos');
   templateDefaults(); layout();
   S.els = S.els.filter(e => had.has(e.id) || !['headline','sub','quote','attr','logo','box'].includes(e.id));
-  if (S.template !== 'review') {
-    S.bg.fadePos = pick([['none', 7], ['bottom', 2], ['both', 1]], 'fadePos');
-    S.bg.fadeSize = 0.4 + Math.random()*0.3;
-  }
-  const hl = byId('headline'), sb = byId('sub');
-  if (hl) {
-    const style = pick([['none', 8], ['glow', 2]], 'shade');
-    if (!LOOKS[S.look].panel) { hl.shade = { style, color:'#000000', alpha:0.35, size: 0.6 + Math.random()*0.6 }; if (sb && style !== 'none') sb.shade = { style, color:'#000000', alpha:0.35, size: hl.shade.size }; }
-    hl.rules = false;
-  }
-  const box = byId('box');
-  if (box) { const g = pick([['deep', 3], ['slate', 1]], 'boxColor'); box.fill = g === 'slate' ? '#586e63' : '#034226'; box.labelFill = '#00d66b'; box.labelColor = '#034226'; }
   const logo = byId('logo');
-  if (logo) { logo.shade = { style: pick([['none', 6], ['glow', 3]], 'logoShade'), color:'#000000', alpha:0.35, size: 0.4 + Math.random()*0.4 }; logo.variant = pick([['full', 5], ['mark', 1]], 'logoVariant'); if (logo.variant === 'mark') { logo.w = W()*0.16; logo.y = H() - logo.w*0.58 - 0.07*H(); } }
+  if (logo && !S.frame.startsWith('w')) logo.shade = { style: onPhoto && Math.random() < 0.3 ? 'glow' : 'none', color:'#000000', alpha:0.35, size:0.4 };
   autoContrast(false);
 }
-async function loadPhotoRec(p){
-  const img = new Image(); img.crossOrigin = 'anonymous';
-  await new Promise((res, rej) => { img.onload = res; img.onerror = rej; img.src = p.url; });
-  IMG.bg = img; IMG.src = Object.assign({ kind:'pexels' }, p);
-  S.bg.ox = S.bg.oy = 0; S.bg.zoom = 1;
-}
+async function loadPhotoRec(){ /* backgrounds are chosen in randomBackground */ }
 let genBusy = false;
 async function generate(){
   if (genBusy) return; genBusy = true;
@@ -1446,14 +1498,14 @@ async function generate(){
     const forced = document.querySelector('#genTpl button[aria-pressed="true"]').dataset.v;
     pushUndo();
     S.template = forced === 'auto' ? brief.template : forced;
+    // seed the text elements first so layout() builds around the real words (a subline only exists if there is one)
+    S.els = [];
+    if (S.template === 'headline' || S.template === 'event') { S.els.push(text('headline', brief.headline || 'Proven before it ships.')); if (brief.sub) S.els.push(text('sub', brief.sub)); }
+    if (S.template === 'review') { S.els.push(text('quote', brief.quote)); S.els.push(text('attr', brief.attr)); }
     layout();
-    const set = (id, v) => { const el = byId(id); if (el && v) el.text = v; };
-    if (S.template === 'headline' || S.template === 'event') { set('headline', brief.headline || 'Here for You'); set('sub', brief.sub); }
-    if (S.template === 'review') { set('quote', brief.quote); set('attr', brief.attr); }
-    const p = await randomPhoto(S.template);
-    await loadPhotoRec(p);
+    await randomBackground(S.template, brief);
     randomStyle(measureLum());
-    if ((S.template === 'headline' || S.template === 'event') && !brief.sub) S.els = S.els.filter(e => e.id !== 'sub');
+    await maybeAddProduct();
     currentDraftId = null;
     $('#gen').hidden = true;
     syncControls(); renderInspector(); renderResults(); fitCanvas(); persist();
@@ -1465,7 +1517,7 @@ async function generate(){
 async function shufflePhoto(){
   if (genBusy) return; genBusy = true;
   $('#loading').classList.add('show');
-  try { pushUndo(); const p = await randomPhoto(S.template); await loadPhotoRec(p); autoContrast(false); syncControls(); renderResults(); fitCanvas(); }
+  try { pushUndo(); await randomBackground(S.template, { headline: byId('headline')?.text || '' }); templateDefaults(); layout(); autoContrast(false); await maybeAddProduct(); syncControls(); renderInspector(); renderResults(); fitCanvas(); }
   catch (err) { toast(err.message || String(err)); }
   finally { $('#loading').classList.remove('show'); genBusy = false; }
 }
@@ -1473,28 +1525,35 @@ function shuffleLook(){
   pushUndo(); randomStyle(measureLum()); syncControls(); renderInspector(); render(); persist();
 }
 $('#genBtn').addEventListener('click', () => { $('#genStatus').textContent = ''; renderTopics(); $('#gen').hidden = false; setTimeout(() => $('#genText').focus(), 0); });
-$('#suggestBtn').addEventListener('click', () => { const sgg = suggestText(topic); $('#genText').value = sgg.headline + '\n' + sgg.sub; $('#genStatus').textContent = 'Press Suggest again for another, or edit it, then Generate.'; });
+$('#suggestBtn').addEventListener('click', () => { const sgg = suggestText(topic); $('#genText').value = sgg.headline + (sgg.sub ? '\n' + sgg.sub : ''); $('#genStatus').textContent = 'Press Suggest again for another, or edit it, then Generate.'; });
 $('#genCancel').addEventListener('click', () => { $('#gen').hidden = true; });
 $('#genGo').addEventListener('click', generate);
 $('#genText').addEventListener('keydown', e => { if ((e.metaKey||e.ctrlKey) && e.key === 'Enter') generate(); });
 $('#genTpl').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; document.querySelectorAll('#genTpl button').forEach(x => x.setAttribute('aria-pressed', String(x === b))); });
 $('#shufPhoto').addEventListener('click', shufflePhoto);
 $('#shufLook').addEventListener('click', shuffleLook);
+$('#addProduct').addEventListener('click', async () => {
+  const prods = LIB.filter(p => p.kind === 'product');
+  if (!prods.length) { toast('No product images in the library yet'); return; }
+  const cur = byId('product'); let next = prods[Math.floor(Math.random()*prods.length)];
+  if (cur && prods.length > 1) { const i = prods.findIndex(p => p.url === cur.src); next = prods[(i + 1) % prods.length]; }
+  pushUndo(); const im = await libImage(next.url); addProduct(next, im); S.sel = 'product'; renderInspector(); render();
+});
 
 // ---------- misc ----------
 let toastT = 0;
 function toast(msg){ const t = $('#toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), 3200); }
 async function fontsReady(){
-  try { await Promise.all([...['600 40px','700 40px','800 40px'].map(f => document.fonts.load(`${f} "Cinzel"`)), ...['400 40px','500 40px','600 40px','700 40px','italic 500 40px'].map(f => document.fonts.load(`${f} "Montserrat"`))]); } catch {}
+  try { await Promise.all([...['600 40px','700 40px','800 40px','900 40px'].map(f => document.fonts.load(`${f} "Montserrat"`)), ...['400 40px','500 40px','600 40px','700 40px'].map(f => document.fonts.load(`${f} "Open Sans"`))]); } catch {}
 }
 
 // ---------- boot ----------
 (async () => {
   restore(); loadPhotoMem();
-  const fromLink = keyFromLink();
-  await Promise.all([LOGO_SRC, MARK_SRC].map((srcUrl, i) => new Promise(res => { const im = new Image(); im.onload = () => { if (i) IMG.mark = im; else IMG.logo = im; res(); }; im.onerror = res; im.src = srcUrl; })));
+  await Promise.all([[LOGO_SRC,'logo'],[MARK_SRC,'mark'],[LOGOC_SRC,'logoColor']].map(([srcUrl, key]) => new Promise(res => { const im = new Image(); im.onload = () => { IMG[key] = im; res(); }; im.onerror = res; im.src = srcUrl; })));
+  IMG.src = { kind:'art', art:S.bg.art, seed:S.bg.seed };
   renderLooks(); templateDefaults(); layout(); syncControls(); fitCanvas(); renderDrafts();
-  $('#apiKey').value = apiKey; $('#q').value = DEFAULT_QUERY[S.template]; search(true);
+  loadLibrary();
   await fontsReady(); render();
   try { document.fonts.ready.then(render); } catch {}
 })();
