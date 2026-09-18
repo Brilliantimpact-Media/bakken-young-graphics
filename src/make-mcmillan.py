@@ -160,7 +160,7 @@ s = s[:i] + """    <div class="sec">
 
 """ + s[j:]
 rep('<button class="btn sm" id="shufPhoto" title="Keep the layout, try a different photo">Shuffle photo</button>', '<button class="btn sm" id="shufPhoto" title="Keep the text, try a different background">Shuffle background</button>')
-rep('<button class="btn sm" id="addText">+ Add text</button>', '<button class="btn sm" id="addProduct" title="Place a product shot from the library on the graphic">+ Product</button>\n      <button class="btn sm" id="addText">+ Add text</button>')
+rep('<button class="btn sm" id="addText">+ Add text</button>', '<button class="btn sm" id="collageQuick" title="Generate a photo collage with the logo plate">\u229e Collage</button>\n      <button class="btn sm" id="addProduct" title="Place a product shot from the library on the graphic">+ Product</button>\n      <button class="btn sm" id="addText">+ Add text</button>')
 rep('<h2>Photo adjustments <button class="btn link" id="autoBtn" title="Set Darken and Fade based on how bright the photo is behind the logo and text">Auto-adjust</button></h2>',
     '<h2>Photo adjustments <button class="btn link" id="autoBtn" title="Set Darken based on how bright the photo is behind the logo and text">Auto-adjust</button></h2>\n      <p class="hint" id="adjHint" hidden>These apply when a photo is the background.</p>')
 rep("""        <button data-v="headline" aria-pressed="false">Headline</button>
@@ -185,7 +185,7 @@ rep('placeholder="Pre-Planning&#10;a simple process&#10;&#10;…or paste the who
 rep('<div class="kicker">Bakken-Young studio</div>', '<div class="kicker">McMillan studio</div>')
 rep('.welcome-card h2{margin:0 0 10px;font:600 40px/1.05 "Cormorant Garamond",Georgia,serif;color:var(--ink)}', '.welcome-card h2{margin:0 0 10px;font:800 34px/1.05 "Montserrat",sans-serif;color:var(--ink)}')
 s = s.replace("rgba(25,68,31,.55)", "rgba(0,214,107,.55)").replace("rgba(25,68,31,0)", "rgba(0,214,107,0)")
-rep("['#tiles','#results','#drafts','#genBtn','#shufPhoto','#shufLook','#addText','#bgBtn','#importBtn','#looks']", "['#tiles','#results','#drafts','#genBtn','#shufPhoto','#shufLook','#addText','#bgBtn','#importBtn','#looks','#artChips','#collageBtn','#addProduct']")
+rep("['#tiles','#results','#drafts','#genBtn','#shufPhoto','#shufLook','#addText','#bgBtn','#importBtn','#looks']", "['#tiles','#results','#drafts','#genBtn','#shufPhoto','#shufLook','#addText','#bgBtn','#importBtn','#looks','#artChips','#collageBtn','#collageQuick','#addProduct']")
 
 # ================= controls / sync =================
 rep("$('#textPos').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; pushUndo(); S.textPos = b.dataset.v; templateDefaults(); layout(); syncControls(); renderInspector(); render(); persist(); });",

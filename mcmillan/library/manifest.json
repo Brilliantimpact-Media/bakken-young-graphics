@@ -61,7 +61,8 @@
     "stators",
     "winding"
    ],
-   "source": "7_28_26.png"
+   "source": "7_28_26.png",
+   "group": "stators-man"
   },
   {
    "file": "flag-usa.jpg",
@@ -156,7 +157,8 @@
     "engineer",
     "monitor"
    ],
-   "source": "8_10_26.png"
+   "source": "8_10_26.png",
+   "group": "test-desk"
   },
   {
    "file": "team-safety-glasses.jpg",
@@ -196,7 +198,8 @@
     "integrity",
     "dictionary"
    ],
-   "source": "8_4_26.png"
+   "source": "8_4_26.png",
+   "group": "dictionary"
   },
   {
    "file": "stock-dictionary-quality.jpg",
@@ -206,7 +209,8 @@
     "quality",
     "dictionary"
    ],
-   "source": "8_5_26.png"
+   "source": "8_5_26.png",
+   "group": "dictionary"
   },
   {
    "file": "stock-warehouse-conveyor.jpg",
@@ -249,7 +253,8 @@
     "engineer",
     "monitor"
    ],
-   "source": "9_16_26.png"
+   "source": "9_16_26.png",
+   "group": "test-desk"
   },
   {
    "file": "shop-machinist.jpg",
@@ -279,7 +284,8 @@
     "employee",
     "stators"
    ],
-   "source": "9_23_26.png"
+   "source": "9_23_26.png",
+   "group": "stators-man"
   },
   {
    "file": "shop-assembly-mask.jpg",
@@ -356,7 +362,8 @@
    "tags": [
     "two motors"
    ],
-   "source": "9_3_26.png"
+   "source": "9_3_26.png",
+   "group": "pairs"
   },
   {
    "file": "motors-pair-b.png",
@@ -365,7 +372,8 @@
    "tags": [
     "two motors"
    ],
-   "source": "7_14_26.png"
+   "source": "7_14_26.png",
+   "group": "pairs"
   },
   {
    "file": "motor-open-frame.png",

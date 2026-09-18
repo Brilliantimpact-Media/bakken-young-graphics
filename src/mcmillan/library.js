@@ -12,7 +12,7 @@ async function loadLibrary(){
     const r = await fetch('library/manifest.json', { cache:'no-store' });
     if (!r.ok) throw new Error('no manifest');
     const j = await r.json();
-    LIB = (j.images || []).map(x => ({ id:x.file, file:x.file, kind:x.kind || 'other', tags:x.tags || [], url:'library/' + x.file, tiny:'library/' + (x.thumb || x.file), photographer:'McMillan' }));
+    LIB = (j.images || []).map(x => ({ id:x.file, file:x.file, kind:x.kind || 'other', tags:x.tags || [], group:x.group || x.file, url:'library/' + x.file, tiny:'library/' + (x.thumb || x.file), photographer:'McMillan' }));
   } catch { LIB = []; }
   renderResults();
 }
@@ -121,9 +121,13 @@ async function makeCollage(kind){
   const pool = pool0.length >= 3 ? pool0 : LIB.filter(p => p.kind !== 'product');
   if (pool.length < 3) { toast('Need at least 3 library photos for a collage'); return false; }
   const shuffled = pool.slice().sort(() => Math.random() - 0.5);
-  const grid = pool.length >= 4 && Math.random() < 0.5 ? '2x2' : (Math.random() < 0.5 ? '2+1' : '1+2');
+  // never two crops of the same shot in one collage
+  const seen = new Set(), picked = [];
+  for (const p of shuffled) { if (seen.has(p.group)) continue; seen.add(p.group); picked.push(p); if (picked.length === 4) break; }
+  const grid = picked.length >= 4 && Math.random() < 0.5 ? '2x2' : (Math.random() < 0.5 ? '2+1' : '1+2');
   const n = grid === '2x2' ? 4 : 3;
-  const cells = shuffled.slice(0, n).map(p => ({ url:p.url, id:p.id, kind:p.kind }));
+  if (picked.length < n) { if (picked.length < 3) { toast('Need at least 3 different library photos for a collage'); return false; } }
+  const cells = picked.slice(0, n).map(p => ({ url:p.url, id:p.id, kind:p.kind }));
   await Promise.all(cells.map(c => libImage(c.url)));
   S.bg.kind = 'collage'; S.bg.cells = cells; S.bg.grid = grid; S.bg.dim = 0; S.bg.fadePos = 'none';
   IMG.bg = null; IMG.src = { kind:'collage', id:'collage:' + cells.map(c => c.id).join('+'), cells };
@@ -132,4 +136,15 @@ async function makeCollage(kind){
 $('#collageBtn').addEventListener('click', async () => {
   pushUndo();
   if (await makeCollage(libKind)) { S.template = 'collage'; S.frame = 'none'; templateDefaults(); layout(); syncControls(); renderInspector(); renderResults(); fitCanvas(); persist(); }
+});
+
+// Toolbar shortcut: same as Generate → Collage, one click.
+$('#collageQuick').addEventListener('click', async () => {
+  if (genBusy) return;
+  pushUndo();
+  const r = await randomBackground('collage', {});
+  if (r === 'none') { toast('A collage needs at least 3 library photos'); return; }
+  S.template = 'collage'; S.frame = 'none'; currentDraftId = null;
+  templateDefaults(); layout(); syncControls(); renderInspector(); renderResults(); fitCanvas(); persist();
+  toast('Collage \u2014 press again for another mix');
 });
