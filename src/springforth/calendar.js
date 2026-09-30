@@ -122,8 +122,9 @@ async function tryMonth(cfg, y, m){
 async function discoverMonths(){
   const cfg = calCfg(); if (!cfg) return [];
   const now = new Date();
+  // this month and what's ahead of it; once a month has gone by its tab is done with
   const want = [];
-  for (let i = -2; i <= 3; i++) { const d = new Date(now.getFullYear(), now.getMonth()+i, 1); want.push([d.getFullYear(), d.getMonth()]); }
+  for (let i = 0; i <= 5; i++) { const d = new Date(now.getFullYear(), now.getMonth()+i, 1); want.push([d.getFullYear(), d.getMonth()]); }
   const found = await Promise.all(want.map(([y,m]) => tryMonth(cfg, y, m)));
   return found.filter(Boolean);
 }
@@ -175,6 +176,49 @@ function doneKey(p){ return (calCfg() || {}).sheetId + '|' + p.iso; }
 function isDone(p){ return !!calDone[doneKey(p)]; }
 function markPostDone(p){ if (!p) return; calDone[doneKey(p)] = Date.now(); saveCalDone(); renderCalendar(); }
 
+// ---------- the headline for a post with no hook text ----------
+// Three things the plain phrase-bank fallback got wrong, all measured against the live sheet:
+//
+//   * the BUCKET column is an explicit label and was being ignored. Guessing the topic from
+//     the caption instead disagreed with it on 37 of 57 posts;
+//   * every caption ends with a call to action ("Message us for tour details", "ask",
+//     "comment"), and the caption matcher is first-rule-wins, so it fired on the CTA rather
+//     than the body — an Inspiring Growth post about growth mindset came out "Now Enrolling!";
+//   * the pick was random, so the same post gave a different headline on every click and a
+//     graphic could not be made again.
+//
+// So: the bucket decides the topic, the caption is only consulted when the bucket is blank
+// and then only its body, and the choice is seeded from the date so a post always suggests
+// the same thing.
+const BUCKET_TOPIC = { 'inspiring growth':'values', 'equipping':'philosophy',
+                       'community':'community', 'enrollment':'enroll', 'enrollement':'enroll' };
+function topicForBucket(bucket){
+  for (const part of String(bucket || '').split(/[\/,&]+/)) {
+    const t = BUCKET_TOPIC[part.trim().toLowerCase()];
+    if (t) return t;
+  }
+  return null;
+}
+// Cut the caption at its call to action or hashtags, so the topic comes from what the post
+// is about rather than how it signs off.
+function captionBody(txt){
+  const t = String(txt || '');
+  const cut = t.search(/\n\s*(?:\u{1F449}|#)|(?:wondering|curious|want to|ready to|interested|message us|send us|dm us|book a|schedule a|learn more|tour details)/iu);
+  return (cut > 40 ? t.slice(0, cut) : t).trim();
+}
+// A stable pick: same post, same suggestion, every time.
+function seededPick(list, seed){
+  let x = 0;
+  for (const ch of String(seed)) x = (x*31 + ch.charCodeAt(0)) % 2147483647;
+  return list[x % list.length];
+}
+function headlineFor(p){
+  if (p.hook) return p.hook;
+  const topic = topicForBucket(p.bucket) || detectTopic(captionBody(p.post)) || 'values';
+  const heads = (BANK[topic] && BANK[topic].heads) || BANK.values.heads;
+  return seededPick(heads, p.iso + '|' + topic);
+}
+
 // Choosing a post fills the headline box from its hook text, and falls back to the phrase
 // bank when the sheet has none yet. The box stays editable either way.
 function usePost(iso){
@@ -185,11 +229,7 @@ function usePost(iso){
   if (row && row.iso.includes(iso)) CAL.view.used = iso;
   else CAL.view = { kind:'day', iso };
   pushUndo();
-  let head = p.hook;
-  if (!head) {
-    const from = p.post || p.bucket || '';
-    head = suggestText(from ? detectTopic(from) : 'any').headline;
-  }
+  const head = headlineFor(p);
   if (S.template === 'logo' || S.template === 'photo') { S.template = 'note'; templateDefaults(); }
   layout();
   const el = byId('headline');
@@ -216,7 +256,7 @@ function openDefault(){
     const next = CAL.months.find(x => x.y === nx.getFullYear() && x.m === nx.getMonth());
     if (next) { CAL.cur = next.key; const g = curGrid(); const row = g.findIndex(r => r.posts.length); CAL.view = { kind:'week', row: row < 0 ? 0 : row }; return; }
   }
-  const month = here || CAL.months[0];
+  const month = here || CAL.months[0];          // if this month has no tab, start at the next one that does
   if (!month) return;
   CAL.cur = month.key;
   const g = curGrid();
@@ -316,12 +356,55 @@ function renderCalendar(){
   }
 }
 
+// ---------- staying in step with the sheet ----------
+// The sheet is edited while the studio is open, so it is re-read on a timer and whenever the
+// tab comes back to the front. Whatever Karissa is looking at is kept: same month, same day
+// or week, and the headline on the canvas is left alone unless that post's hook text has
+// actually changed in the sheet.
+let calBusy = false, calLastSync = 0;
+function postSig(list){ return list.map(p => p.iso + '\u0001' + p.bucket + '\u0001' + p.hook).join('\u0002'); }
+async function refreshCalendar(reason){
+  if (calBusy || !calCfg()) return;
+  calBusy = true;
+  const btn = $('#calSync'); if (btn) btn.disabled = true;
+  const wasCur = CAL.cur, wasView = CAL.view && Object.assign({}, CAL.view);
+  const before = new Map(CAL.months.map(m => [m.key, postSig(m.posts)]));
+  try {
+    const months = await discoverMonths();
+    if (months.length) {
+      const added = months.filter(m => !before.has(m.key)).map(m => m.label);
+      const changed = months.filter(m => before.has(m.key) && before.get(m.key) !== postSig(m.posts)).map(m => m.label);
+      CAL.months = months; CAL.state = 'ready';
+      if (months.some(m => m.key === wasCur)) { CAL.cur = wasCur; CAL.view = wasView; }
+      else openDefault();
+      // if the post on screen now has hook text in the sheet, take it
+      const p = selectedPost();
+      if (p && p.hook && byId('headline') && byId('headline').text !== p.hook) {
+        byId('headline').text = p.hook; renderQuickFields(); render();
+      }
+      renderCalendar();
+      if (reason === 'manual') toast(added.length || changed.length ? 'Calendar updated' : 'Calendar is up to date');
+      else if (added.length) toast('Calendar: ' + added.join(', ') + ' added');
+      else if (changed.length) toast('Calendar: ' + changed.join(', ') + ' updated');
+    } else if (reason === 'manual') toast('Couldn\u2019t read the calendar just now');
+    calLastSync = Date.now();
+  } catch { if (reason === 'manual') toast('Couldn\u2019t reach the calendar'); }
+  finally { calBusy = false; if (btn) btn.disabled = false; }
+}
+function watchCalendar(){
+  setInterval(() => { if (!document.hidden) refreshCalendar('timer'); }, 5*60*1000);
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden && Date.now() - calLastSync > 60*1000) refreshCalendar('focus');
+  });
+}
+
 async function wireCalendar(){
   if (!window.BI_CLIENTS) await new Promise(r => window.addEventListener('load', r, { once:true }));
   const cfg = calCfg();
   if (!cfg) { const sec = $('#calSec'); if (sec) sec.hidden = true; return; }
   loadCalDone();
   $('#calOpen').addEventListener('click', () => window.open(cfg.url, '_blank', 'noopener'));
+  $('#calSync').addEventListener('click', () => refreshCalendar('manual'));
   $('#calMonth').addEventListener('change', e => { CAL.cur = e.target.value; CAL.view = { kind:'week', row:0 }; const g = curGrid(); const r = g.findIndex(x => x.posts.length); CAL.view.row = r < 0 ? 0 : r; renderCalendar(); });
   const step = (d) => { const i = CAL.months.findIndex(x => x.key === CAL.cur) + d;
     if (i < 0 || i >= CAL.months.length) return;
@@ -335,5 +418,7 @@ async function wireCalendar(){
     CAL.state = CAL.months.length ? 'ready' : 'empty';
   } catch { CAL.state = 'offline'; }
   if (CAL.state === 'ready') openDefault();
+  calLastSync = Date.now();
   renderCalendar();
+  watchCalendar();
 }

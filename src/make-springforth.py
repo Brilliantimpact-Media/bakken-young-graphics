@@ -81,7 +81,7 @@ rep("""const LOOKS = {
   gold: { label:'Gold writing', accent:'#bb8a2d', text:'#8a7a55', shadow:false, dim:null, fade:null, swatch:['#fbfaf6','#bb8a2d'] },
 };""")
 rep("let S = { template:'headline', size:'square', textPos:'tc', look:'classic',\n          bg:{zoom:1, ox:0, oy:0, dim:0.35, fadePos:'none', fade:0.45, fadeSize:0.55, fadeColor:'#000000'}, els:[], sel:null };",
-    "let S = { template:'note', size:'portrait', textPos:'tc', look:'blue', wave:'both', noteFill:'#e5f4ee', noteRot:-0.015,\n          bg:{kind:'paper', ground:'paper', seed:11, zoom:1, ox:0, oy:0, dim:0, fadePos:'none', fade:0.45, fadeSize:0.5, fadeColor:'#000000'}, els:[], sel:null };")
+    "let S = { template:'note', size:'portrait', textPos:'tc', look:'blue', wave:'both', waveStyle:'a', noteFill:'#e5f4ee', noteRot:-0.015,\n          bg:{kind:'paper', ground:'paper', seed:11, zoom:1, ox:0, oy:0, dim:0, fadePos:'none', fade:0.45, fadeSize:0.5, fadeColor:'#000000'}, els:[], sel:null };")
 rep("const BUILT_IN_KEY = 'dMBOWE33ohoJ8Weu0lSEIQhWNDpSnHnC3n9Vkhs3l7I4cfYOKDJgZ7Tf';\nlet page = 1, lastQuery = '', results = [], apiKey = BUILT_IN_KEY, tab = 'search';",
     "let page = 1, lastQuery = '', results = [];")
 rep("const IMG = { bg:null, logo:null, src:null }; // src: {kind:'pexels',id,url,tiny,photographer,alt} | {kind:'own',data}",
@@ -92,7 +92,7 @@ rep("function logoAspect(){ return IMG.logo ? IMG.logo.naturalHeight / IMG.logo.
     "  return im ? im.naturalHeight / im.naturalWidth : (base === 'wordmark' ? 0.134 : 1.12); }\n"
     "function logoAspect(el){ return markAspect((el && el.variant) || 'lockup'); }")
 rep("if (el.type === 'logo') return { x:el.x, y:el.y, w:el.w, h:el.w*logoAspect() };",
-    "if (el.type === 'logo') return { x:el.x, y:el.y, w:el.w, h:el.w*logoAspect(el) };\n  if (el.type === 'image') return { x:el.x, y:el.y, w:el.w, h:el.w*imageAspect(el) };\n  if (el.type === 'sticker') return { x:el.x, y:el.y, w:el.w, h:el.w*stickerAspect(el) };")
+    "if (el.type === 'logo') return { x:el.x, y:el.y, w:el.w, h:el.w*logoAspect(el) };\n  if (el.type === 'image') return { x:el.x, y:el.y, w:el.w, h:el.w*imageAspect(el) };\n  if (el.type === 'sticker') return { x:el.x, y:el.y, w:el.w, h:el.w*stickerAspect(el) };\n  if (el.type === 'wave') return { x:el.x, y:el.y, w:el.w, h:el.w*waveAspect(el) };")
 rep("function drawLogo(ctx, el){\n  const h = el.w * logoAspect();", "function drawLogo(ctx, el){\n  const h = el.w * logoAspect(el);")
 
 # Two-tone text: the footer's second line (the domain) is gold against the blue band.
@@ -106,9 +106,9 @@ rep("function logoEl(o){ const L = LOOKS[S.look]; return Object.assign({ id:'log
 # ================= backgrounds, notes, framed photos =================
 rep_between("function drawBokeh(w, h){", "// Soft feathered rectangle", blk('backgrounds.js'))
 rep("    else if (el.type === 'logo') drawLogo(ctx, el);\n  }\n  if (!forExport && S.sel) {",
-    "    else if (el.type === 'logo') drawLogo(ctx, el);\n    else if (el.type === 'image') drawImageEl(ctx, el);\n    else if (el.type === 'note') drawNote(ctx, el);\n    else if (el.type === 'sticker') drawSticker(ctx, el);\n  }\n  if (!forExport && S.sel) {")
+    "    else if (el.type === 'logo') drawLogo(ctx, el);\n    else if (el.type === 'image') drawImageEl(ctx, el);\n    else if (el.type === 'note') drawNote(ctx, el);\n    else if (el.type === 'sticker') drawSticker(ctx, el);\n    else if (el.type === 'wave') drawWave(ctx, el);\n  }\n  if (!forExport && S.sel) {")
 rep("    else if (el.type === 'logo') el.w = drag.w0*f;\n    else { el.w = drag.w0*f; el.h = drag.h0*f; }",
-    "    else if (el.type === 'logo' || el.type === 'image' || el.type === 'sticker') el.w = drag.w0*f;\n    else { el.w = drag.w0*f; el.h = drag.h0*f; }")
+    "    else if (el.type === 'logo' || el.type === 'image' || el.type === 'sticker' || el.type === 'wave') el.w = drag.w0*f;\n    else { el.w = drag.w0*f; el.h = drag.h0*f; }")
 
 # ================= layout + look =================
 rep_between("function layout(){", "// Apply the current look's colors", blk('layout.js'))
@@ -221,7 +221,7 @@ rep("""      <div class="row" id="textPosRow"><label>Text</label>
 # the calendar opens the rail: the schedule is where the work starts
 rep('  <aside class="panel" id="left">\n',
     '  <aside class="panel" id="left">\n' + """    <div class="sec" id="calSec" hidden>
-      <h2>Calendar <button class="btn link" id="calOpen" title="Open the schedule in Google Sheets">Open calendar</button></h2>
+      <h2>Calendar <button class="btn link" id="calSync" title="Re-read the sheet now">Refresh</button> <button class="btn link" id="calOpen" title="Open the schedule in Google Sheets">Open calendar</button></h2>
       <div class="cal-nav">
         <button class="btn sm" id="calPrev" title="Previous month with a tab" aria-label="Previous month">‹</button>
         <select id="calMonth" aria-label="Month"></select>
@@ -321,9 +321,9 @@ rep("function setTemplate(t){\n  pushUndo(); S.template = t; templateDefaults();
   syncControls(); renderInspector(); renderResults(); render();
 }""")
 rep("function snapshot(){ return JSON.stringify({ template:S.template, size:S.size, textPos:S.textPos, look:S.look, bg:S.bg, els:S.els }); }",
-    "function snapshot(){ return JSON.stringify({ template:S.template, size:S.size, textPos:S.textPos, look:S.look, wave:S.wave, waveWas:S.waveWas, noteFill:S.noteFill, noteRot:S.noteRot, bg:S.bg, els:S.els }); }")
+    "function snapshot(){ return JSON.stringify({ template:S.template, size:S.size, textPos:S.textPos, look:S.look, wave:S.wave, waveStyle:S.waveStyle, waveWas:S.waveWas, noteFill:S.noteFill, noteRot:S.noteRot, bg:S.bg, els:S.els }); }")
 rep("state: { template:S.template, size:S.size, textPos:S.textPos, look:S.look, bg:clone(S.bg), els:clone(S.els) }",
-    "state: { template:S.template, size:S.size, textPos:S.textPos, look:S.look, wave:S.wave, waveWas:S.waveWas, noteFill:S.noteFill, noteRot:S.noteRot, bg:clone(S.bg), els:clone(S.els) }")
+    "state: { template:S.template, size:S.size, textPos:S.textPos, look:S.look, wave:S.wave, waveStyle:S.waveStyle, waveWas:S.waveWas, noteFill:S.noteFill, noteRot:S.noteRot, bg:clone(S.bg), els:clone(S.els) }")
 rep("  if (['tc','tl','tr','mid'].includes(o.textPos)) S.textPos = o.textPos;", "  if (['tc','tl','mid'].includes(o.textPos)) S.textPos = o.textPos;")
 rep("  if (['logo','headline','event','review'].includes(o.template)) S.template = o.template;", "  if (['logo','headline','photo','collage','quote','note','list'].includes(o.template)) S.template = o.template;")
 rep("  if (typeof o.apiKey === 'string' && o.apiKey) apiKey = o.apiKey;\n", "")
@@ -344,6 +344,19 @@ rep("""  const defs = S.template === 'headline' ? [['headline','Headline','input
              : S.template === 'logo' ? []
              : [['headline','Headline','textarea']];""")
 
+rep("""function removeSel(){
+  if (!S.sel) return; pushUndo();
+  const el = byId(S.sel);""",
+"""function removeSel(){
+  if (!S.sel) return; pushUndo();
+  const el = byId(S.sel);
+  // a deleted frame piece has to come out of S.wave too, or the next layout rebuilds it
+  if (el && el.type === 'wave') {
+    const w = S.wave || 'bottom';
+    S.wave = w === 'both' ? (el.part === 'top' ? 'bottom' : 'top') : 'none';
+    syncControls();
+  }""")
+
 # ================= inspector: logo variants, framed photo, note =================
 rep("    box.append(h('p',{class:'hint',style:'margin-bottom:8px'}, 'Bakken-Young logo'));",
     "    box.append(row('Logo', seg([['lockup','Stacked'],['mark','Shield'],['wordmark','Wide']], ()=>(el.variant||'lockup').replace('-white',''), v=>el.variant = v + (String(el.variant||'').includes('white') ? '-white' : ''))));\n"
@@ -354,6 +367,14 @@ rep("  else if (el.type === 'box') {\n    box.append(h('div',{class:'field'}, h(
     box.append(row('Width', h('input',{type:'range',id:'insp-width',min:Math.round(W()*0.15),max:W(),value:Math.round(el.w),oninput:change(e=>{guard();el.w=+e.target.value;})})));
     box.append(row('Frame', seg([['tape','Taped'],['polaroid','Polaroid'],['plain','Plain']], ()=>el.style||'tape', v=>el.style=v)));
     box.append(row('Tilt', h('input',{type:'range',min:-12,max:12,value:Math.round((el.rot||0)*100),oninput:change(e=>{guard();el.rot=e.target.value/100;})})));
+  }
+  else if (el.type === 'wave') {
+    box.append(h('p',{class:'hint',style:'margin-bottom:8px'}, 'A piece of the wave frame. Drag to move, corners to resize, Delete to take it off.'));
+    box.append(row('Style', seg([['a','With lockup'],['b','Plain']], ()=>el.style||'a', v=>el.style=v)));
+    box.append(row('Edge', seg([['bottom','Bottom'],['top','Top']], ()=>el.part||'bottom', v=>{ el.part=v; el.id='wave-'+v; })));
+    box.append(chk('Flip over', ()=>!!el.flip, v=>el.flip=v));
+    box.append(row('Width', h('input',{type:'range',id:'insp-width',min:Math.round(W()*0.4),max:Math.round(W()*1.6),value:Math.round(el.w),oninput:change(e=>{guard();el.w=+e.target.value;})})));
+    box.append(h('button',{class:'btn sm',style:'margin-top:6px',onclick:()=>{ pushUndo(); const m=(WAVE&&WAVE.styles[el.style||'a'].parts[el.part||'bottom'])||{y:0.8}; el.x=0; el.w=W(); el.y=m.y*H(); el.flip=false; render(); renderInspector(); persist(); }}, 'Put it back'));
   }
   else if (el.type === 'sticker') {
     box.append(h('p',{class:'hint',style:'margin-bottom:8px'}, 'A sticker from Spring Forth\u2019s sheet. Drag to move, corners to resize.'));
@@ -373,7 +394,7 @@ rep("    box.append(chk('ALL CAPS', ()=>el.upper, v=>el.upper=v));\n    if (el.a
     "    box.append(chk('ALL CAPS', ()=>el.upper, v=>el.upper=v));\n    box.append(row('Font', seg([['hand','Handwriting'],['sans','Clean sans']], ()=>el.font||'hand', v=>el.font=v)));\n    if (el.align === 'center')")
 rep("rules:!!src.rules, shade:clone(src.shade || NO_SHADE()) });", "rules:!!src.rules, font:src.font, ls:src.ls, shade:clone(src.shade || NO_SHADE()) });")
 rep("    else if (el.type === 'logo') Object.assign(el, { shadow:src.shadow, shade:clone(src.shade) });",
-    "    else if (el.type === 'logo') Object.assign(el, { shadow:src.shadow, variant:src.variant, shade:clone(src.shade) });\n    else if (el.type === 'note') Object.assign(el, { fill:src.fill, rot:src.rot, tape:src.tape, lines:src.lines, pin:src.pin });\n    else if (el.type === 'sticker') Object.assign(el, { name:src.name, rot:src.rot });")
+    "    else if (el.type === 'logo') Object.assign(el, { shadow:src.shadow, variant:src.variant, shade:clone(src.shade) });\n    else if (el.type === 'note') Object.assign(el, { fill:src.fill, rot:src.rot, tape:src.tape, lines:src.lines, pin:src.pin });\n    else if (el.type === 'sticker') Object.assign(el, { name:src.name, rot:src.rot });\n    else if (el.type === 'wave') Object.assign(el, { part:src.part, style:src.style, flip:src.flip });")
 rep("      for (const ex of extras) S.els.push(Object.assign(clone(ex), { x: ex.x/w0*w, y: ex.y/h0*hh, w: ex.w/w0*w, size: ex.size*Math.min(w/w0, hh/h0) }));",
     "      for (const ex of extras) S.els.push(Object.assign(clone(ex), { x: ex.x/w0*w, y: ex.y/h0*hh, w: ex.w/w0*w, size: ex.size*Math.min(w/w0, hh/h0) }));\n"
     "" +

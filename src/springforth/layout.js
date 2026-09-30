@@ -1,3 +1,15 @@
+// The frame pieces S.wave asks for. Deleting one on the page clears it from S.wave, so it
+// does not come straight back on the next layout.
+function wantsWave(part){
+  const w = S.wave || 'bottom';
+  return w === 'both' || w === part;
+}
+function newWaveEl(part){
+  const st = S.waveStyle || 'a';
+  const m = (WAVE && WAVE.styles && WAVE.styles[st] && WAVE.styles[st].parts[part]) || { y: part === 'top' ? 0 : 0.8 };
+  return { id:'wave-' + part, type:'wave', part, style:st, x:0, y:m.y*H(), w:W(), flip:false };
+}
+
 // The wave frame carries the site lockup itself — it is part of the exported artwork, so
 // nothing here draws it. Every layout just has to keep its content clear of the frame:
 // `waveCeiling` is how far the top wave hangs, `waveFloor` how high the bottom wave rises.
@@ -9,8 +21,17 @@ function layout(){
   const pos = S.textPos || 'tc';
   const onPhoto = S.bg.kind === 'photo';
   const handSize = 78*u;
-  const head = (waveCeiling(0.05, 0.95) + 0.045)*h;       // first line of type clears the top wave
   const stickers = (S.els || []).filter(e => e.type === 'sticker');
+  // The frame pieces are elements, so a moved or resized one stays where it was put; only
+  // the ones S.wave asks for and that aren't on the page yet get made.
+  const frame = [];
+  for (const part of ['top','bottom']) {
+    if (!wantsWave(part)) continue;
+    const had = (S.els || []).find(e => e.type === 'wave' && e.part === part);
+    frame.push(had || newWaveEl(part));
+  }
+  FRAME = frame;                    // what waveCeiling/waveFloor measure against this pass
+  const head = (waveCeiling(0.05, 0.95) + 0.045)*h;       // first line of type clears the top wave
 
   if (S.template === 'note') {
     // One card, sized to its words and optically centred in the space the frame leaves — the
@@ -96,6 +117,7 @@ function layout(){
   const notes = els.filter(e => e.type === 'note');           // notes render behind their own text
   for (const n of notes) { const i = els.indexOf(n); els.splice(i,1); els.unshift(n); }
   const p = els.findIndex(e => e.id === 'photo'); if (p > 0) els.unshift(els.splice(p,1)[0]);
+  els.unshift(...frame);                                      // the frame sits under the content
   els.push(...stickers);                                      // stickers are placed by hand, and stay put
   S.els = els;
   S.sel = null;

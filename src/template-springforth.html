@@ -228,7 +228,7 @@ canvas#c.dragging{cursor:grabbing}
 <main class="app">
   <aside class="panel" id="left">
     <div class="sec" id="calSec" hidden>
-      <h2>Calendar <button class="btn link" id="calOpen" title="Open the schedule in Google Sheets">Open calendar</button></h2>
+      <h2>Calendar <button class="btn link" id="calSync" title="Re-read the sheet now">Refresh</button> <button class="btn link" id="calOpen" title="Open the schedule in Google Sheets">Open calendar</button></h2>
       <div class="cal-nav">
         <button class="btn sm" id="calPrev" title="Previous month with a tab" aria-label="Previous month">‹</button>
         <select id="calMonth" aria-label="Month"></select>
@@ -424,7 +424,7 @@ const LOOKS = {
 };
 
 // ---------- state ----------
-let S = { template:'note', size:'portrait', textPos:'tc', look:'blue', wave:'both', noteFill:'#e5f4ee', noteRot:-0.015,
+let S = { template:'note', size:'portrait', textPos:'tc', look:'blue', wave:'both', waveStyle:'a', noteFill:'#e5f4ee', noteRot:-0.015,
           bg:{kind:'paper', ground:'paper', seed:11, zoom:1, ox:0, oy:0, dim:0, fadePos:'none', fade:0.45, fadeSize:0.5, fadeColor:'#000000'}, els:[], sel:null };
 const IMG = { bg:null, src:null, lib:{} }; // src: {kind:'lib',id,url,...} | {kind:'own',data} | {kind:'ground',ground} | {kind:'collage',cells}
 let undo = [];
@@ -447,6 +447,18 @@ function text(id, str, o){
 }
 function logoEl(o){ return Object.assign({ id:'logo', type:'logo', variant:'lockup', shadow:false, shade:NO_SHADE() }, o); }
 
+// The frame pieces S.wave asks for. Deleting one on the page clears it from S.wave, so it
+// does not come straight back on the next layout.
+function wantsWave(part){
+  const w = S.wave || 'bottom';
+  return w === 'both' || w === part;
+}
+function newWaveEl(part){
+  const st = S.waveStyle || 'a';
+  const m = (WAVE && WAVE.styles && WAVE.styles[st] && WAVE.styles[st].parts[part]) || { y: part === 'top' ? 0 : 0.8 };
+  return { id:'wave-' + part, type:'wave', part, style:st, x:0, y:m.y*H(), w:W(), flip:false };
+}
+
 // The wave frame carries the site lockup itself — it is part of the exported artwork, so
 // nothing here draws it. Every layout just has to keep its content clear of the frame:
 // `waveCeiling` is how far the top wave hangs, `waveFloor` how high the bottom wave rises.
@@ -458,8 +470,17 @@ function layout(){
   const pos = S.textPos || 'tc';
   const onPhoto = S.bg.kind === 'photo';
   const handSize = 78*u;
-  const head = (waveCeiling(0.05, 0.95) + 0.045)*h;       // first line of type clears the top wave
   const stickers = (S.els || []).filter(e => e.type === 'sticker');
+  // The frame pieces are elements, so a moved or resized one stays where it was put; only
+  // the ones S.wave asks for and that aren't on the page yet get made.
+  const frame = [];
+  for (const part of ['top','bottom']) {
+    if (!wantsWave(part)) continue;
+    const had = (S.els || []).find(e => e.type === 'wave' && e.part === part);
+    frame.push(had || newWaveEl(part));
+  }
+  FRAME = frame;                    // what waveCeiling/waveFloor measure against this pass
+  const head = (waveCeiling(0.05, 0.95) + 0.045)*h;       // first line of type clears the top wave
 
   if (S.template === 'note') {
     // One card, sized to its words and optically centred in the space the frame leaves — the
@@ -545,6 +566,7 @@ function layout(){
   const notes = els.filter(e => e.type === 'note');           // notes render behind their own text
   for (const n of notes) { const i = els.indexOf(n); els.splice(i,1); els.unshift(n); }
   const p = els.findIndex(e => e.id === 'photo'); if (p > 0) els.unshift(els.splice(p,1)[0]);
+  els.unshift(...frame);                                      // the frame sits under the content
   els.push(...stickers);                                      // stickers are placed by hand, and stay put
   S.els = els;
   S.sel = null;
@@ -609,6 +631,7 @@ function bbox(ctx, el){
   if (el.type === 'logo') return { x:el.x, y:el.y, w:el.w, h:el.w*logoAspect(el) };
   if (el.type === 'image') return { x:el.x, y:el.y, w:el.w, h:el.w*imageAspect(el) };
   if (el.type === 'sticker') return { x:el.x, y:el.y, w:el.w, h:el.w*stickerAspect(el) };
+  if (el.type === 'wave') return { x:el.x, y:el.y, w:el.w, h:el.w*waveAspect(el) };
   return { x:el.x, y:el.y, w:el.w, h:el.h };
 }
 // Visible extent of a text block (the widest line), so shading hugs the words rather than the whole text box.
@@ -631,15 +654,18 @@ const GROUNDS = { paper:'Crumpled paper', cork:'Cork board' };
 const NOTE_FILLS = [['#e5f4ee','Mint'],['#f4ede0','Cream'],['#faece2','Peach'],['#00bcd1','Sky']];
 const DARK_CARDS = ['#00bcd1'];                 // cards that need light writing on them
 const TAPE_FILLS = ['#f8c97a','#bfe3f5','#cfe8cf','#f3e3c4'];
-IMG.tex = {}; IMG.stickers = {}; IMG.notes = {}; let WAVE = null; let STICKERS = []; let NOTE_CARDS = [];
+IMG.tex = {}; IMG.stickers = {}; IMG.notes = {}; IMG.waves = {}; let WAVE = null; let STICKERS = []; let NOTE_CARDS = [];
 
 function loadArt(){
   const one = (src) => new Promise(res => { const im = new Image(); im.onload = () => res(im); im.onerror = () => res(null); im.src = src; });
   return Promise.all([
     one('art/paper.jpg').then(i => IMG.tex.paper = i),
     one('art/cork.jpg').then(i => IMG.tex.cork = i),
-    Promise.all([one('art/wave-top.png'), one('art/wave-bottom.png'), fetch('art/wave.json').then(r => r.json())])
-      .then(([t, b, j]) => { WAVE = b ? Object.assign({ topImg:t, botImg:b }, j) : null; }).catch(() => WAVE = null),
+    fetch('art/waves/index.json').then(r => r.json()).then(j => {
+      WAVE = j;
+      return Promise.all(Object.keys(j.styles).flatMap(st => ['top','bottom'].map(part =>
+        one('art/waves/' + st + '-' + part + '.png').then(im => { IMG.waves[st + '-' + part] = im; }))));
+    }).catch(() => WAVE = null),
     fetch('art/notes/index.json').then(r => r.json()).then(list => {
       NOTE_CARDS = list;
       return Promise.all(list.map(d => {
@@ -662,34 +688,57 @@ function drawGround(ctx, w, h, style){
 }
 
 // ---------- the wave frame ----------
-// Exported from Canva as two transparent PNGs: the top wave and the bottom wave, the latter
-// carrying the site lockup and the gold hairline. Both are drawn full width at their own
-// height; nothing about them is redrawn by hand.
-function drawWaves(ctx, w, h, where){
-  if (!where || where === 'none' || !WAVE) return;
-  const both = where === 'both';
-  if ((both || where === 'top') && WAVE.topImg) ctx.drawImage(WAVE.topImg, 0, 0, w, WAVE.top.h*h);
-  if ((both || where === 'bottom') && WAVE.botImg) ctx.drawImage(WAVE.botImg, 0, WAVE.bottom.y*h, w, WAVE.bottom.h*h);
+// Exported from Canva as transparent PNGs \u2014 two styles, each with a top and a bottom
+// piece, the bottom of style A carrying the site lockup and the gold hairline. They are
+// ordinary elements on the page: drag them, resize them, swap the style, flip them or
+// delete them like anything else.
+let FRAME = [];                     // the frame pieces for the layout pass in flight
+function wavePart(el){ return (el.style || 'a') + '-' + (el.part || 'bottom'); }
+function waveImg(el){ return IMG.waves[wavePart(el)] || null; }
+function waveMeta(el){
+  const st = WAVE && WAVE.styles && WAVE.styles[el.style || 'a'];
+  return (st && st.parts[el.part || 'bottom']) || null;
 }
-// Where the frame's ink reaches at a given fraction across the width, so content can be
-// kept clear of it: `waveFloor` is the highest the bottom wave rises over a span, and
-// `waveCeiling` is the lowest the top wave hangs.
+function waveAspect(el){ const im = waveImg(el); return im ? im.naturalHeight/im.naturalWidth : 0.2; }
+function drawWave(ctx, el){
+  const im = waveImg(el); if (!im) return;
+  const hh = el.w * waveAspect(el);
+  ctx.save();
+  if (el.flip) { ctx.translate(el.x, el.y + hh); ctx.scale(1, -1); ctx.drawImage(im, 0, 0, el.w, hh); }
+  else ctx.drawImage(im, el.x, el.y, el.w, hh);
+  ctx.restore();
+}
+// Where the frame's ink actually reaches on the page, so layouts can keep clear of it.
+// It reads the placed elements, so moving or resizing a wave moves the content with it.
 function edgeAt(arr, fx){
   if (!arr) return null;
-  return arr[Math.max(0, Math.min(arr.length-1, Math.round(fx*(arr.length-1))))];
+  const v = arr[Math.max(0, Math.min(arr.length-1, Math.round(fx*(arr.length-1))))];
+  return v == null ? null : v;
 }
-function waveFloor(x0, x1){
-  if (!WAVE || (S.wave !== 'bottom' && S.wave !== 'both')) return 0.94;
-  let m = 1;
-  for (let f = Math.max(0,x0); f <= Math.min(1,x1); f += 0.004) m = Math.min(m, edgeAt(WAVE.bottom.edge, f));
-  return m;
+function waveEdge(x0, x1, which){
+  const h = H(), w = W();
+  let best = which === 'floor' ? 1 : 0;
+  for (const el of (FRAME.length ? FRAME : (S.els || []))) {
+    if (el.type !== 'wave') continue;
+    const m = waveMeta(el); if (!m) continue;
+    const scale = el.w / w, hh = el.w * waveAspect(el);
+    const isTop = (el.part === 'top') !== !!el.flip;
+    for (let f = Math.max(0,x0); f <= Math.min(1,x1); f += 0.006) {
+      // where this column of the page falls inside the piece
+      const fx = (f*w - el.x) / (el.w || 1);
+      if (fx < 0 || fx > 1) continue;
+      const e = edgeAt(m.edge, el.flip ? 1 - fx : fx);
+      if (e == null) continue;
+      const local = (e - m.y) / (m.h || 1);                 // 0..1 down the piece
+      const yOn = (el.y + (el.flip ? (1-local) : local) * hh) / h;
+      if (which === 'floor') { if (!isTop) best = Math.min(best, yOn); }
+      else if (isTop) best = Math.max(best, yOn);
+    }
+  }
+  return which === 'floor' ? best : best;
 }
-function waveCeiling(x0, x1){
-  if (!WAVE || (S.wave !== 'top' && S.wave !== 'both')) return 0.02;
-  let m = 0;
-  for (let f = Math.max(0,x0); f <= Math.min(1,x1); f += 0.004) m = Math.max(m, edgeAt(WAVE.top.edge, f));
-  return m;
-}
+function waveFloor(x0, x1){ const v = waveEdge(x0, x1, 'floor'); return v >= 1 ? 0.94 : v; }
+function waveCeiling(x0, x1){ const v = waveEdge(x0, x1, 'ceiling'); return v <= 0 ? 0.02 : v; }
 
 // ---------- stickers ----------
 // The hand-drawn marks from their sticker sheet. They are placed by hand, never scattered.
@@ -811,7 +860,6 @@ function drawPhoto(ctx, w, h, bg){
 function drawBackground(ctx, w, h){
   drawPhoto(ctx, w, h, S.bg);
   if (S.bg.kind === 'photo' && S.bg.dim > 0) { ctx.fillStyle = `rgba(0,0,0,${S.bg.dim})`; ctx.fillRect(0,0,w,h); }
-  drawWaves(ctx, w, h, S.wave || 'bottom');
 }
 // Soft feathered rectangle: solid in the middle, fading out at all four edges.
 function softRect(ctx, x, y, w, h, color, alpha){
@@ -896,6 +944,7 @@ function drawScene(ctx, w, h, forExport){
     else if (el.type === 'image') drawImageEl(ctx, el);
     else if (el.type === 'note') drawNote(ctx, el);
     else if (el.type === 'sticker') drawSticker(ctx, el);
+    else if (el.type === 'wave') drawWave(ctx, el);
   }
   if (!forExport && S.sel) {
     const el = byId(S.sel); if (!el) return;
@@ -1021,7 +1070,7 @@ cv.addEventListener('pointermove', e => {
     el.x = ax <= b0.x+1 ? ax : ax-nw;
     el.y = ay <= b0.y+1 ? ay : ay-nh;
     if (el.type === 'text') { el.w = drag.w0*f; el.size = Math.max(8, drag.size0*f); }
-    else if (el.type === 'logo' || el.type === 'image' || el.type === 'sticker') el.w = drag.w0*f;
+    else if (el.type === 'logo' || el.type === 'image' || el.type === 'sticker' || el.type === 'wave') el.w = drag.w0*f;
     else { el.w = drag.w0*f; el.h = drag.h0*f; }
   }
   render();
@@ -1048,7 +1097,7 @@ document.addEventListener('keydown', e => {
 });
 
 // ---------- undo ----------
-function snapshot(){ return JSON.stringify({ template:S.template, size:S.size, textPos:S.textPos, look:S.look, wave:S.wave, waveWas:S.waveWas, noteFill:S.noteFill, noteRot:S.noteRot, bg:S.bg, els:S.els }); }
+function snapshot(){ return JSON.stringify({ template:S.template, size:S.size, textPos:S.textPos, look:S.look, wave:S.wave, waveStyle:S.waveStyle, waveWas:S.waveWas, noteFill:S.noteFill, noteRot:S.noteRot, bg:S.bg, els:S.els }); }
 function pushUndo(){ undo.push(snapshot()); if (undo.length > 60) undo.shift(); $('#undoBtn').disabled = false; }
 function doUndo(){
   const snap = undo.pop(); if (!snap) return;
@@ -1164,6 +1213,12 @@ function h(tag, attrs, ...kids){
 function removeSel(){
   if (!S.sel) return; pushUndo();
   const el = byId(S.sel);
+  // a deleted frame piece has to come out of S.wave too, or the next layout rebuilds it
+  if (el && el.type === 'wave') {
+    const w = S.wave || 'bottom';
+    S.wave = w === 'both' ? (el.part === 'top' ? 'bottom' : 'top') : 'none';
+    syncControls();
+  }
   const ids = new Set([S.sel, ...(el?.kids||[])]);
   S.els = S.els.filter(e => !ids.has(e.id));
   S.sel = null; renderQuickFields(); renderInspector(); render();
@@ -1224,6 +1279,14 @@ function renderInspector(){
     box.append(row('Width', h('input',{type:'range',id:'insp-width',min:Math.round(W()*0.15),max:W(),value:Math.round(el.w),oninput:change(e=>{guard();el.w=+e.target.value;})})));
     box.append(row('Frame', seg([['tape','Taped'],['polaroid','Polaroid'],['plain','Plain']], ()=>el.style||'tape', v=>el.style=v)));
     box.append(row('Tilt', h('input',{type:'range',min:-12,max:12,value:Math.round((el.rot||0)*100),oninput:change(e=>{guard();el.rot=e.target.value/100;})})));
+  }
+  else if (el.type === 'wave') {
+    box.append(h('p',{class:'hint',style:'margin-bottom:8px'}, 'A piece of the wave frame. Drag to move, corners to resize, Delete to take it off.'));
+    box.append(row('Style', seg([['a','With lockup'],['b','Plain']], ()=>el.style||'a', v=>el.style=v)));
+    box.append(row('Edge', seg([['bottom','Bottom'],['top','Top']], ()=>el.part||'bottom', v=>{ el.part=v; el.id='wave-'+v; })));
+    box.append(chk('Flip over', ()=>!!el.flip, v=>el.flip=v));
+    box.append(row('Width', h('input',{type:'range',id:'insp-width',min:Math.round(W()*0.4),max:Math.round(W()*1.6),value:Math.round(el.w),oninput:change(e=>{guard();el.w=+e.target.value;})})));
+    box.append(h('button',{class:'btn sm',style:'margin-top:6px',onclick:()=>{ pushUndo(); const m=(WAVE&&WAVE.styles[el.style||'a'].parts[el.part||'bottom'])||{y:0.8}; el.x=0; el.w=W(); el.y=m.y*H(); el.flip=false; render(); renderInspector(); persist(); }}, 'Put it back'));
   }
   else if (el.type === 'sticker') {
     box.append(h('p',{class:'hint',style:'margin-bottom:8px'}, 'A sticker from Spring Forth’s sheet. Drag to move, corners to resize.'));
@@ -1503,7 +1566,7 @@ function thumb(){
 }
 function currentDraft(){
   return { id: currentDraftId || ('d'+Date.now().toString(36)), name: draftName(), savedAt: Date.now(), thumb: thumb(),
-           state: { template:S.template, size:S.size, textPos:S.textPos, look:S.look, wave:S.wave, waveWas:S.waveWas, noteFill:S.noteFill, noteRot:S.noteRot, bg:clone(S.bg), els:clone(S.els) }, photo: IMG.src ? clone(IMG.src) : null };
+           state: { template:S.template, size:S.size, textPos:S.textPos, look:S.look, wave:S.wave, waveStyle:S.waveStyle, waveWas:S.waveWas, noteFill:S.noteFill, noteRot:S.noteRot, bg:clone(S.bg), els:clone(S.els) }, photo: IMG.src ? clone(IMG.src) : null };
 }
 function saveDraft(){
   const d = currentDraft();
@@ -1614,6 +1677,7 @@ function carryStyle(from, to){
     else if (el.type === 'logo') Object.assign(el, { shadow:src.shadow, variant:src.variant, shade:clone(src.shade) });
     else if (el.type === 'note') Object.assign(el, { fill:src.fill, rot:src.rot, tape:src.tape, lines:src.lines, pin:src.pin });
     else if (el.type === 'sticker') Object.assign(el, { name:src.name, rot:src.rot });
+    else if (el.type === 'wave') Object.assign(el, { part:src.part, style:src.style, flip:src.flip });
     else if (el.type === 'box') Object.assign(el, { fill:src.fill, alpha:src.alpha, label:src.label, labelFill:src.labelFill, labelColor:src.labelColor });
   }
   return to;
@@ -2015,8 +2079,9 @@ async function tryMonth(cfg, y, m){
 async function discoverMonths(){
   const cfg = calCfg(); if (!cfg) return [];
   const now = new Date();
+  // this month and what's ahead of it; once a month has gone by its tab is done with
   const want = [];
-  for (let i = -2; i <= 3; i++) { const d = new Date(now.getFullYear(), now.getMonth()+i, 1); want.push([d.getFullYear(), d.getMonth()]); }
+  for (let i = 0; i <= 5; i++) { const d = new Date(now.getFullYear(), now.getMonth()+i, 1); want.push([d.getFullYear(), d.getMonth()]); }
   const found = await Promise.all(want.map(([y,m]) => tryMonth(cfg, y, m)));
   return found.filter(Boolean);
 }
@@ -2068,6 +2133,49 @@ function doneKey(p){ return (calCfg() || {}).sheetId + '|' + p.iso; }
 function isDone(p){ return !!calDone[doneKey(p)]; }
 function markPostDone(p){ if (!p) return; calDone[doneKey(p)] = Date.now(); saveCalDone(); renderCalendar(); }
 
+// ---------- the headline for a post with no hook text ----------
+// Three things the plain phrase-bank fallback got wrong, all measured against the live sheet:
+//
+//   * the BUCKET column is an explicit label and was being ignored. Guessing the topic from
+//     the caption instead disagreed with it on 37 of 57 posts;
+//   * every caption ends with a call to action ("Message us for tour details", "ask",
+//     "comment"), and the caption matcher is first-rule-wins, so it fired on the CTA rather
+//     than the body — an Inspiring Growth post about growth mindset came out "Now Enrolling!";
+//   * the pick was random, so the same post gave a different headline on every click and a
+//     graphic could not be made again.
+//
+// So: the bucket decides the topic, the caption is only consulted when the bucket is blank
+// and then only its body, and the choice is seeded from the date so a post always suggests
+// the same thing.
+const BUCKET_TOPIC = { 'inspiring growth':'values', 'equipping':'philosophy',
+                       'community':'community', 'enrollment':'enroll', 'enrollement':'enroll' };
+function topicForBucket(bucket){
+  for (const part of String(bucket || '').split(/[\/,&]+/)) {
+    const t = BUCKET_TOPIC[part.trim().toLowerCase()];
+    if (t) return t;
+  }
+  return null;
+}
+// Cut the caption at its call to action or hashtags, so the topic comes from what the post
+// is about rather than how it signs off.
+function captionBody(txt){
+  const t = String(txt || '');
+  const cut = t.search(/\n\s*(?:\u{1F449}|#)|(?:wondering|curious|want to|ready to|interested|message us|send us|dm us|book a|schedule a|learn more|tour details)/iu);
+  return (cut > 40 ? t.slice(0, cut) : t).trim();
+}
+// A stable pick: same post, same suggestion, every time.
+function seededPick(list, seed){
+  let x = 0;
+  for (const ch of String(seed)) x = (x*31 + ch.charCodeAt(0)) % 2147483647;
+  return list[x % list.length];
+}
+function headlineFor(p){
+  if (p.hook) return p.hook;
+  const topic = topicForBucket(p.bucket) || detectTopic(captionBody(p.post)) || 'values';
+  const heads = (BANK[topic] && BANK[topic].heads) || BANK.values.heads;
+  return seededPick(heads, p.iso + '|' + topic);
+}
+
 // Choosing a post fills the headline box from its hook text, and falls back to the phrase
 // bank when the sheet has none yet. The box stays editable either way.
 function usePost(iso){
@@ -2078,11 +2186,7 @@ function usePost(iso){
   if (row && row.iso.includes(iso)) CAL.view.used = iso;
   else CAL.view = { kind:'day', iso };
   pushUndo();
-  let head = p.hook;
-  if (!head) {
-    const from = p.post || p.bucket || '';
-    head = suggestText(from ? detectTopic(from) : 'any').headline;
-  }
+  const head = headlineFor(p);
   if (S.template === 'logo' || S.template === 'photo') { S.template = 'note'; templateDefaults(); }
   layout();
   const el = byId('headline');
@@ -2109,7 +2213,7 @@ function openDefault(){
     const next = CAL.months.find(x => x.y === nx.getFullYear() && x.m === nx.getMonth());
     if (next) { CAL.cur = next.key; const g = curGrid(); const row = g.findIndex(r => r.posts.length); CAL.view = { kind:'week', row: row < 0 ? 0 : row }; return; }
   }
-  const month = here || CAL.months[0];
+  const month = here || CAL.months[0];          // if this month has no tab, start at the next one that does
   if (!month) return;
   CAL.cur = month.key;
   const g = curGrid();
@@ -2209,12 +2313,55 @@ function renderCalendar(){
   }
 }
 
+// ---------- staying in step with the sheet ----------
+// The sheet is edited while the studio is open, so it is re-read on a timer and whenever the
+// tab comes back to the front. Whatever Karissa is looking at is kept: same month, same day
+// or week, and the headline on the canvas is left alone unless that post's hook text has
+// actually changed in the sheet.
+let calBusy = false, calLastSync = 0;
+function postSig(list){ return list.map(p => p.iso + '\u0001' + p.bucket + '\u0001' + p.hook).join('\u0002'); }
+async function refreshCalendar(reason){
+  if (calBusy || !calCfg()) return;
+  calBusy = true;
+  const btn = $('#calSync'); if (btn) btn.disabled = true;
+  const wasCur = CAL.cur, wasView = CAL.view && Object.assign({}, CAL.view);
+  const before = new Map(CAL.months.map(m => [m.key, postSig(m.posts)]));
+  try {
+    const months = await discoverMonths();
+    if (months.length) {
+      const added = months.filter(m => !before.has(m.key)).map(m => m.label);
+      const changed = months.filter(m => before.has(m.key) && before.get(m.key) !== postSig(m.posts)).map(m => m.label);
+      CAL.months = months; CAL.state = 'ready';
+      if (months.some(m => m.key === wasCur)) { CAL.cur = wasCur; CAL.view = wasView; }
+      else openDefault();
+      // if the post on screen now has hook text in the sheet, take it
+      const p = selectedPost();
+      if (p && p.hook && byId('headline') && byId('headline').text !== p.hook) {
+        byId('headline').text = p.hook; renderQuickFields(); render();
+      }
+      renderCalendar();
+      if (reason === 'manual') toast(added.length || changed.length ? 'Calendar updated' : 'Calendar is up to date');
+      else if (added.length) toast('Calendar: ' + added.join(', ') + ' added');
+      else if (changed.length) toast('Calendar: ' + changed.join(', ') + ' updated');
+    } else if (reason === 'manual') toast('Couldn\u2019t read the calendar just now');
+    calLastSync = Date.now();
+  } catch { if (reason === 'manual') toast('Couldn\u2019t reach the calendar'); }
+  finally { calBusy = false; if (btn) btn.disabled = false; }
+}
+function watchCalendar(){
+  setInterval(() => { if (!document.hidden) refreshCalendar('timer'); }, 5*60*1000);
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden && Date.now() - calLastSync > 60*1000) refreshCalendar('focus');
+  });
+}
+
 async function wireCalendar(){
   if (!window.BI_CLIENTS) await new Promise(r => window.addEventListener('load', r, { once:true }));
   const cfg = calCfg();
   if (!cfg) { const sec = $('#calSec'); if (sec) sec.hidden = true; return; }
   loadCalDone();
   $('#calOpen').addEventListener('click', () => window.open(cfg.url, '_blank', 'noopener'));
+  $('#calSync').addEventListener('click', () => refreshCalendar('manual'));
   $('#calMonth').addEventListener('change', e => { CAL.cur = e.target.value; CAL.view = { kind:'week', row:0 }; const g = curGrid(); const r = g.findIndex(x => x.posts.length); CAL.view.row = r < 0 ? 0 : r; renderCalendar(); });
   const step = (d) => { const i = CAL.months.findIndex(x => x.key === CAL.cur) + d;
     if (i < 0 || i >= CAL.months.length) return;
@@ -2228,7 +2375,9 @@ async function wireCalendar(){
     CAL.state = CAL.months.length ? 'ready' : 'empty';
   } catch { CAL.state = 'offline'; }
   if (CAL.state === 'ready') openDefault();
+  calLastSync = Date.now();
   renderCalendar();
+  watchCalendar();
 }
 
 // ---------- misc ----------

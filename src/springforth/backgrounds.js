@@ -7,15 +7,18 @@ const GROUNDS = { paper:'Crumpled paper', cork:'Cork board' };
 const NOTE_FILLS = [['#e5f4ee','Mint'],['#f4ede0','Cream'],['#faece2','Peach'],['#00bcd1','Sky']];
 const DARK_CARDS = ['#00bcd1'];                 // cards that need light writing on them
 const TAPE_FILLS = ['#f8c97a','#bfe3f5','#cfe8cf','#f3e3c4'];
-IMG.tex = {}; IMG.stickers = {}; IMG.notes = {}; let WAVE = null; let STICKERS = []; let NOTE_CARDS = [];
+IMG.tex = {}; IMG.stickers = {}; IMG.notes = {}; IMG.waves = {}; let WAVE = null; let STICKERS = []; let NOTE_CARDS = [];
 
 function loadArt(){
   const one = (src) => new Promise(res => { const im = new Image(); im.onload = () => res(im); im.onerror = () => res(null); im.src = src; });
   return Promise.all([
     one('art/paper.jpg').then(i => IMG.tex.paper = i),
     one('art/cork.jpg').then(i => IMG.tex.cork = i),
-    Promise.all([one('art/wave-top.png'), one('art/wave-bottom.png'), fetch('art/wave.json').then(r => r.json())])
-      .then(([t, b, j]) => { WAVE = b ? Object.assign({ topImg:t, botImg:b }, j) : null; }).catch(() => WAVE = null),
+    fetch('art/waves/index.json').then(r => r.json()).then(j => {
+      WAVE = j;
+      return Promise.all(Object.keys(j.styles).flatMap(st => ['top','bottom'].map(part =>
+        one('art/waves/' + st + '-' + part + '.png').then(im => { IMG.waves[st + '-' + part] = im; }))));
+    }).catch(() => WAVE = null),
     fetch('art/notes/index.json').then(r => r.json()).then(list => {
       NOTE_CARDS = list;
       return Promise.all(list.map(d => {
@@ -38,34 +41,57 @@ function drawGround(ctx, w, h, style){
 }
 
 // ---------- the wave frame ----------
-// Exported from Canva as two transparent PNGs: the top wave and the bottom wave, the latter
-// carrying the site lockup and the gold hairline. Both are drawn full width at their own
-// height; nothing about them is redrawn by hand.
-function drawWaves(ctx, w, h, where){
-  if (!where || where === 'none' || !WAVE) return;
-  const both = where === 'both';
-  if ((both || where === 'top') && WAVE.topImg) ctx.drawImage(WAVE.topImg, 0, 0, w, WAVE.top.h*h);
-  if ((both || where === 'bottom') && WAVE.botImg) ctx.drawImage(WAVE.botImg, 0, WAVE.bottom.y*h, w, WAVE.bottom.h*h);
+// Exported from Canva as transparent PNGs \u2014 two styles, each with a top and a bottom
+// piece, the bottom of style A carrying the site lockup and the gold hairline. They are
+// ordinary elements on the page: drag them, resize them, swap the style, flip them or
+// delete them like anything else.
+let FRAME = [];                     // the frame pieces for the layout pass in flight
+function wavePart(el){ return (el.style || 'a') + '-' + (el.part || 'bottom'); }
+function waveImg(el){ return IMG.waves[wavePart(el)] || null; }
+function waveMeta(el){
+  const st = WAVE && WAVE.styles && WAVE.styles[el.style || 'a'];
+  return (st && st.parts[el.part || 'bottom']) || null;
 }
-// Where the frame's ink reaches at a given fraction across the width, so content can be
-// kept clear of it: `waveFloor` is the highest the bottom wave rises over a span, and
-// `waveCeiling` is the lowest the top wave hangs.
+function waveAspect(el){ const im = waveImg(el); return im ? im.naturalHeight/im.naturalWidth : 0.2; }
+function drawWave(ctx, el){
+  const im = waveImg(el); if (!im) return;
+  const hh = el.w * waveAspect(el);
+  ctx.save();
+  if (el.flip) { ctx.translate(el.x, el.y + hh); ctx.scale(1, -1); ctx.drawImage(im, 0, 0, el.w, hh); }
+  else ctx.drawImage(im, el.x, el.y, el.w, hh);
+  ctx.restore();
+}
+// Where the frame's ink actually reaches on the page, so layouts can keep clear of it.
+// It reads the placed elements, so moving or resizing a wave moves the content with it.
 function edgeAt(arr, fx){
   if (!arr) return null;
-  return arr[Math.max(0, Math.min(arr.length-1, Math.round(fx*(arr.length-1))))];
+  const v = arr[Math.max(0, Math.min(arr.length-1, Math.round(fx*(arr.length-1))))];
+  return v == null ? null : v;
 }
-function waveFloor(x0, x1){
-  if (!WAVE || (S.wave !== 'bottom' && S.wave !== 'both')) return 0.94;
-  let m = 1;
-  for (let f = Math.max(0,x0); f <= Math.min(1,x1); f += 0.004) m = Math.min(m, edgeAt(WAVE.bottom.edge, f));
-  return m;
+function waveEdge(x0, x1, which){
+  const h = H(), w = W();
+  let best = which === 'floor' ? 1 : 0;
+  for (const el of (FRAME.length ? FRAME : (S.els || []))) {
+    if (el.type !== 'wave') continue;
+    const m = waveMeta(el); if (!m) continue;
+    const scale = el.w / w, hh = el.w * waveAspect(el);
+    const isTop = (el.part === 'top') !== !!el.flip;
+    for (let f = Math.max(0,x0); f <= Math.min(1,x1); f += 0.006) {
+      // where this column of the page falls inside the piece
+      const fx = (f*w - el.x) / (el.w || 1);
+      if (fx < 0 || fx > 1) continue;
+      const e = edgeAt(m.edge, el.flip ? 1 - fx : fx);
+      if (e == null) continue;
+      const local = (e - m.y) / (m.h || 1);                 // 0..1 down the piece
+      const yOn = (el.y + (el.flip ? (1-local) : local) * hh) / h;
+      if (which === 'floor') { if (!isTop) best = Math.min(best, yOn); }
+      else if (isTop) best = Math.max(best, yOn);
+    }
+  }
+  return which === 'floor' ? best : best;
 }
-function waveCeiling(x0, x1){
-  if (!WAVE || (S.wave !== 'top' && S.wave !== 'both')) return 0.02;
-  let m = 0;
-  for (let f = Math.max(0,x0); f <= Math.min(1,x1); f += 0.004) m = Math.max(m, edgeAt(WAVE.top.edge, f));
-  return m;
-}
+function waveFloor(x0, x1){ const v = waveEdge(x0, x1, 'floor'); return v >= 1 ? 0.94 : v; }
+function waveCeiling(x0, x1){ const v = waveEdge(x0, x1, 'ceiling'); return v <= 0 ? 0.02 : v; }
 
 // ---------- stickers ----------
 // The hand-drawn marks from their sticker sheet. They are placed by hand, never scattered.
@@ -187,5 +213,4 @@ function drawPhoto(ctx, w, h, bg){
 function drawBackground(ctx, w, h){
   drawPhoto(ctx, w, h, S.bg);
   if (S.bg.kind === 'photo' && S.bg.dim > 0) { ctx.fillStyle = `rgba(0,0,0,${S.bg.dim})`; ctx.fillRect(0,0,w,h); }
-  drawWaves(ctx, w, h, S.wave || 'bottom');
 }
