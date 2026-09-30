@@ -24,7 +24,7 @@ function layout(){
     els.push({ id:'note', type:'note', x:nx, y:ny, w:nw, h:nh, fill:S.noteFill || '#e5f4ee',
                tapeFill:S.tapeFill || TAPE_FILLS[0], rot:S.noteRot ?? -0.015, tape:true, kids:['headline'] });
     els.push(text('headline', hl, { x:nx + nw*0.08, y:ny + (nh - textH)/2, w:nw*0.84, size:handSize,
-      align:'center', lh:1.22, color:DEEP, shadow:false }));
+      align:'center', lh:1.22, color:DARK_CARDS.includes(S.noteFill) ? '#ffffff' : DEEP, shadow:false }));
   }
   else if (S.template === 'list') {
     // their "Three questions …" / "Instead of … try:" format: a blue headline, then three
@@ -47,7 +47,7 @@ function layout(){
       els.push({ id:'note-'+(i+1), type:'note', x:nx, y:ny, w:nw, h:nh, fill:NOTE_FILLS[i%NOTE_FILLS.length][0],
                  rot:(i-1)*0.016, tape:false, kids:[id] });
       els.push(text(id, byId(id)?.text ?? defaults[i], { x:nx+nw*0.09, y:ny+nh*0.20, w:nw*0.82, size:29*u,
-        align:'center', lh:1.30, font:'sans', color:'#2f3a40', shadow:false }));
+        align:'center', lh:1.30, font:'sans', color:DARK_CARDS.includes(NOTE_FILLS[i%NOTE_FILLS.length][0]) ? '#ffffff' : '#2f3a40', shadow:false }));
     }
   }
   else if (S.template === 'quote') {

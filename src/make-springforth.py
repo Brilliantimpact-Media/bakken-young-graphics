@@ -81,7 +81,7 @@ rep("""const LOOKS = {
   gold: { label:'Gold writing', accent:'#bb8a2d', text:'#8a7a55', shadow:false, dim:null, fade:null, swatch:['#fbfaf6','#bb8a2d'] },
 };""")
 rep("let S = { template:'headline', size:'square', textPos:'tc', look:'classic',\n          bg:{zoom:1, ox:0, oy:0, dim:0.35, fadePos:'none', fade:0.45, fadeSize:0.55, fadeColor:'#000000'}, els:[], sel:null };",
-    "let S = { template:'note', size:'portrait', textPos:'tc', look:'blue', wave:'both', noteFill:'#dff1ee', noteRot:-0.015,\n          bg:{kind:'paper', ground:'paper', seed:11, zoom:1, ox:0, oy:0, dim:0, fadePos:'none', fade:0.45, fadeSize:0.5, fadeColor:'#000000'}, els:[], sel:null };")
+    "let S = { template:'note', size:'portrait', textPos:'tc', look:'blue', wave:'both', noteFill:'#e5f4ee', noteRot:-0.015,\n          bg:{kind:'paper', ground:'paper', seed:11, zoom:1, ox:0, oy:0, dim:0, fadePos:'none', fade:0.45, fadeSize:0.5, fadeColor:'#000000'}, els:[], sel:null };")
 rep("const BUILT_IN_KEY = 'dMBOWE33ohoJ8Weu0lSEIQhWNDpSnHnC3n9Vkhs3l7I4cfYOKDJgZ7Tf';\nlet page = 1, lastQuery = '', results = [], apiKey = BUILT_IN_KEY, tab = 'search';",
     "let page = 1, lastQuery = '', results = [];")
 rep("const IMG = { bg:null, logo:null, src:null }; // src: {kind:'pexels',id,url,tiny,photographer,alt} | {kind:'own',data}",
@@ -126,6 +126,8 @@ function applyLook(withPhoto){
     if (el.id === 'quote') { el.color = L.accent; el.shadow = false; continue; }
     if (el.id === 'attr') { el.shadow = false; continue; }
     const inNote = S.template === 'note' && el.id === 'headline';
+    // writing on the strong cyan card has to be white, whatever the look says
+    if (inNote && DARK_CARDS.includes(S.noteFill)) { el.color = '#ffffff'; el.shadow = false; continue; }
     el.color = (onPhoto && !inNote) ? '#ffffff' : (el.id === 'headline' ? L.accent : L.text);
     el.shadow = onPhoto && !inNote;
   }

@@ -3,9 +3,11 @@
 // photographs, the wave frame and the stickers, all exported from the artwork itself.
 const SKY = '#1cc1e0', DEEP = '#03a2c6', GOLD = '#ffc000', BRONZE = '#bb8a2d';
 const GROUNDS = { paper:'Crumpled paper', cork:'Cork board' };
-const NOTE_FILLS = [['#e5f4ee','Mint'],['#fbf0d7','Cream'],['#fae2e0','Peach'],['#ddeef8','Sky'],['#ffffff','White']];
+// the four taped cards, exported from Canva; the hex doubles as the card's id
+const NOTE_FILLS = [['#e5f4ee','Mint'],['#f4ede0','Cream'],['#faece2','Peach'],['#00bcd1','Sky']];
+const DARK_CARDS = ['#00bcd1'];                 // cards that need light writing on them
 const TAPE_FILLS = ['#f8c97a','#bfe3f5','#cfe8cf','#f3e3c4'];
-IMG.tex = {}; IMG.stickers = {}; let WAVE = null; let STICKERS = [];
+IMG.tex = {}; IMG.stickers = {}; IMG.notes = {}; let WAVE = null; let STICKERS = []; let NOTE_CARDS = [];
 
 function loadArt(){
   const one = (src) => new Promise(res => { const im = new Image(); im.onload = () => res(im); im.onerror = () => res(null); im.src = src; });
@@ -14,6 +16,13 @@ function loadArt(){
     one('art/cork.jpg').then(i => IMG.tex.cork = i),
     Promise.all([one('art/wave-top.png'), one('art/wave-bottom.png'), fetch('art/wave.json').then(r => r.json())])
       .then(([t, b, j]) => { WAVE = b ? Object.assign({ topImg:t, botImg:b }, j) : null; }).catch(() => WAVE = null),
+    fetch('art/notes/index.json').then(r => r.json()).then(list => {
+      NOTE_CARDS = list;
+      return Promise.all(list.map(d => {
+        const rec = IMG.notes[d.name] = { meta:d };
+        return one('art/notes/tape-' + d.name + '.png').then(i => { rec.tapeImg = i; });
+      }));
+    }).catch(() => { NOTE_CARDS = []; }),
     fetch('art/stickers/index.json').then(r => r.json()).then(list => {
       STICKERS = list;
       return Promise.all(list.map(d => one('art/stickers/' + d.file).then(i => { if (i) IMG.stickers[d.file.replace('.png','')] = i; })));
@@ -78,18 +87,35 @@ function drawTape(ctx, cx, cy, len, rot, fill){
   ctx.globalAlpha = 0.92; ctx.fillRect(-len/2, -len*0.155, len, len*0.31);
   ctx.restore();
 }
+// The cards come from Spring Forth's own sheet. The card itself is a flat rectangle with a
+// soft drop shadow, which canvas reproduces exactly — stretching the photograph of it just
+// leaves nine-slice seams. The tape is the part with character, so that is the real artwork,
+// drawn on top at the size and offset measured off the sheet. The cork notepad, which has
+// ruled lines and a pin, still uses the drawn version below.
+function cardFor(el){
+  const meta = NOTE_CARDS.find(c => c.fill === (el.fill || '').toLowerCase());
+  if (!meta || el.tape === false || el.lines) return null;
+  const rec = IMG.notes[meta.name];
+  return { meta, tape: rec && rec.tapeImg };
+}
 function drawNote(ctx, el){
   ctx.save();
   ctx.translate(el.x + el.w/2, el.y + el.h/2); ctx.rotate(el.rot || 0); ctx.translate(-el.w/2, -el.h/2);
+  const card = cardFor(el);
   ctx.shadowColor = 'rgba(40,40,40,0.26)'; ctx.shadowBlur = el.w*0.055; ctx.shadowOffsetY = el.w*0.014;
-  ctx.fillStyle = el.fill || '#e5f4ee';
-  ctx.beginPath(); ctx.roundRect(0, 0, el.w, el.h, el.w*0.018); ctx.fill();
+  ctx.fillStyle = (card ? card.meta.fill : el.fill) || '#e5f4ee';
+  ctx.beginPath(); ctx.roundRect(0, 0, el.w, el.h, el.w*0.012); ctx.fill();
   ctx.shadowColor = 'transparent';
   if (el.lines) {
     ctx.strokeStyle = 'rgba(110,145,168,0.32)'; ctx.lineWidth = Math.max(1, el.w*0.004);
     for (let y = el.h*0.20; y < el.h*0.93; y += el.h*0.098) { ctx.beginPath(); ctx.moveTo(el.w*0.07, y); ctx.lineTo(el.w*0.93, y); ctx.stroke(); }
   }
-  if (el.tape !== false) drawTape(ctx, el.w/2, 0, el.w*0.30, -(el.rot||0)*0.7, el.tapeFill);
+  if (card && card.tape) {
+    const t = card.meta.tape, tw = t.wf*el.w, th = tw * (t.h/t.w);
+    ctx.drawImage(card.tape, t.cx*el.w - tw/2, t.top*el.w, tw, th);
+  } else if (el.tape !== false) {
+    drawTape(ctx, el.w/2, 0, el.w*0.30, -(el.rot||0)*0.7, el.tapeFill);
+  }
   if (el.pin) {
     const px = el.w/2, py = el.h*0.045, pr = el.w*0.032;
     ctx.fillStyle = 'rgba(0,0,0,0.18)'; ctx.beginPath(); ctx.ellipse(px+pr*0.35, py+pr*0.5, pr*0.95, pr*0.5, 0, 0, Math.PI*2); ctx.fill();
