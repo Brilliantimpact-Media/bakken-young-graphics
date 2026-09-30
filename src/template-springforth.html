@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Spring Forth Graphics</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gochi+Hand&family=Caveat:wght@500;600;700&family=Quicksand:wght@400;500;600;700&family=Nunito+Sans:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chewy&family=Roboto+Slab:wght@300;400;500;600;700&family=Quicksand:wght@400;500;600;700&display=swap">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <style>
 :root{
@@ -92,7 +92,7 @@ input[type=color]{width:34px;height:28px;padding:0;border:1px solid var(--line-s
 .looks{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}
 .look{border:1px solid var(--line-strong);border-radius:8px;padding:6px 8px;cursor:pointer;display:flex;align-items:center;gap:8px;background:var(--panel-2);font-size:12px;font-weight:600;text-align:left}
 .look[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent);background:var(--accent-soft)}
-.look i{width:26px;height:26px;border-radius:5px;flex:0 0 auto;display:grid;place-items:center;font:400 15px "Gochi Hand",cursive;border:1px solid rgba(0,0,0,.15)}
+.look i{width:26px;height:26px;border-radius:5px;flex:0 0 auto;display:grid;place-items:center;font:400 15px "Chewy",cursive;border:1px solid rgba(0,0,0,.15)}
 
 .chips{display:flex;flex-wrap:wrap;gap:6px}
 .chip{border:1px solid var(--line-strong);background:var(--panel);border-radius:999px;padding:4px 10px;font-size:12px;cursor:pointer}
@@ -138,7 +138,7 @@ canvas#c.dragging{cursor:grabbing}
 .welcome{position:absolute;inset:0;display:grid;place-items:center;background:var(--stage);border-radius:10px;z-index:3;padding:24px}
 .welcome-card{max-width:480px;width:100%;text-align:center;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:36px 30px 30px;box-shadow:var(--shadow)}
 .welcome-card .kicker{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:10px}
-.welcome-card h2{margin:0 0 10px;font:400 44px/1.05 "Gochi Hand",cursive;color:var(--ink)}
+.welcome-card h2{margin:0 0 10px;font:400 42px/1.05 "Chewy",cursive;color:var(--ink)}
 .welcome-card p{margin:0 auto 24px;max-width:38ch;color:var(--muted);font-size:14px;line-height:1.55}
 .btn.gen.big{font-size:18px;padding:14px 30px;border-radius:12px}
 .ping{position:relative;animation:ping 1.7s ease-out infinite}
@@ -150,7 +150,7 @@ canvas#c.dragging{cursor:grabbing}
 .kbd{font-family:ui-monospace,Menlo,monospace;font-size:11px;background:var(--panel-2);border:1px solid var(--line-strong);border-radius:4px;padding:1px 4px}
 .setup{position:fixed;inset:0;background:rgba(0,0,0,.55);display:grid;place-items:center;z-index:20;padding:16px}
 .setup > div{background:var(--panel);color:var(--ink);border-radius:12px;padding:22px 24px;max-width:460px;width:100%;box-shadow:var(--shadow)}
-.setup h2{margin:0 0 6px;font:400 26px/1.1 "Gochi Hand",cursive}
+.setup h2{margin:0 0 6px;font:400 25px/1.1 "Chewy",cursive}
 .setup p{margin:0 0 12px;color:var(--muted);font-size:13px;line-height:1.5}
 .setup .field{margin-bottom:12px}
 .setup textarea{min-height:110px}
@@ -204,6 +204,8 @@ canvas#c.dragging{cursor:grabbing}
           <svg viewBox="0 0 44 44"><rect x="2" y="2" width="40" height="40" rx="4" fill="#9fb8c4"/><path d="M2 26l11-9 9 7 7-5 13 10v8a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4z" fill="#7d9aa8"/><circle cx="31" cy="12" r="4" fill="#ffc000"/><rect x="2" y="33" width="40" height="9" fill="#1cc1e0"/></svg>Photo</button>
         <button class="tile" data-t="collage" aria-pressed="false">
           <svg viewBox="0 0 44 44"><rect x="2" y="2" width="40" height="40" rx="4" fill="#eef3f2"/><rect x="2" y="33" width="40" height="9" fill="#1cc1e0"/><rect x="6" y="7" width="15" height="12" fill="#fff" stroke="#c3cdd2"/><rect x="23" y="7" width="15" height="12" fill="#fff" stroke="#c3cdd2"/><rect x="6" y="21" width="32" height="9" fill="#fff" stroke="#c3cdd2"/></svg>Collage</button>
+        <button class="tile" data-t="list" aria-pressed="false">
+          <svg viewBox="0 0 44 44"><rect x="2" y="2" width="40" height="40" rx="4" fill="#eef3f2"/><rect x="2" y="33" width="40" height="9" fill="#1cc1e0"/><path d="M11 9h22" stroke="#03a2c6" stroke-width="2.2" stroke-linecap="round"/><rect x="4" y="14" width="11" height="14" rx="1.5" fill="#e5f4ee" stroke="#a9cfc8"/><rect x="16.5" y="12" width="11" height="14" rx="1.5" fill="#fbf0d7" stroke="#d8c79b"/><rect x="29" y="14" width="11" height="14" rx="1.5" fill="#fae2e0" stroke="#d8b3ae"/></svg>List</button>
         <button class="tile" data-t="quote" aria-pressed="false">
           <svg viewBox="0 0 44 44"><rect x="2" y="2" width="40" height="40" rx="4" fill="#c9a36b"/><rect x="9" y="7" width="26" height="30" rx="1.5" fill="#fffdf6" stroke="#ddd3bb"/><circle cx="22" cy="10" r="2.4" fill="#e05c4b"/><path d="M13 17h18M13 22h18M13 27h11" stroke="#8fb9cb" stroke-width="1.6" stroke-linecap="round"/></svg>Quote</button>
         <button class="tile" data-t="logo" aria-pressed="false">
@@ -340,6 +342,7 @@ canvas#c.dragging{cursor:grabbing}
         <button data-v="headline" aria-pressed="false">Headline</button>
         <button data-v="photo" aria-pressed="false">Photo</button>
         <button data-v="collage" aria-pressed="false">Collage</button>
+        <button data-v="list" aria-pressed="false">List</button>
         <button data-v="quote" aria-pressed="false">Quote</button>
       </div></div>
     <div class="actions"><span class="status" id="genStatus"></span><button class="btn link" id="genCancel">Cancel</button><button class="btn gen" id="genGo">Generate</button></div>
@@ -351,8 +354,9 @@ canvas#c.dragging{cursor:grabbing}
 'use strict';
 const $ = s => document.querySelector(s);
 const SIZES = { square:[1080,1080], landscape:[1200,630], portrait:[1080,1350], story:[1080,1920] };
-const SERIF = '"Gochi Hand", "Caveat", "Comic Sans MS", cursive';
-const SANS = '"Quicksand", "Nunito Sans", Arial, sans-serif';
+const HAND = '"More Sugar", "Chewy", "Comic Sans MS", cursive';
+const SERIF = HAND;
+const SANS = '"Roboto Slab", Georgia, serif';
 const COLORS = [
   ['#03a2c6','Deep blue'],['#1cc1e0','Sky'],['#ffc000','Yellow'],['#bb8a2d','Bronze'],['#ffffff','White'],['#6d7f88','Slate'],['#2f3a40','Charcoal']
 ];
@@ -394,98 +398,152 @@ function text(id, str, o){
 }
 function logoEl(o){ return Object.assign({ id:'logo', type:'logo', variant:'lockup', shadow:false, shade:NO_SHADE() }, o); }
 
+// Footer lockup measured off the master (fractions of the 1080×1350 page):
+// shield height .085h, lockup centred on y .928h, left edge .062w, shield-to-text gap .025w,
+// two lines of .0455w on 1.12 line-height — "Visit us at" then the domain.
+const FOOT = { h:0.085, cy:0.928, x:0.062, gap:0.025, size:0.0455, lh:1.12, aspect:1.122 };
+
 function layout(){
   const w = W(), h = H(), u = U();
-  const wide = w > h;
   const els = [];
-  const m = 0.08*w;
+  const m = 0.075*w;
   const pos = S.textPos || 'tc';
   const onPhoto = S.bg.kind === 'photo';
-  // House rules (2026 Instagram set): handwritten headline in brand blue on crumpled paper,
-  // gold doodles around the edges, and the blue wave footer carrying the mark + site address.
-  const bandH = h * 0.155;
+  const handSize = 78*u;
 
-  // ---- the wave footer: white mark + "Visit us at springforthsv.org" ----
+  // ---- the site lockup: shield + "Visit us at" / the domain, as one measured unit ----
+  // House rule: every page carries it, and on the wave it sits where the band is deep enough
+  // to hold it — the master puts it left when the wave rises on the left, right when it doesn't.
   function footer(){
-    if ((S.wave || 'bottom') === 'none') return;
-    const markW = w*0.115, markH = markW * markAspect('mark');
-    const fs = 30*u, gap = w*0.022;
+    const banded = (S.wave || 'bottom') !== 'none';
+    const onDark = banded || S.bg.ground === 'cork' || onPhoto;
     const label = byId('site')?.text ?? 'Visit us at\nspringforthsv.org';
-    const lines = label.split('\n').length;
-    const textW = w*0.40;
-    const groupW = markW + gap + textW;
-    const cx = (w - groupW)/2;
-    const by = h - bandH*0.52;
-    els.push(logoEl({ x:cx, y:by - markH/2, w:markW, variant:'mark-white' }));
-    els.push(text('site', label, { x:cx + markW + gap, y:by - (fs*1.18*lines)/2, w:textW, size:fs, weight:600,
-      align:'left', lh:1.18, font:'sans', color:'#ffffff', shadow:false }));
+    const markH = FOOT.h*h;
+    let markW = markH/FOOT.aspect, size = FOOT.size*w, gap = FOOT.gap*w;
+    const measure = () => { ctx.save(); ctx.font = `400 ${size}px ${SANS}`;
+      const t = Math.max(...label.split('\n').map(s => ctx.measureText(s).width)); ctx.restore(); return t; };
+    let tw = measure();
+    const room = w*(1 - FOOT.x*2);
+    if (markW + gap + tw > room) { size *= (room - markW - gap)/tw; tw = measure(); }
+    const total = markW + gap + tw, fw = total/w;
+    let x = FOOT.x*w, cy = FOOT.cy*h;
+    if (banded) {
+      const floor = 1 - ((typeof WAVE !== 'undefined' && WAVE && WAVE.gold) || 0.0148) - 0.014;
+      const slot = (x0) => { const top = bandTopOver(x0, x0+fw) + 0.016; return { x0, top, room:floor - top }; };
+      const need = Math.max(FOOT.h, 2*size*FOOT.lh/h);
+      const opts = [slot(FOOT.x), slot(1 - FOOT.x - fw), slot((1-fw)/2)];
+      const fit = opts.find(o => o.room >= need) || opts.reduce((a,b) => b.room > a.room ? b : a);
+      x = fit.x0*w; cy = (fit.top + Math.min(fit.room, need)/2)*h;
+    } else {
+      x = (w - total)/2;
+    }
+    const blockH = 2*size*FOOT.lh;
+    els.push(logoEl({ x, y:cy - markH/2, w:markW, variant:onDark ? 'mark-white' : 'mark', shadow:false }));
+    els.push(text('site', label, { x:x + markW + gap, y:cy - blockH/2, w:tw + size*0.2, size, weight:400,
+      align:'left', lh:FOOT.lh, font:'sans', color:onDark ? '#ffffff' : DEEP, color2:onDark ? GOLD : SKY, shadow:false }));
   }
 
   if (S.template === 'note') {
-    const hl = byId('headline')?.text ?? 'What Makes\nSpring Forth\nDifferent?';
-    const hsize = 96*u;
-    // the card grows with the writing, and the writing sits centred inside it
+    // One card, sized to its words and optically centred in the space above the wave — the
+    // master never leaves a paper page with a line of type and a hollow middle.
+    const hl = byId('headline')?.text ?? 'Ownership';
     const hLines = hl.split('\n').reduce((n,l) => n + Math.max(1, Math.ceil(l.length/13)), 0);
-    const textH = hLines * hsize * 1.22;
-    const nw = w*0.66, nh = Math.max(h*0.26, textH + h*0.085);
-    const nx = (w - nw)/2, ny = h*0.19;
-    els.push({ id:'note', type:'note', x:nx, y:ny, w:nw, h:nh, fill:S.noteFill || '#dff1ee', rot:S.noteRot ?? -0.015, tape:true, kids:['headline'] });
-    els.push(text('headline', hl, { x:nx + nw*0.08, y:ny + (nh - textH)/2, w:nw*0.84, size:hsize, weight:400,
+    const textH = hLines * handSize * 1.22;
+    const top = h*0.085, floor = (S.wave === 'none' ? 0.845 : bandCrestOver(0.1, 0.9) - 0.028)*h;
+    const nw = w*0.72, nh = Math.min(floor - top, Math.max(h*0.40, textH + h*0.13));
+    const nx = (w - nw)/2, ny = top + (floor - top - nh)*0.5;
+    els.push({ id:'note', type:'note', x:nx, y:ny, w:nw, h:nh, fill:S.noteFill || '#e5f4ee',
+               tapeFill:S.tapeFill || TAPE_FILLS[0], rot:S.noteRot ?? -0.015, tape:true, kids:['headline'] });
+    els.push(text('headline', hl, { x:nx + nw*0.08, y:ny + (nh - textH)/2, w:nw*0.84, size:handSize,
       align:'center', lh:1.22, color:DEEP, shadow:false }));
+    footer();
+  }
+  else if (S.template === 'list') {
+    // their "Three questions …" / "Instead of … try:" format: a blue headline, then three
+    // cards carrying a gold numeral, filling the page down to the wave.
+    const hl = byId('headline')?.text ?? 'Three questions we encourage parents to ask';
+    const hs = 66*u;
+    const hLines = Math.max(1, Math.ceil(hl.length/24));
+    els.push(text('headline', hl, { x:m, y:h*0.062, w:w-m*2, size:hs, align:'center', lh:1.18, color:DEEP, shadow:false }));
+    const top = h*0.062 + hLines*hs*1.18 + h*0.055;
+    const floor = (S.wave === 'none' ? 0.845 : bandCrestOver(0.06, 0.94) - 0.028)*h;
+    const gap = w*0.032, nw = (w - m*2 - gap*2)/3;
+    const nh = Math.max(h*0.19, Math.min(h*0.33, floor - top - h*0.02));
+    const y0 = top + (floor - top - nh)*0.52;
+    const defaults = ['“You worked hard on that.”','“You stuck with it, even when it was hard.”','“You tried a new strategy — that took courage.”'];
+    for (let i=0;i<3;i++){
+      const id = 'item-'+(i+1), nx = m + i*(nw+gap);
+      const ny = y0 + (i===1 ? -h*0.020 : h*0.012);          // the middle card sits slightly proud
+      els.push(text('num-'+(i+1), String(i+1), { x:nx, y:ny - 62*u, w:nw, size:58*u, align:'center', lh:1,
+        color:GOLD, shadow:false }));
+      els.push({ id:'note-'+(i+1), type:'note', x:nx, y:ny, w:nw, h:nh, fill:NOTE_FILLS[i%NOTE_FILLS.length][0],
+                 tapeFill:TAPE_FILLS[i%TAPE_FILLS.length], rot:(i-1)*0.016, tape:true, kids:[id] });
+      els.push(text(id, byId(id)?.text ?? defaults[i], { x:nx+nw*0.09, y:ny+nh*0.20, w:nw*0.82, size:29*u,
+        align:'center', lh:1.30, font:'sans', color:'#2f3a40', shadow:false }));
+    }
     footer();
   }
   else if (S.template === 'quote') {
     const q = byId('quote')?.text ?? '“It’s very hands on, student driven… I love that we allow them to fail early and cheaply.”';
     const a = byId('attr')?.text ?? '— a Spring Forth parent';
-    const nw = w*0.68, nh = h*0.52, nx = (w - nw)/2, ny = h*0.17;
-    els.push({ id:'note', type:'note', x:nx, y:ny, w:nw, h:nh, fill:'#fffdf6', rot:S.noteRot ?? 0.02, tape:false, lines:true, pin:'#e05c4b', kids:['quote','attr'] });
-    els.push(text('quote', q, { x:nx + nw*0.10, y:ny + nh*0.17, w:nw*0.80, size:52*u, weight:400, align:'left', lh:1.34, color:DEEP, shadow:false }));
-    const lw = w*0.19, lh = lw*markAspect('lockup');
-    els.push(logoEl({ x:nx + nw*0.08, y:ny + nh - lh - nh*0.05, w:lw, variant:'lockup' }));
-    els.push(text('attr', a, { x:nx + nw*0.10, y:ny + nh - lh*0.62, w:nw*0.80, size:28*u, weight:500, align:'right', lh:1.2, font:'sans', color:'#6d7f88', shadow:false }));
+    // the note fills the board down to the wave rather than floating in the middle of it
+    const floor = (S.wave === 'none' ? 0.88 : bandCrestOver(0.06, 0.94) - 0.030)*h;
+    const nw = w*0.74, ny = h*0.115, nh = Math.max(h*0.44, floor - ny), nx = (w - nw)/2;
+    els.push({ id:'note', type:'note', x:nx, y:ny, w:nw, h:nh, fill:'#fffdf6', rot:S.noteRot ?? 0.02,
+               tape:false, lines:true, pin:'#e05c4b', kids:['quote','attr'] });
+    els.push(text('quote', q, { x:nx+nw*0.10, y:ny+nh*0.16, w:nw*0.80, size:46*u, align:'left', lh:1.30,
+      font:'sans', color:DEEP, shadow:false }));
+    els.push(text('attr', a, { x:nx+nw*0.10, y:ny+nh*0.80, w:nw*0.80, size:26*u, align:'right', lh:1.2,
+      font:'sans', color:'#6d7f88', shadow:false }));
     footer();
   }
   else if (S.template === 'collage') {
     const hl = byId('headline')?.text ?? '';
-    if (hl) els.push(text('headline', hl, { x:m, y:h*0.045, w:w-m*2, size:68*u, weight:400, align:'center', lh:1.2, color:DEEP, shadow:false }));
+    if (hl) els.push(text('headline', hl, { x:m, y:h*0.045, w:w-m*2, size:60*u, align:'center', lh:1.2, color:DEEP, shadow:false }));
     footer();
   }
   else if (S.template === 'logo') {
     footer();
-    if ((S.wave || 'bottom') === 'none') { const lw = w*0.34; els.push(logoEl({ x:(w-lw)/2, y:h - lw*markAspect('lockup') - 0.07*h, w:lw, variant:'lockup' })); }
   }
-  else { // 'headline' — handwritten headline with an optional photo beneath
+  else { // 'headline' and 'photo' — a headline always sits with a photo
     const hl = byId('headline')?.text ?? 'Learning By Doing';
     const sb = byId('sub')?.text ?? '';
-    const hsize = 78*u*(wide? .85:1), ssize = 36*u;
-    const tw = pos === 'tl' ? w*0.74 : w - m*2;
-    const tx = pos === 'tl' ? m : m;
+    const tw = pos === 'tl' ? w*0.76 : w - m*2;
     const align = pos === 'tl' ? 'left' : 'center';
-    const hLines = Math.max(1, Math.ceil(hl.length / 20));
-    let y = pos === 'mid' ? h*0.36 : h*0.055;
+    const hLines = Math.max(1, Math.ceil(hl.length/18));
+    const y0 = h*0.055;
     const col = onPhoto ? '#ffffff' : DEEP;
-    els.push(text('headline', hl, { x:tx, y, w:tw, size:hsize, weight:400, align, lh:1.22, color:col, shadow:onPhoto }));
-    if (sb) els.push(text('sub', sb, { x:tx, y:y + hsize*1.26*hLines, w:tw, size:ssize, weight:500, align, lh:1.35, font:'sans', color:onPhoto ? '#ffffff' : '#6d7f88', shadow:onPhoto }));
+    els.push(text('headline', hl, { x:m, y:y0, w:tw, size:handSize, align, lh:1.22, color:col, shadow:onPhoto }));
+    if (sb) els.push(text('sub', sb, { x:m, y:y0 + handSize*1.26*hLines, w:tw, size:34*u, align, lh:1.32,
+      font:'sans', color:onPhoto ? '#ffffff' : '#6d7f88', shadow:onPhoto }));
     footer();
   }
 
-  // a framed photo the user placed (or the generator added) sits under the text
-  const ph = byId('photo'); if (ph) els.unshift(ph);
-  const note = els.find(e => e.type === 'note');
-  if (note) { // keep the note behind its own text
-    const i = els.indexOf(note); els.splice(i, 1); els.unshift(note);
-    const p = els.indexOf(byId('photo')); if (p > -1) { const x = els.splice(p,1)[0]; els.unshift(x); }
-  }
+  // a framed photo belongs to the headline layout only — it never rides along under a card
+  const ph = S.template === 'headline' ? byId('photo') : null; if (ph) els.unshift(ph);
+  const notes = els.filter(e => e.type === 'note');           // notes render behind their own text
+  for (const n of notes) { const i = els.indexOf(n); els.splice(i,1); els.unshift(n); }
+  const p = els.findIndex(e => e.id === 'photo'); if (p > 0) els.unshift(els.splice(p,1)[0]);
   S.els = els;
   S.sel = null;
   applyLook(false);
+  refreshDoodles();
 }
+
+// Doodles are placed last, once the content boxes are known, and only in free margins.
+function refreshDoodles(){
+  if (S.bg.kind === 'photo' || S.bg.ground === 'cork') { S.doodles = []; return; }
+  const boxes = S.els.filter(e => e.type !== 'logo' && e.id !== 'site').map(e => bbox(ctx, e));
+  const blob = S.els.filter(e => e.type === 'text' && e.id !== 'site').map(e => e.text).join(' ');
+  S.doodles = placeDoodles(blob, W(), H(), boxes, S.bg.seed || 1);
+}
+
 function templateDefaults(){
-  S.bg.fadePos = 'none'; S.bg.fade = 0.45; S.bg.fadeSize = 0.5;
-  S.bg.dim = S.bg.kind === 'photo' ? 0.2 : 0;
+  S.bg.dim = S.bg.kind === 'photo' ? 0.18 : 0;
   if (S.template === 'quote') {
-    // cork board, no wave — and remember what the wave was so leaving a quote restores it
-    S.bg.ground = 'cork'; if (S.waveWas == null) S.waveWas = S.wave || 'bottom'; S.wave = 'none';
+    // the cork board still carries the wave: it is the one element on every page, and the
+    // white lockup has nothing to sit on without it
+    S.bg.ground = 'cork';
   } else {
     if (S.bg.ground === 'cork') S.bg.ground = 'paper';
     if (S.waveWas != null) { S.wave = S.waveWas; S.waveWas = null; }
@@ -498,7 +556,9 @@ function applyLook(withPhoto){
   const onPhoto = S.bg.kind === 'photo';
   for (const el of S.els) {
     if (el.type !== 'text') continue;
-    if (el.id === 'site') { el.color = '#ffffff'; el.shadow = false; continue; }
+    // the site line, the list cards and their gold numerals are coloured by the layout,
+    // which knows what they are sitting on — the look must not paint over them
+    if (el.id === 'site' || /^(num|item)-/.test(el.id)) continue;
     if (el.id === 'quote') { el.color = L.accent; el.shadow = false; continue; }
     if (el.id === 'attr') { el.shadow = false; continue; }
     const inNote = S.template === 'note' && el.id === 'headline';
@@ -548,255 +608,222 @@ function textExtent(ctx, el){
 }
 
 // ---------- drawing ----------
-// ---------- Spring Forth backgrounds: crumpled paper, cork board, photos, collages ----------
-// Their whole look is a scrapbook: paper ground, a blue wave footer, gold doodles, taped photos
-// and sticky notes. All of it is generated here so every graphic gets a fresh variation.
+// ---------- Spring Forth art layer ----------
+// Everything here comes from the 2026 Canva master: the real crumpled-paper and cork
+// photographs, the traced wave footer, and 55 doodles lifted from the artwork itself.
 const SKY = '#1cc1e0', DEEP = '#03a2c6', GOLD = '#ffc000', BRONZE = '#bb8a2d';
 const GROUNDS = { paper:'Crumpled paper', cork:'Cork board' };
-const NOTE_FILLS = [['#dff1ee','Mint'],['#fbf0d7','Cream'],['#ddeef8','Sky'],['#ffffff','White'],['#fce9df','Peach']];
-const artCache = new Map();
-function seeded(seed){ let s = (Math.abs(seed)*9301+49297) % 233280 || 7; return () => (s = (s*9301+49297) % 233280) / 233280; }
+const NOTE_FILLS = [['#e5f4ee','Mint'],['#fbf0d7','Cream'],['#fae2e0','Peach'],['#ddeef8','Sky'],['#ffffff','White']];
+const TAPE_FILLS = ['#f8c97a','#bfe3f5','#cfe8cf','#f3e3c4'];
+IMG.tex = {}; IMG.doodles = {}; let WAVE = null;
 
-function makeGround(style, seed, w, h){
-  const key = style+'|'+seed+'|'+w+'x'+h; if (artCache.has(key)) return artCache.get(key);
-  const c = document.createElement('canvas'); c.width = w; c.height = h;
-  const g = c.getContext('2d'); const rnd = seeded(seed);
-  if (style === 'cork') {
-    g.fillStyle = '#c9a36b'; g.fillRect(0,0,w,h);
-    for (let i=0;i<Math.round(w*h/900);i++){
-      const x = rnd()*w, y = rnd()*h, r = 2 + rnd()*9, a = 0.05 + rnd()*0.3;
-      const dark = rnd() < 0.55;
-      g.fillStyle = dark ? `rgba(120,84,44,${a})` : `rgba(235,208,167,${a})`;
-      g.beginPath(); g.ellipse(x, y, r, r*(0.4+rnd()*0.7), rnd()*Math.PI, 0, Math.PI*2); g.fill();
-    }
-    const vg = g.createRadialGradient(w/2,h/2,Math.min(w,h)*0.3,w/2,h/2,Math.max(w,h)*0.75);
-    vg.addColorStop(0,'rgba(0,0,0,0)'); vg.addColorStop(1,'rgba(60,35,10,0.28)'); g.fillStyle = vg; g.fillRect(0,0,w,h);
-  } else {
-    g.fillStyle = '#fbfaf6'; g.fillRect(0,0,w,h);
-    // crumple facets: soft light/dark wedges radiating from random creases
-    for (let i=0;i<38;i++){
-      const x = rnd()*w, y = rnd()*h, r = (0.18+rnd()*0.4)*Math.max(w,h), ang = rnd()*Math.PI*2;
-      const lg = g.createLinearGradient(x, y, x+Math.cos(ang)*r, y+Math.sin(ang)*r);
-      const dark = rnd() < 0.5, a = 0.05 + rnd()*0.07;
-      lg.addColorStop(0, dark ? `rgba(120,115,105,${a})` : `rgba(255,255,255,${a*1.6})`);
-      lg.addColorStop(1, 'rgba(255,255,255,0)');
-      g.fillStyle = lg; g.beginPath();
-      g.moveTo(x, y);
-      for (let k=0;k<4;k++){ const a2 = ang + (k-1.5)*0.5; g.lineTo(x+Math.cos(a2)*r*(0.5+rnd()*0.8), y+Math.sin(a2)*r*(0.5+rnd()*0.8)); }
-      g.closePath(); g.fill();
-    }
-    // crease lines
-    g.lineWidth = 1;
-    for (let i=0;i<14;i++){
-      let x = rnd()*w, y = rnd()*h;
-      g.strokeStyle = rnd() < 0.5 ? 'rgba(150,145,135,0.10)' : 'rgba(255,255,255,0.5)';
-      g.beginPath(); g.moveTo(x,y);
-      for (let k=0;k<3;k++){ x += (rnd()-0.5)*w*0.5; y += (rnd()-0.5)*h*0.4; g.lineTo(x,y); }
-      g.stroke();
-    }
-    // fine grain
-    for (let i=0;i<Math.round(w*h/420);i++){
-      const a = rnd()*0.05; g.fillStyle = rnd()<0.5 ? `rgba(0,0,0,${a})` : `rgba(255,255,255,${a*2})`;
-      g.fillRect(rnd()*w, rnd()*h, 1.4, 1.4);
-    }
-    const vg = g.createRadialGradient(w/2,h*0.45,Math.min(w,h)*0.4,w/2,h/2,Math.max(w,h)*0.8);
-    vg.addColorStop(0,'rgba(0,0,0,0)'); vg.addColorStop(1,'rgba(90,85,75,0.14)'); g.fillStyle = vg; g.fillRect(0,0,w,h);
-  }
-  if (artCache.size > 12) artCache.delete(artCache.keys().next().value);
-  artCache.set(key, c); return c;
+function loadArt(){
+  const one = (src) => new Promise(res => { const im = new Image(); im.onload = () => res(im); im.onerror = () => res(null); im.src = src; });
+  return Promise.all([
+    one('art/paper.jpg').then(i => IMG.tex.paper = i),
+    one('art/cork.jpg').then(i => IMG.tex.cork = i),
+    Promise.all([one('art/wave-bottom.png'), fetch('art/wave-bottom.json').then(r => r.json())])
+      .then(([im, j]) => { WAVE = im ? Object.assign({ img:im }, j) : null; }).catch(() => WAVE = null),
+    fetch('art/doodles/index.json').then(r => r.json()).then(list =>
+      Promise.all(list.map(d => one('art/doodles/' + d.file).then(i => { if (i) IMG.doodles[d.file.replace('.png','')] = i; })))
+    ).catch(() => {}),
+  ]);
+}
+function drawGround(ctx, w, h, style){
+  const im = IMG.tex[style === 'cork' ? 'cork' : 'paper'];
+  if (!im) { ctx.fillStyle = style === 'cork' ? '#c9a36b' : '#f7f6f3'; ctx.fillRect(0,0,w,h); return; }
+  const s = Math.max(w/im.naturalWidth, h/im.naturalHeight);
+  const dw = im.naturalWidth*s, dh = im.naturalHeight*s;
+  ctx.drawImage(im, (w-dw)/2, (h-dh)/2, dw, dh);
 }
 
-// ---------- the blue wave band (their signature footer) ----------
-function waveBandRect(w, h, where){
-  const bh = h * 0.132;
-  return where === 'top' ? { x:0, y:0, w, h:bh, top:true } : { x:0, y:h-bh, w, h:bh, top:false };
-}
-function wavePath(ctx, w, y0, amp, phase, toBottom, h){
-  ctx.beginPath();
-  ctx.moveTo(0, y0 + Math.sin(phase)*amp);
-  const steps = 8;
-  for (let i=1;i<=steps;i++){
-    const x = w*i/steps, xp = w*(i-1)/steps;
-    const yp = y0 + Math.sin(phase + (i-1)*0.9)*amp, yc = y0 + Math.sin(phase + i*0.9)*amp;
-    ctx.bezierCurveTo(xp + w/steps*0.5, yp, x - w/steps*0.5, yc, x, yc);
-  }
-  ctx.lineTo(w, toBottom ? h : 0); ctx.lineTo(0, toBottom ? h : 0); ctx.closePath();
-}
-function drawWaves(ctx, w, h, where, seed){
+// ---------- the wave footer, traced from the real artwork ----------
+// wave.json holds, per column of the 1080px master, the top of the blue band and the top
+// of the white crest above it. Both are replayed scaled to whatever canvas we are on.
+// The footer wave is the real element, cut straight out of the master as a transparent PNG:
+// the #03a2c6 band with its wave edge, the #1cc1e0 crescent that rides above it on the left,
+// and the gold hairline along the very bottom. It is drawn full width, never redrawn by hand.
+function drawWaves(ctx, w, h, where){
   if (!where || where === 'none') return;
-  const list = where === 'both' ? ['bottom','top'] : [where];
-  for (const pos of list) {
-    const top = pos === 'top';
-    const band = waveBandRect(w, h, pos);
-    const amp = h*0.028, base = top ? band.h : h - band.h;
-    ctx.save();
-    // pale under-wave, offset, like the layered swoosh in their posts
-    ctx.globalAlpha = 0.5; ctx.fillStyle = SKY;
-    wavePath(ctx, w, base + (top ? amp*1.2 : -amp*1.2), amp*1.1, seed % 6, !top, h); ctx.fill();
-    ctx.globalAlpha = 1;
-    const lg = ctx.createLinearGradient(0, top ? 0 : h, 0, top ? band.h : h - band.h);
-    lg.addColorStop(0, DEEP); lg.addColorStop(1, SKY);
-    ctx.fillStyle = lg;
-    wavePath(ctx, w, base, amp, (seed % 5) + 1.4, !top, h); ctx.fill();
-    ctx.restore();
+  for (const pos of (where === 'both' ? ['bottom','top'] : [where])) {
+    if (!WAVE || !WAVE.img) { ctx.fillStyle = DEEP; ctx.fillRect(0, pos === 'top' ? 0 : h*0.847, w, h*0.153); continue; }
+    const bh = WAVE.h*h;
+    if (pos === 'top') { ctx.save(); ctx.translate(0, bh); ctx.scale(1, -1); ctx.drawImage(WAVE.img, 0, 0, w, bh); ctx.restore(); }
+    else ctx.drawImage(WAVE.img, 0, WAVE.top*h, w, bh);
   }
+}
+// How far down the page the band's top edge sits at a given fraction across the width \u2014
+// used to park the site lockup where the band is actually deep enough to hold it.
+function bandTopAt(fx){
+  const a = WAVE && WAVE.bandTopByCol;
+  if (!a) return 0.86;
+  return a[Math.max(0, Math.min(a.length-1, Math.round(fx*(a.length-1))))];
+}
+// The band's lowest top edge over a span — where the band is deep enough to park the lockup.
+function bandTopOver(x0, x1){
+  let m = 0;
+  for (let f = Math.max(0,x0); f <= Math.min(1,x1); f += 0.004) m = Math.max(m, bandTopAt(f));
+  return m;
+}
+// The band's highest top edge over a span — the line content has to stay above to clear it.
+function bandCrestOver(x0, x1){
+  let m = 1;
+  for (let f = Math.max(0,x0); f <= Math.min(1,x1); f += 0.004) m = Math.min(m, bandTopAt(f));
+  return m;
 }
 
-// ---------- gold doodles ----------
-const DOODLES = ['star','sparkle','swirl','arrow','heart','question','bolt','crown','squiggle','dots'];
-function wobble(ctx, pts, rnd, amt){
-  ctx.beginPath();
-  pts.forEach((p, i) => { const x = p[0] + (rnd()-0.5)*amt, y = p[1] + (rnd()-0.5)*amt; i ? ctx.lineTo(x,y) : ctx.moveTo(x,y); });
+// ---------- doodles: real artwork, keyword-matched, kept out of the content ----------
+// Only the doodles that came out of the master clean — hand-drawn gold marks, nothing
+// reconstructed and nothing carrying a scrap of the page it was lifted from.
+const DOODLE_TAGS = {
+  question: ['question-2','question-3'],
+  crown:    ['crown'], heart: ['heart-outline','heart-filled-1','heart-filled-2'],
+  star:     ['star-outline-1','star-outline-3','star-outline-4'],
+  bolt:     ['bolt-2'],
+  smile:    ['smiley','smile-4','smile-5'],
+  child:    ['figure-girl'], bird: ['bird'], music: ['music-note'], money: ['money-bag-1','money-bag-2'],
+  grade:    ['letter-a'], leaf: ['leaf'],
+  filler:   ['dashes-1','star-outline-1','heart-outline','smile-4'],
+  num:      ['num-3'],
+};
+const DOODLE_WORDS = [
+  [/\?|what|why|how|which|wonder|curious|different|ask/i, 'question'],
+  [/master|leader|best|honest|excellence|champion/i,      'crown'],
+  [/love|care|support|kind|family|together|communit|belong|alone/i, 'heart'],
+  [/quality|ownership|growth|proud|celebrat|shine|achieve|grow/i,   'star'],
+  [/energy|power|spark|drive|momentum|action/i,           'bolt'],
+  [/joy|fun|happy|positive|attitude|smile|delight/i,      'smile'],
+  [/child|kid|student|learner|young|youth/i,              'child'],
+  [/spring forth|fly|soar|freedom|forth/i,                'bird'],
+  [/music|art|sing|creativ/i,                             'music'],
+  [/cost|money|price|invest|tuition|worth/i,              'money'],
+  [/doing|complete|done|mastery|persist|practice/i,       'check'],
+  [/enroll|grade|school year|tour|apply|register/i,       'grade'],
+  [/nature|outdoor|garden|grow/i,                         'leaf'],
+];
+function doodlesFor(textBlob, rnd){
+  const picked = [];
+  for (const [re, tag] of DOODLE_WORDS) if (re.test(textBlob) && !picked.includes(tag)) picked.push(tag);
+  while (picked.length < 2) picked.push('filler');
+  return picked.slice(0, 3);
 }
-function drawDoodle(ctx, d){
-  const rnd = seeded(d.seed || 1), s = d.size, wob = s*0.035;
-  ctx.save(); ctx.translate(d.x, d.y); ctx.rotate(d.rot || 0);
-  ctx.strokeStyle = d.color || GOLD; ctx.fillStyle = d.color || GOLD;
-  ctx.lineWidth = Math.max(2, s*0.075); ctx.lineCap = 'round'; ctx.lineJoin = 'round';
-  const t = d.type;
-  if (t === 'star') {
-    const pts = []; for (let i=0;i<11;i++){ const a = -Math.PI/2 + i*Math.PI/5, r = i%2 ? s*0.42 : s; pts.push([Math.cos(a)*r, Math.sin(a)*r]); }
-    wobble(ctx, pts, rnd, wob); d.fill ? ctx.fill() : ctx.stroke();
-  } else if (t === 'sparkle') {
-    for (const a of [0, Math.PI/2]) { ctx.save(); ctx.rotate(a); ctx.beginPath(); ctx.moveTo(0,-s); ctx.quadraticCurveTo(s*0.16,-s*0.16,s,0); ctx.quadraticCurveTo(s*0.16,s*0.16,0,s); ctx.quadraticCurveTo(-s*0.16,s*0.16,-s,0); ctx.quadraticCurveTo(-s*0.16,-s*0.16,0,-s); ctx.fill(); ctx.restore(); }
-  } else if (t === 'swirl') {
-    ctx.beginPath(); for (let i=0;i<=90;i++){ const a = i*0.12, r = s*0.12 + a*s*0.1; const x = Math.cos(a)*r, y = Math.sin(a)*r; i ? ctx.lineTo(x,y) : ctx.moveTo(x,y); } ctx.stroke();
-  } else if (t === 'arrow') {
-    ctx.beginPath(); ctx.moveTo(-s, s*0.5); ctx.quadraticCurveTo(-s*0.1, -s*0.9, s*0.85, -s*0.2); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(s*0.85,-s*0.2); ctx.lineTo(s*0.3,-s*0.35); ctx.moveTo(s*0.85,-s*0.2); ctx.lineTo(s*0.62,s*0.3); ctx.stroke();
-  } else if (t === 'heart') {
-    ctx.beginPath(); ctx.moveTo(0, s*0.85);
-    ctx.bezierCurveTo(-s*1.25, -s*0.1, -s*0.55, -s*1.05, 0, -s*0.32);
-    ctx.bezierCurveTo(s*0.55, -s*1.05, s*1.25, -s*0.1, 0, s*0.85);
-    d.fill ? ctx.fill() : ctx.stroke();
-  } else if (t === 'question') {
-    ctx.beginPath(); ctx.arc(0, -s*0.35, s*0.5, Math.PI*0.95, Math.PI*0.35); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(s*0.32, -s*0.05); ctx.quadraticCurveTo(0, s*0.15, 0, s*0.45); ctx.stroke();
-    ctx.beginPath(); ctx.arc(0, s*0.85, s*0.1, 0, Math.PI*2); ctx.fill();
-  } else if (t === 'bolt') {
-    ctx.beginPath(); ctx.moveTo(s*0.25,-s); ctx.lineTo(-s*0.5,s*0.12); ctx.lineTo(0,s*0.12); ctx.lineTo(-s*0.2,s); ctx.lineTo(s*0.55,-s*0.18); ctx.lineTo(s*0.05,-s*0.18); ctx.closePath(); d.fill !== false ? ctx.fill() : ctx.stroke();
-  } else if (t === 'crown') {
-    ctx.beginPath(); ctx.moveTo(-s, s*0.5); ctx.lineTo(-s*0.75,-s*0.6); ctx.lineTo(-s*0.3,s*0.02); ctx.lineTo(0,-s*0.8); ctx.lineTo(s*0.3,s*0.02); ctx.lineTo(s*0.75,-s*0.6); ctx.lineTo(s,s*0.5); ctx.closePath(); ctx.stroke();
-  } else if (t === 'squiggle') {
-    ctx.beginPath(); ctx.moveTo(-s*1.3, 0);
-    for (let i=0;i<3;i++){ const x0 = -s*1.3 + i*s*0.87; ctx.quadraticCurveTo(x0+s*0.22, -s*0.42, x0+s*0.43, 0); ctx.quadraticCurveTo(x0+s*0.65, s*0.42, x0+s*0.87, 0); }
-    ctx.stroke();
-  } else {
-    for (let i=0;i<5;i++){ ctx.beginPath(); ctx.arc((i-2)*s*0.45, Math.sin(i)*s*0.2, s*0.11, 0, Math.PI*2); ctx.fill(); }
-  }
-  ctx.restore();
-}
-// Doodles are scattered around the edges so they never sit on the headline.
-function makeDoodles(seed, w, h, count){
-  const rnd = seeded(seed * 31 + 7); const out = [];
-  const n = count == null ? 4 + Math.floor(rnd()*4) : count;
-  const spots = [[0.12,0.13],[0.87,0.14],[0.09,0.42],[0.92,0.45],[0.16,0.72],[0.85,0.74],[0.5,0.09],[0.28,0.2],[0.72,0.22],[0.35,0.86],[0.66,0.85]];
-  const order = spots.slice().sort(() => rnd() - 0.5).slice(0, n);
-  for (const [fx, fy] of order) {
-    const type = DOODLES[Math.floor(rnd()*DOODLES.length)];
-    out.push({ type, x: (fx + (rnd()-0.5)*0.05)*w, y: (fy + (rnd()-0.5)*0.05)*h, size: w*(0.034 + rnd()*0.038),
-               rot: (rnd()-0.5)*1.0, color: rnd() < 0.18 ? BRONZE : GOLD, fill: rnd() < 0.35, seed: Math.floor(rnd()*9999) });
+// Zones are the page margins; anything overlapping the content box is dropped.
+function placeDoodles(textBlob, w, h, boxes, seedN){
+  if (!Object.keys(IMG.doodles).length) return [];
+  let s = (Math.abs(seedN||1)*9301+49297) % 233280 || 11;
+  const rnd = () => (s = (s*9301+49297) % 233280) / 233280;
+  const tags = doodlesFor(textBlob, rnd);
+  const zones = [[0.06,0.07,0.26,0.20],[0.72,0.07,0.94,0.20],[0.04,0.34,0.22,0.52],
+                 [0.78,0.34,0.96,0.52],[0.07,0.60,0.26,0.76],[0.74,0.60,0.94,0.76]];
+  const free = zones.filter(z => {
+    const r = { x:z[0]*w, y:z[1]*h, w:(z[2]-z[0])*w, h:(z[3]-z[1])*h };
+    return !boxes.some(b => r.x < b.x+b.w+w*0.02 && r.x+r.w > b.x-w*0.02 && r.y < b.y+b.h+h*0.015 && r.y+r.h > b.y-h*0.015);
+  });
+  const order = free.sort(() => rnd() - 0.5);
+  const out = [];
+  for (let i = 0; i < Math.min(tags.length, order.length); i++) {
+    const pool = DOODLE_TAGS[tags[i]] || DOODLE_TAGS.filler;
+    const name = pool[Math.floor(rnd()*pool.length)];
+    const im = IMG.doodles[name]; if (!im) continue;
+    const z = order[i];
+    const zw = (z[2]-z[0])*w, zh = (z[3]-z[1])*h;
+    const scale = Math.min(zw/im.naturalWidth, zh/im.naturalHeight) * (0.72 + rnd()*0.26);
+    const dw = im.naturalWidth*scale, dh = im.naturalHeight*scale;
+    out.push({ name, x: z[0]*w + (zw-dw)/2, y: z[1]*h + (zh-dh)/2, w: dw, h: dh, rot: (rnd()-0.5)*0.30 });
   }
   return out;
 }
+function drawDoodle(ctx, d){
+  const im = IMG.doodles[d.name]; if (!im) return;
+  ctx.save(); ctx.translate(d.x + d.w/2, d.y + d.h/2); ctx.rotate(d.rot||0);
+  ctx.drawImage(im, -d.w/2, -d.h/2, d.w, d.h); ctx.restore();
+}
 
-// ---------- photo frames ----------
+// ---------- notes, tape, framed photos ----------
+function drawTape(ctx, cx, cy, len, rot, fill){
+  ctx.save(); ctx.translate(cx, cy); ctx.rotate(rot||0);
+  ctx.fillStyle = fill || TAPE_FILLS[0];
+  ctx.globalAlpha = 0.92; ctx.fillRect(-len/2, -len*0.155, len, len*0.31);
+  ctx.restore();
+}
+function drawNote(ctx, el){
+  ctx.save();
+  ctx.translate(el.x + el.w/2, el.y + el.h/2); ctx.rotate(el.rot || 0); ctx.translate(-el.w/2, -el.h/2);
+  ctx.shadowColor = 'rgba(40,40,40,0.26)'; ctx.shadowBlur = el.w*0.055; ctx.shadowOffsetY = el.w*0.014;
+  ctx.fillStyle = el.fill || '#e5f4ee';
+  ctx.beginPath(); ctx.roundRect(0, 0, el.w, el.h, el.w*0.018); ctx.fill();
+  ctx.shadowColor = 'transparent';
+  if (el.lines) {
+    ctx.strokeStyle = 'rgba(110,145,168,0.32)'; ctx.lineWidth = Math.max(1, el.w*0.004);
+    for (let y = el.h*0.20; y < el.h*0.93; y += el.h*0.098) { ctx.beginPath(); ctx.moveTo(el.w*0.07, y); ctx.lineTo(el.w*0.93, y); ctx.stroke(); }
+  }
+  if (el.tape !== false) drawTape(ctx, el.w/2, 0, el.w*0.30, -(el.rot||0)*0.7, el.tapeFill);
+  if (el.pin) {
+    const px = el.w/2, py = el.h*0.045, pr = el.w*0.032;
+    ctx.fillStyle = 'rgba(0,0,0,0.18)'; ctx.beginPath(); ctx.ellipse(px+pr*0.35, py+pr*0.5, pr*0.95, pr*0.5, 0, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = el.pin; ctx.beginPath(); ctx.arc(px, py, pr, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = 'rgba(255,255,255,0.5)'; ctx.beginPath(); ctx.arc(px-pr*0.3, py-pr*0.3, pr*0.33, 0, Math.PI*2); ctx.fill();
+  }
+  ctx.restore();
+}
 function drawCover(ctx, img, x, y, cw, ch){
   const iw = img.naturalWidth, ih = img.naturalHeight, s = Math.max(cw/iw, ch/ih), dw = iw*s, dh = ih*s;
   ctx.save(); ctx.beginPath(); ctx.rect(x, y, cw, ch); ctx.clip(); ctx.drawImage(img, x + (cw-dw)/2, y + (ch-dh)/2, dw, dh); ctx.restore();
 }
-function drawTape(ctx, cx, cy, len, rot){
-  ctx.save(); ctx.translate(cx, cy); ctx.rotate(rot);
-  ctx.fillStyle = 'rgba(242,228,196,0.82)';
-  ctx.fillRect(-len/2, -len*0.17, len, len*0.34);
-  ctx.strokeStyle = 'rgba(190,170,130,0.45)'; ctx.lineWidth = 1;
-  ctx.strokeRect(-len/2, -len*0.17, len, len*0.34);
-  ctx.restore();
-}
-// A photo in a frame: polaroid, taped, or plain white border. Returns nothing; draws in place.
 function drawFramedPhoto(ctx, img, x, y, cw, ch, style, rot, seed){
-  const rnd = seeded(seed || 3);
+  let s = (Math.abs(seed||3)*9301+49297) % 233280 || 5; const rnd = () => (s = (s*9301+49297) % 233280) / 233280;
   ctx.save();
   ctx.translate(x + cw/2, y + ch/2); ctx.rotate(rot || 0); ctx.translate(-cw/2, -ch/2);
-  const pad = style === 'polaroid' ? cw*0.055 : cw*0.028;
-  const bottom = style === 'polaroid' ? cw*0.17 : pad;
-  ctx.shadowColor = 'rgba(40,35,25,0.3)'; ctx.shadowBlur = cw*0.05; ctx.shadowOffsetY = cw*0.012;
+  const pad = style === 'polaroid' ? cw*0.05 : cw*0.026;
+  const bottom = style === 'polaroid' ? cw*0.16 : pad;
+  ctx.shadowColor = 'rgba(40,40,40,0.30)'; ctx.shadowBlur = cw*0.045; ctx.shadowOffsetY = cw*0.011;
   ctx.fillStyle = '#ffffff'; ctx.fillRect(-pad, -pad, cw + pad*2, ch + pad + bottom);
   ctx.shadowColor = 'transparent';
   drawCover(ctx, img, 0, 0, cw, ch);
-  if (style === 'tape') { drawTape(ctx, 0, 0, cw*0.30, -0.6 + rnd()*0.2); drawTape(ctx, cw, ch, cw*0.30, -0.6 + rnd()*0.2); }
+  if (style === 'tape') {
+    drawTape(ctx, 0, 0, cw*0.28, -0.62 + rnd()*0.16, TAPE_FILLS[3]);
+    drawTape(ctx, cw, ch, cw*0.28, -0.62 + rnd()*0.16, TAPE_FILLS[3]);
+  }
   ctx.restore();
 }
-
-// ---------- background compositing ----------
-function collageCells(grid, w, h){
-  const m = w*0.07, g = w*0.035, iw = w - m*2;
-  if (grid === '2x2') { const ch = (h*0.62 - g)/2, cw = (iw - g)/2; const top = h*0.13;
-    return [[m,top,cw,ch],[m+cw+g,top,cw,ch],[m,top+ch+g,cw,ch],[m+cw+g,top+ch+g,cw,ch]]; }
-  if (grid === '2+1') { const cw = (iw - g)/2, ch = h*0.28; const top = h*0.13;
-    return [[m,top,cw,ch],[m+cw+g,top,cw,ch],[m,top+ch+g,iw,h*0.30]]; }
-  return [[m,h*0.13,iw,h*0.30],[m,h*0.13+h*0.30+g,(iw-g)/2,h*0.28],[m+(iw-g)/2+g,h*0.13+h*0.30+g,(iw-g)/2,h*0.28]];
+function drawImageEl(ctx, el){
+  const im = IMG.lib[el.src]; if (!im) return;
+  drawFramedPhoto(ctx, im, el.x, el.y, el.w, el.w * (im.naturalHeight/im.naturalWidth), el.style || 'tape', el.rot || 0, el.seed);
 }
+function imageAspect(el){ const im = IMG.lib[el.src]; return im ? im.naturalHeight/im.naturalWidth : 0.75; }
+
+// ---------- collage + background compositing ----------
+function collageCells(grid, w, h){
+  const m = w*0.07, g = w*0.035, iw = w - m*2, top = h*0.13;
+  if (grid === '2x2') { const ch = (h*0.60 - g)/2, cw = (iw - g)/2;
+    return [[m,top,cw,ch],[m+cw+g,top,cw,ch],[m,top+ch+g,cw,ch],[m+cw+g,top+ch+g,cw,ch]]; }
+  if (grid === '2+1') { const cw = (iw - g)/2, ch = h*0.27;
+    return [[m,top,cw,ch],[m+cw+g,top,cw,ch],[m,top+ch+g,iw,h*0.29]]; }
+  return [[m,top,iw,h*0.29],[m,top+h*0.29+g,(iw-g)/2,h*0.27],[m+(iw-g)/2+g,top+h*0.29+g,(iw-g)/2,h*0.27]];
+}
+function hexA(hex, a){ const n = parseInt(hex.slice(1),16); return `rgba(${n>>16&255},${n>>8&255},${n&255},${a})`; }
 function drawPhoto(ctx, w, h, bg){
   if (bg.kind === 'photo' && IMG.bg) {
-    const img = IMG.bg, iw = img.naturalWidth || img.width, ih = img.naturalHeight || img.height;
+    const img = IMG.bg, iw = img.naturalWidth, ih = img.naturalHeight;
     const s = Math.max(w/iw, h/ih) * bg.zoom, dw = iw*s, dh = ih*s;
     ctx.drawImage(img, (w-dw)/2 + bg.ox, (h-dh)/2 + bg.oy, dw, dh);
     return;
   }
-  ctx.drawImage(makeGround(bg.ground || 'paper', bg.seed || 1, w, h), 0, 0);
+  drawGround(ctx, w, h, bg.ground || 'paper');
   if (bg.kind === 'collage' && bg.cells && bg.cells.length) {
     const cells = collageCells(bg.grid || '2x2', w, h);
     bg.cells.forEach((c, i) => {
       const im = IMG.lib[c.url], r = cells[i]; if (!r) return;
       if (im) drawFramedPhoto(ctx, im, r[0], r[1], r[2], r[3], c.style || 'tape', c.rot || 0, c.seed);
-      else { ctx.fillStyle = '#dfe6e9'; ctx.fillRect(r[0], r[1], r[2], r[3]); }
     });
   }
 }
-function hexA(hex, a){ const n = parseInt(hex.slice(1),16); return `rgba(${n>>16&255},${n>>8&255},${n&255},${a})`; }
 function drawBackground(ctx, w, h){
   drawPhoto(ctx, w, h, S.bg);
-  if (S.bg.kind === 'photo') {
-    if (S.bg.dim > 0) { ctx.fillStyle = `rgba(0,0,0,${S.bg.dim})`; ctx.fillRect(0,0,w,h); }
-    const f = S.bg.fade, p = S.bg.fadePos, col = S.bg.fadeColor || '#000000', size = h * (S.bg.fadeSize ?? 0.5);
-    if (f > 0 && p !== 'none') {
-      if (p === 'bottom' || p === 'both') { const g = ctx.createLinearGradient(0, h - size, 0, h); g.addColorStop(0, hexA(col,0)); g.addColorStop(1, hexA(col,f)); ctx.fillStyle = g; ctx.fillRect(0,0,w,h); }
-      if (p === 'top' || p === 'both') { const g = ctx.createLinearGradient(0, size, 0, 0); g.addColorStop(0, hexA(col,0)); g.addColorStop(1, hexA(col,f*0.85)); ctx.fillStyle = g; ctx.fillRect(0,0,w,h); }
-    }
-  }
+  if (S.bg.kind === 'photo' && S.bg.dim > 0) { ctx.fillStyle = `rgba(0,0,0,${S.bg.dim})`; ctx.fillRect(0,0,w,h); }
   if (S.doodles && S.doodles.length) for (const d of S.doodles) drawDoodle(ctx, d);
-  drawWaves(ctx, w, h, S.wave || 'bottom', S.bg.seed || 1);
+  drawWaves(ctx, w, h, S.wave || 'bottom');
 }
-
-// ---------- note card (their sticky-note format) ----------
-function drawNote(ctx, el){
-  ctx.save();
-  ctx.translate(el.x + el.w/2, el.y + el.h/2); ctx.rotate(el.rot || 0); ctx.translate(-el.w/2, -el.h/2);
-  ctx.shadowColor = 'rgba(40,35,25,0.28)'; ctx.shadowBlur = el.w*0.06; ctx.shadowOffsetY = el.w*0.015;
-  ctx.fillStyle = el.fill || '#dff1ee';
-  const r = el.w*0.02;
-  ctx.beginPath(); ctx.roundRect(0, 0, el.w, el.h, r); ctx.fill();
-  ctx.shadowColor = 'transparent';
-  if (el.lines) { // notebook rules, for the quote format
-    ctx.strokeStyle = 'rgba(120,150,170,0.35)'; ctx.lineWidth = Math.max(1, el.w*0.004);
-    for (let y = el.h*0.22; y < el.h*0.92; y += el.h*0.105) { ctx.beginPath(); ctx.moveTo(el.w*0.08, y); ctx.lineTo(el.w*0.92, y); ctx.stroke(); }
-  }
-  if (el.tape !== false) drawTape(ctx, el.w/2, 0, el.w*0.30, (el.rot || 0) * -0.6 + 0.04);
-  if (el.pin) { // pushpin, for the cork-board quotes
-    const px = el.w/2, py = el.h*0.045, pr = el.w*0.035;
-    ctx.fillStyle = 'rgba(0,0,0,0.18)'; ctx.beginPath(); ctx.ellipse(px+pr*0.3, py+pr*0.5, pr*0.9, pr*0.5, 0, 0, Math.PI*2); ctx.fill();
-    ctx.fillStyle = el.pin; ctx.beginPath(); ctx.arc(px, py, pr, 0, Math.PI*2); ctx.fill();
-    ctx.fillStyle = 'rgba(255,255,255,0.5)'; ctx.beginPath(); ctx.arc(px - pr*0.3, py - pr*0.3, pr*0.35, 0, Math.PI*2); ctx.fill();
-  }
-  ctx.restore();
-}
-// Foreground image element (a single framed photo the user placed)
-function drawImageEl(ctx, el){
-  const im = IMG.lib[el.src]; if (!im) return;
-  drawFramedPhoto(ctx, im, el.x, el.y, el.w, el.w * (im.naturalHeight / im.naturalWidth), el.style || 'tape', el.rot || 0, el.seed);
-}
-function imageAspect(el){ const im = IMG.lib[el.src]; return im ? im.naturalHeight / im.naturalWidth : 0.75; }
 // Soft feathered rectangle: solid in the middle, fading out at all four edges.
 function softRect(ctx, x, y, w, h, color, alpha){
   if (w < 2 || h < 2) return;
@@ -844,7 +871,8 @@ function drawText(ctx, el){
   ctx.fillStyle = el.color; ctx.textBaseline = 'alphabetic'; ctx.textAlign = el.align;
   if (el.shadow) { ctx.shadowColor = 'rgba(0,0,0,.5)'; ctx.shadowBlur = el.size*0.16; ctx.shadowOffsetY = el.size*0.03; }
   const ax = el.align === 'left' ? el.x : el.align === 'right' ? el.x+el.w : el.x+el.w/2;
-  lines.forEach((ln,i) => ctx.fillText(ln, ax, el.y + el.size*0.78 + i*el.size*el.lh));
+  lines.forEach((ln,i) => { if (el.color2 && i) ctx.fillStyle = el.color2;
+    ctx.fillText(ln, ax, el.y + el.size*0.78 + i*el.size*el.lh); });
   if (el.rules && el.align === 'center' && lines[0]) {
     const tw = ctx.measureText(lines[0]).width, gap = el.size*0.45, ly = el.y + el.size*0.5;
     ctx.shadowColor = 'transparent'; ctx.strokeStyle = el.color; ctx.lineWidth = Math.max(1.5, el.size*0.03); ctx.globalAlpha = 0.85;
@@ -1049,7 +1077,11 @@ async function setTemplate(t){
   else if (t === 'collage' && S.bg.kind !== 'collage') { if (await randomBackground('collage') === 'none') toast('A collage needs at least 3 library photos'); }
   else if (t === 'quote') { await randomBackground('quote'); }
   else if (S.bg.kind !== 'paper') { await randomBackground(t); }
-  templateDefaults(); layout(); if (IMG.bg && S.bg.kind === 'photo') autoContrast(false);
+  templateDefaults(); layout();
+  // House rule from the master: a headline never sits on bare paper. It arrives with a photo,
+  // and if the library is empty it becomes a sticky-note card instead of a hollow page.
+  if (t === 'headline') { if (await maybeAddPhoto()) layout(); else { S.template = 'note'; templateDefaults(); layout(); toast('Add photos to the library — showing a note card instead'); } }
+  if (IMG.bg && S.bg.kind === 'photo') autoContrast(false);
   syncControls(); renderInspector(); renderResults(); render();
 }
 $('#tiles').addEventListener('click', e => { const b = e.target.closest('.tile'); if (b) { setTemplate(b.dataset.t); persist(); } });
@@ -1342,14 +1374,14 @@ function setGround(style, newSeed){
   pushUndo();
   if (S.bg.kind === 'photo') { S.bg.kind = 'paper'; IMG.bg = null; IMG.src = null; }
   S.bg.ground = style || S.bg.ground || 'paper';
-  if (newSeed || !S.bg.seed) { S.bg.seed = Math.floor(Math.random()*100000) + 1; S.doodles = S.bg.ground === 'cork' ? [] : makeDoodles(S.bg.seed, W(), H()); }
+  if (newSeed || !S.bg.seed) S.bg.seed = Math.floor(Math.random()*100000) + 1;
   templateDefaults(); layout(); syncControls(); renderInspector(); renderResults(); render(); persist();
 }
 function renderGroundChips(){
   const box = $('#artChips'); box.innerHTML = '';
   for (const [k,l] of Object.entries(GROUNDS)) box.append(h('button',{class:'chip','aria-pressed':String(S.bg.kind !== 'photo' && S.bg.ground === k),onclick:()=>setGround(k, true)}, l));
   box.append(h('button',{class:'btn sm',title:'Same paper, fresh crumple and doodles',onclick:()=>setGround(S.bg.ground, true)}, '↻ Variation'));
-  box.append(h('button',{class:'btn sm',title:'Re-scatter the gold doodles',onclick:()=>{ pushUndo(); S.doodles = S.bg.ground === 'cork' ? [] : makeDoodles(Math.floor(Math.random()*99999), W(), H()); render(); }}, '✦ Doodles'));
+  box.append(h('button',{class:'btn sm',title:'Re-pick the gold doodles',onclick:()=>{ pushUndo(); S.bg.seed = Math.floor(Math.random()*99999); refreshDoodles(); render(); }}, '\u2726 Doodles'));
 }
 // Collage: 3–4 library photos, framed and tilted, never two crops of the same shot.
 async function makeCollage(kind){
@@ -1369,7 +1401,7 @@ async function makeCollage(kind){
   S.bg.kind = 'collage'; S.bg.cells = cells; S.bg.grid = grid; S.bg.dim = 0;
   if (S.bg.ground === 'cork') S.bg.ground = 'paper';
   if (!S.bg.seed) S.bg.seed = Math.floor(Math.random()*100000) + 1;
-  S.doodles = makeDoodles(S.bg.seed + 5, W(), H(), 4);
+  S.bg.seed = S.bg.seed || Math.floor(Math.random()*100000) + 1;
   IMG.bg = null; IMG.src = { kind:'collage', id:'collage:' + cells.map(c => c.id).join('+'), cells };
   return true;
 }
@@ -1515,7 +1547,7 @@ function restore(){
   let o = null; try { o = JSON.parse(localStorage.getItem(LS.prefs)||'null'); } catch {}
   if (!o) return;
   if (SIZES[o.size]) S.size = o.size;
-  if (['logo','headline','photo','collage','quote','note'].includes(o.template)) S.template = o.template;
+  if (['logo','headline','photo','collage','quote','note','list'].includes(o.template)) S.template = o.template;
   if (['tc','tl','mid'].includes(o.textPos)) S.textPos = o.textPos;
   if (LOOKS[o.look]) S.look = o.look;
 }
@@ -1570,7 +1602,6 @@ $('#dlAllBtn').addEventListener('click', async () => {
       layout(); carryStyle(fromEls, S.els);
       const [w,hh] = SIZES[size];
       for (const ex of extras) S.els.push(Object.assign(clone(ex), { x: ex.x/w0*w, y: ex.y/h0*hh, w: ex.w/w0*w, size: ex.size*Math.min(w/w0, hh/h0) }));
-      S.doodles = (S.bg.kind === 'photo' || S.bg.ground === 'cork') ? [] : makeDoodles(S.bg.seed || 1, w, hh);
       const pr = byId('photo'), pr0 = fromEls.find(e => e.id === 'photo'); if (pr && pr0) { pr.w = pr0.w/w0*w; pr.x = pr0.x/w0*w; pr.y = pr0.y/h0*hh; }
       S.bg = Object.assign(clone(fromBg), { ox:0, oy:0, zoom:1 });
       if (IMG.bg && S.bg.kind === 'photo') autoContrast(false);
@@ -1675,6 +1706,8 @@ function analyzeCaption(txt){
   const tp = detectTopic(txt);
   const parentQuote = quoted && /parent|mom|dad|family|we see|our kids|my child|tell us/i.test(txt);
   if (parentQuote) return { template:'quote', headline:'', sub:'', quote:'“' + quoted + '”', attr:'— a Spring Forth parent' };
+  if (LIST_RE.test(txt)) { const q = (txt.match(/[^.!?\n]*(?:instead of|three questions|questions we)[^.!?\n]*/i)||[])[0];
+    return { template:'list', headline:((q||'A few things to try').trim().replace(/[.:]?$/, ':')), items:[], sub:'', quote:'', attr:'' }; }
   if (quoted && quoted.length < 70) { const sgg = tp ? suggestText(tp) : { sub:'' }; return { template:'headline', headline:quoted, sub:sgg.sub || '', quote:'', attr:'' }; }
   if (tp) { const sgg = suggestText(tp); return { template: tp === 'values' ? 'note' : 'headline', headline:sgg.headline, sub:sgg.sub, quote:'', attr:'' }; }
   return { template:'logo', headline:'', sub:'', quote:'', attr:'' };
@@ -1685,6 +1718,7 @@ function parseBrief(txt){
   if (wordsAll > 26 || captionSignals) return analyzeCaption(txt);
   return parseLines(txt);
 }
+const LIST_RE = /\b(instead of|three questions|questions we|try:|ask:|ways to|signs of)\b/i;
 function parseLines(txt){
   const lines = txt.split('\n').map(l => l.trim()).filter(Boolean);
   const attr = lines.find(l => /^[—–-]\s*/.test(l));
@@ -1696,6 +1730,10 @@ function parseLines(txt){
   if (quoted || words > 18) return { template:'quote', headline:'', sub:'', quote:joined, attr: attr || '— a Spring Forth parent' };
   // a short phrase — on one line or broken over two or three — is a sticky-note card,
   // and the line breaks she typed are kept as written
+  // an intro ending in a colon is a three-note list; lines after it become the notes
+  if (/:\s*$/.test(body[0] || '') || LIST_RE.test(body[0] || '')) {
+    return { template:'list', headline: body[0], items: body.slice(1).filter(Boolean).slice(0,3), sub:'', quote:'', attr:'' };
+  }
   if (body.length <= 3 && words <= 8) return { template:'note', headline: body.join('\n'), sub:'', quote:'', attr:'' };
   return { template:'headline', headline: body[0] || '', sub: body.slice(1).join(' '), quote:'', attr:'' };
 }
@@ -1707,6 +1745,10 @@ async function randomBackground(template){
   const pool = fresh.length >= 3 ? fresh : photos;
   S.bg.seed = Math.floor(Math.random()*100000) + 1;
   S.bg.cells = null; S.bg.zoom = 1; S.bg.ox = S.bg.oy = 0;
+  if (template === 'note' || template === 'list') {
+    S.bg.kind = 'paper'; S.bg.ground = 'paper'; IMG.bg = null; IMG.src = { kind:'ground', ground:'paper' };
+    return 'paper';
+  }
   if (template === 'quote') {
     S.bg.kind = 'paper'; S.bg.ground = 'cork'; IMG.bg = null; IMG.src = { kind:'ground', ground:'cork' };
     S.doodles = []; return 'cork';
@@ -1725,23 +1767,25 @@ async function randomBackground(template){
   }
   // note / headline: crumpled paper with doodles
   S.bg.kind = 'paper'; S.bg.ground = 'paper'; IMG.bg = null; IMG.src = { kind:'ground', ground:'paper' };
-  S.doodles = makeDoodles(S.bg.seed, W(), H());
+  refreshDoodles();
   return 'paper';
 }
+// House rule: paper never carries a headline on its own. A headline layout always gets a
+// photo; if the library is empty the headline is demoted to a sticky-note card instead.
 async function maybeAddPhoto(){
   const el = byId('photo');
-  const roomBelow = S.template === 'headline' && S.bg.kind === 'paper';
-  if (!LIB.length || !roomBelow) { if (el) S.els = S.els.filter(e => e.id !== 'photo'); return; }
-  if (Math.random() < 0.65) {
-    const fresh = LIB.filter(p => !photoMem.used[p.id]); const from = fresh.length ? fresh : LIB;
-    const p = from[Math.floor(Math.random()*from.length)];
-    const im = await libImage(p.url); addPhoto(p, im);
-  } else if (el) S.els = S.els.filter(e => e.id !== 'photo');
+  if (S.template !== 'headline' || S.bg.kind !== 'paper') { if (el) S.els = S.els.filter(e => e.id !== 'photo'); return true; }
+  if (!LIB.length) { if (el) S.els = S.els.filter(e => e.id !== 'photo'); return false; }
+  const fresh = LIB.filter(p => !photoMem.used[p.id]); const from = fresh.length ? fresh : LIB;
+  const p = from[Math.floor(Math.random()*from.length)];
+  const im = await libImage(p.url); addPhoto(p, im);
+  return true;
 }
 function randomStyle(){
   const had = new Set(S.els.map(e => e.id));
   S.look = pick([['blue', 12], ['gold', 1]], 'look');
-  if (S.template === 'note') S.noteFill = pick(NOTE_FILLS.map(([hex]) => [hex, 1]), 'note');
+  S.noteFill = pick(NOTE_FILLS.map(([hex]) => [hex, 1]), 'note');
+  S.tapeFill = TAPE_FILLS[Math.floor(Math.random()*TAPE_FILLS.length)];
   S.noteRot = (Math.random() - 0.5) * 0.06;
   if (S.template === 'headline') S.textPos = pick([['tc', 6], ['tl', 2], ['mid', 1]], 'textPos');
   templateDefaults(); layout();
@@ -1765,6 +1809,10 @@ async function generate(){
       if (brief.sub) S.els.push(text('sub', brief.sub));
     }
     if (S.template === 'quote') { S.els.push(text('quote', brief.quote)); S.els.push(text('attr', brief.attr)); }
+    if (S.template === 'list') {
+      S.els.push(text('headline', brief.headline || 'A few things to try:'));
+      (brief.items || []).forEach((t,i) => { if (i < 3) S.els.push(text('item-'+(i+1), t)); });
+    }
     const bgKind = await randomBackground(S.template);
     if (bgKind === 'none') {
       // no photos yet: fall back to a paper card so we never hand back an empty frame
@@ -1774,7 +1822,12 @@ async function generate(){
       toast('No photos in the library yet — made a paper card instead');
     }
     randomStyle();
-    await maybeAddPhoto();
+    if (!(await maybeAddPhoto())) {
+      const hl = byId('headline')?.text || 'Learning By Doing';
+      S.template = 'note'; S.els = [text('headline', hl)];
+      templateDefaults(); layout();
+      toast('No photo to pair with that headline \u2014 made a note card instead');
+    }
     currentDraftId = null;
     $('#gen').hidden = true;
     syncControls(); renderInspector(); renderResults(); fitCanvas(); persist();
@@ -1798,7 +1851,7 @@ async function shufflePhoto(){
 function shuffleLook(){
   pushUndo();
   S.bg.seed = Math.floor(Math.random()*100000) + 1;
-  if (S.bg.kind !== 'photo' && S.bg.ground !== 'cork') S.doodles = makeDoodles(S.bg.seed, W(), H());
+  S.bg.seed = Math.floor(Math.random()*100000) + 1; refreshDoodles();
   randomStyle(); syncControls(); renderInspector(); render(); persist();
 }
 $('#genBtn').addEventListener('click', () => { $('#genStatus').textContent = ''; renderTopics(); $('#gen').hidden = false; setTimeout(() => $('#genText').focus(), 0); });
@@ -1813,8 +1866,8 @@ $('#shufLook').addEventListener('click', shuffleLook);
 let toastT = 0;
 function toast(msg){ const t = $('#toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), 3200); }
 async function fontsReady(){
-  try { await Promise.all([document.fonts.load('400 40px "Gochi Hand"'), document.fonts.load('600 40px "Caveat"'),
-    ...['400 40px','500 40px','600 40px','700 40px'].map(f => document.fonts.load(`${f} "Quicksand"`))]); } catch {}
+  try { await Promise.all([document.fonts.load('400 40px "Chewy"'),
+    ...['300 40px','400 40px','500 40px','600 40px','700 40px'].map(f => document.fonts.load(`${f} "Roboto Slab"`))]); } catch {}
 }
 
 // ---------- boot ----------
@@ -1822,9 +1875,14 @@ async function fontsReady(){
   restore(); loadPhotoMem();
   await Promise.all(Object.entries(LOGO_SRCS).map(([k, url]) => new Promise(res => { const im = new Image(); im.onload = () => { LOGOS[k] = im; res(); }; im.onerror = res; im.src = url; })));
   IMG.src = { kind:'ground', ground:S.bg.ground };
-  if (!S.doodles || !S.doodles.length) S.doodles = makeDoodles(S.bg.seed, W(), H());
+  await loadArt();
   renderLooks(); templateDefaults(); layout(); syncControls(); fitCanvas(); renderDrafts();
-  loadLibrary();
+  await loadLibrary();
+  // the opening page obeys the same house rule as every other: a headline arrives with a photo
+  if (S.template === 'headline' && !byId('photo') && S.bg.kind === 'paper') {
+    if (await maybeAddPhoto()) layout(); else { S.template = 'note'; templateDefaults(); layout(); }
+    syncControls(); renderInspector(); render();
+  }
   await fontsReady(); render();
   try { document.fonts.ready.then(render); } catch {}
 })();

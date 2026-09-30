@@ -78,6 +78,8 @@ function analyzeCaption(txt){
   const tp = detectTopic(txt);
   const parentQuote = quoted && /parent|mom|dad|family|we see|our kids|my child|tell us/i.test(txt);
   if (parentQuote) return { template:'quote', headline:'', sub:'', quote:'“' + quoted + '”', attr:'— a Spring Forth parent' };
+  if (LIST_RE.test(txt)) { const q = (txt.match(/[^.!?\n]*(?:instead of|three questions|questions we)[^.!?\n]*/i)||[])[0];
+    return { template:'list', headline:((q||'A few things to try').trim().replace(/[.:]?$/, ':')), items:[], sub:'', quote:'', attr:'' }; }
   if (quoted && quoted.length < 70) { const sgg = tp ? suggestText(tp) : { sub:'' }; return { template:'headline', headline:quoted, sub:sgg.sub || '', quote:'', attr:'' }; }
   if (tp) { const sgg = suggestText(tp); return { template: tp === 'values' ? 'note' : 'headline', headline:sgg.headline, sub:sgg.sub, quote:'', attr:'' }; }
   return { template:'logo', headline:'', sub:'', quote:'', attr:'' };
@@ -88,6 +90,7 @@ function parseBrief(txt){
   if (wordsAll > 26 || captionSignals) return analyzeCaption(txt);
   return parseLines(txt);
 }
+const LIST_RE = /\b(instead of|three questions|questions we|try:|ask:|ways to|signs of)\b/i;
 function parseLines(txt){
   const lines = txt.split('\n').map(l => l.trim()).filter(Boolean);
   const attr = lines.find(l => /^[—–-]\s*/.test(l));
@@ -99,6 +102,10 @@ function parseLines(txt){
   if (quoted || words > 18) return { template:'quote', headline:'', sub:'', quote:joined, attr: attr || '— a Spring Forth parent' };
   // a short phrase — on one line or broken over two or three — is a sticky-note card,
   // and the line breaks she typed are kept as written
+  // an intro ending in a colon is a three-note list; lines after it become the notes
+  if (/:\s*$/.test(body[0] || '') || LIST_RE.test(body[0] || '')) {
+    return { template:'list', headline: body[0], items: body.slice(1).filter(Boolean).slice(0,3), sub:'', quote:'', attr:'' };
+  }
   if (body.length <= 3 && words <= 8) return { template:'note', headline: body.join('\n'), sub:'', quote:'', attr:'' };
   return { template:'headline', headline: body[0] || '', sub: body.slice(1).join(' '), quote:'', attr:'' };
 }
@@ -110,6 +117,10 @@ async function randomBackground(template){
   const pool = fresh.length >= 3 ? fresh : photos;
   S.bg.seed = Math.floor(Math.random()*100000) + 1;
   S.bg.cells = null; S.bg.zoom = 1; S.bg.ox = S.bg.oy = 0;
+  if (template === 'note' || template === 'list') {
+    S.bg.kind = 'paper'; S.bg.ground = 'paper'; IMG.bg = null; IMG.src = { kind:'ground', ground:'paper' };
+    return 'paper';
+  }
   if (template === 'quote') {
     S.bg.kind = 'paper'; S.bg.ground = 'cork'; IMG.bg = null; IMG.src = { kind:'ground', ground:'cork' };
     S.doodles = []; return 'cork';
@@ -128,23 +139,25 @@ async function randomBackground(template){
   }
   // note / headline: crumpled paper with doodles
   S.bg.kind = 'paper'; S.bg.ground = 'paper'; IMG.bg = null; IMG.src = { kind:'ground', ground:'paper' };
-  S.doodles = makeDoodles(S.bg.seed, W(), H());
+  refreshDoodles();
   return 'paper';
 }
+// House rule: paper never carries a headline on its own. A headline layout always gets a
+// photo; if the library is empty the headline is demoted to a sticky-note card instead.
 async function maybeAddPhoto(){
   const el = byId('photo');
-  const roomBelow = S.template === 'headline' && S.bg.kind === 'paper';
-  if (!LIB.length || !roomBelow) { if (el) S.els = S.els.filter(e => e.id !== 'photo'); return; }
-  if (Math.random() < 0.65) {
-    const fresh = LIB.filter(p => !photoMem.used[p.id]); const from = fresh.length ? fresh : LIB;
-    const p = from[Math.floor(Math.random()*from.length)];
-    const im = await libImage(p.url); addPhoto(p, im);
-  } else if (el) S.els = S.els.filter(e => e.id !== 'photo');
+  if (S.template !== 'headline' || S.bg.kind !== 'paper') { if (el) S.els = S.els.filter(e => e.id !== 'photo'); return true; }
+  if (!LIB.length) { if (el) S.els = S.els.filter(e => e.id !== 'photo'); return false; }
+  const fresh = LIB.filter(p => !photoMem.used[p.id]); const from = fresh.length ? fresh : LIB;
+  const p = from[Math.floor(Math.random()*from.length)];
+  const im = await libImage(p.url); addPhoto(p, im);
+  return true;
 }
 function randomStyle(){
   const had = new Set(S.els.map(e => e.id));
   S.look = pick([['blue', 12], ['gold', 1]], 'look');
-  if (S.template === 'note') S.noteFill = pick(NOTE_FILLS.map(([hex]) => [hex, 1]), 'note');
+  S.noteFill = pick(NOTE_FILLS.map(([hex]) => [hex, 1]), 'note');
+  S.tapeFill = TAPE_FILLS[Math.floor(Math.random()*TAPE_FILLS.length)];
   S.noteRot = (Math.random() - 0.5) * 0.06;
   if (S.template === 'headline') S.textPos = pick([['tc', 6], ['tl', 2], ['mid', 1]], 'textPos');
   templateDefaults(); layout();
@@ -168,6 +181,10 @@ async function generate(){
       if (brief.sub) S.els.push(text('sub', brief.sub));
     }
     if (S.template === 'quote') { S.els.push(text('quote', brief.quote)); S.els.push(text('attr', brief.attr)); }
+    if (S.template === 'list') {
+      S.els.push(text('headline', brief.headline || 'A few things to try:'));
+      (brief.items || []).forEach((t,i) => { if (i < 3) S.els.push(text('item-'+(i+1), t)); });
+    }
     const bgKind = await randomBackground(S.template);
     if (bgKind === 'none') {
       // no photos yet: fall back to a paper card so we never hand back an empty frame
@@ -177,7 +194,12 @@ async function generate(){
       toast('No photos in the library yet — made a paper card instead');
     }
     randomStyle();
-    await maybeAddPhoto();
+    if (!(await maybeAddPhoto())) {
+      const hl = byId('headline')?.text || 'Learning By Doing';
+      S.template = 'note'; S.els = [text('headline', hl)];
+      templateDefaults(); layout();
+      toast('No photo to pair with that headline \u2014 made a note card instead');
+    }
     currentDraftId = null;
     $('#gen').hidden = true;
     syncControls(); renderInspector(); renderResults(); fitCanvas(); persist();
@@ -201,7 +223,7 @@ async function shufflePhoto(){
 function shuffleLook(){
   pushUndo();
   S.bg.seed = Math.floor(Math.random()*100000) + 1;
-  if (S.bg.kind !== 'photo' && S.bg.ground !== 'cork') S.doodles = makeDoodles(S.bg.seed, W(), H());
+  S.bg.seed = Math.floor(Math.random()*100000) + 1; refreshDoodles();
   randomStyle(); syncControls(); renderInspector(); render(); persist();
 }
 $('#genBtn').addEventListener('click', () => { $('#genStatus').textContent = ''; renderTopics(); $('#gen').hidden = false; setTimeout(() => $('#genText').focus(), 0); });

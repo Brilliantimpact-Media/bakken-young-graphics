@@ -110,14 +110,14 @@ function setGround(style, newSeed){
   pushUndo();
   if (S.bg.kind === 'photo') { S.bg.kind = 'paper'; IMG.bg = null; IMG.src = null; }
   S.bg.ground = style || S.bg.ground || 'paper';
-  if (newSeed || !S.bg.seed) { S.bg.seed = Math.floor(Math.random()*100000) + 1; S.doodles = S.bg.ground === 'cork' ? [] : makeDoodles(S.bg.seed, W(), H()); }
+  if (newSeed || !S.bg.seed) S.bg.seed = Math.floor(Math.random()*100000) + 1;
   templateDefaults(); layout(); syncControls(); renderInspector(); renderResults(); render(); persist();
 }
 function renderGroundChips(){
   const box = $('#artChips'); box.innerHTML = '';
   for (const [k,l] of Object.entries(GROUNDS)) box.append(h('button',{class:'chip','aria-pressed':String(S.bg.kind !== 'photo' && S.bg.ground === k),onclick:()=>setGround(k, true)}, l));
   box.append(h('button',{class:'btn sm',title:'Same paper, fresh crumple and doodles',onclick:()=>setGround(S.bg.ground, true)}, '↻ Variation'));
-  box.append(h('button',{class:'btn sm',title:'Re-scatter the gold doodles',onclick:()=>{ pushUndo(); S.doodles = S.bg.ground === 'cork' ? [] : makeDoodles(Math.floor(Math.random()*99999), W(), H()); render(); }}, '✦ Doodles'));
+  box.append(h('button',{class:'btn sm',title:'Re-pick the gold doodles',onclick:()=>{ pushUndo(); S.bg.seed = Math.floor(Math.random()*99999); refreshDoodles(); render(); }}, '\u2726 Doodles'));
 }
 // Collage: 3–4 library photos, framed and tilted, never two crops of the same shot.
 async function makeCollage(kind){
@@ -137,7 +137,7 @@ async function makeCollage(kind){
   S.bg.kind = 'collage'; S.bg.cells = cells; S.bg.grid = grid; S.bg.dim = 0;
   if (S.bg.ground === 'cork') S.bg.ground = 'paper';
   if (!S.bg.seed) S.bg.seed = Math.floor(Math.random()*100000) + 1;
-  S.doodles = makeDoodles(S.bg.seed + 5, W(), H(), 4);
+  S.bg.seed = S.bg.seed || Math.floor(Math.random()*100000) + 1;
   IMG.bg = null; IMG.src = { kind:'collage', id:'collage:' + cells.map(c => c.id).join('+'), cells };
   return true;
 }

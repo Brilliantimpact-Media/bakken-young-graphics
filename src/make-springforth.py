@@ -24,12 +24,17 @@ def rep_between(start, end, new):
 # ================= identity / fonts / theme =================
 rep("<title>Bakken-Young Graphics</title>", "<title>Spring Forth Graphics</title>")
 rep('<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=Nunito+Sans:wght@400;600;700&display=swap">',
-    '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gochi+Hand&family=Caveat:wght@500;600;700&family=Quicksand:wght@400;500;600;700&family=Nunito+Sans:wght@400;600;700&display=swap">')
+    '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chewy&family=Roboto+Slab:wght@300;400;500;600;700&family=Quicksand:wght@400;500;600;700&display=swap">')
 s = s.replace('font:600 20px/1 "Cormorant Garamond",Georgia,serif;letter-spacing:.01em', 'font:700 19px/1 "Quicksand",sans-serif;letter-spacing:.01em')
-s = s.replace('font:italic 700 15px "Cormorant Garamond",serif', 'font:400 15px "Gochi Hand",cursive')
-s = s.replace('font:600 24px/1.1 "Cormorant Garamond",serif', 'font:400 26px/1.1 "Gochi Hand",cursive')
+s = s.replace('font:italic 700 15px "Cormorant Garamond",serif', 'font:400 15px "Chewy",cursive')
+s = s.replace('font:600 24px/1.1 "Cormorant Garamond",serif', 'font:400 25px/1.1 "Chewy",cursive')
+# Canva names the two brand faces "More Sugar" (headlines) and "Roboto Slab" (body).
+# More Sugar is a licensed Canva font with no webfont, so Chewy stands in for it on the web;
+# it is listed second so a machine that has More Sugar installed uses the real thing.
 rep("const SERIF = '\"Cormorant Garamond\", Georgia, \"Times New Roman\", serif';",
-    "const SERIF = '\"Gochi Hand\", \"Caveat\", \"Comic Sans MS\", cursive';\nconst SANS = '\"Quicksand\", \"Nunito Sans\", Arial, sans-serif';")
+    "const HAND = '\"More Sugar\", \"Chewy\", \"Comic Sans MS\", cursive';\n"
+    "const SERIF = HAND;\n"
+    "const SANS = '\"Roboto Slab\", Georgia, serif';")
 rep('<select id="profileSel" class="profile" aria-label="Client"><option value="bakken-young">Bakken-Young</option></select>\n    <span>Social graphics</span>',
     '<select id="profileSel" class="profile" aria-label="Client"><option value="springforth">Spring Forth</option></select>\n    <span>Academy</span>')
 s = s.replace("--accent:#19441f; --accent-ink:#ffffff; --accent-soft:#e3ece3;", "--accent:#03a2c6; --accent-ink:#ffffff; --accent-soft:#ddeef8;")
@@ -89,6 +94,11 @@ rep("function logoAspect(){ return IMG.logo ? IMG.logo.naturalHeight / IMG.logo.
 rep("if (el.type === 'logo') return { x:el.x, y:el.y, w:el.w, h:el.w*logoAspect() };",
     "if (el.type === 'logo') return { x:el.x, y:el.y, w:el.w, h:el.w*logoAspect(el) };\n  if (el.type === 'image') return { x:el.x, y:el.y, w:el.w, h:el.w*imageAspect(el) };")
 rep("function drawLogo(ctx, el){\n  const h = el.w * logoAspect();", "function drawLogo(ctx, el){\n  const h = el.w * logoAspect(el);")
+
+# Two-tone text: the footer's second line (the domain) is gold against the blue band.
+rep("  lines.forEach((ln,i) => ctx.fillText(ln, ax, el.y + el.size*0.78 + i*el.size*el.lh));",
+    "  lines.forEach((ln,i) => { if (el.color2 && i) ctx.fillStyle = el.color2;\n"
+    "    ctx.fillText(ln, ax, el.y + el.size*0.78 + i*el.size*el.lh); });")
 rep("  if (IMG.logo) ctx.drawImage(IMG.logo, el.x, el.y, el.w, h);", "  const im = logoImg(el);\n  if (im) ctx.drawImage(im, el.x, el.y, el.w, h);")
 rep("function logoEl(o){ const L = LOOKS[S.look]; return Object.assign({ id:'logo', type:'logo', shadow:true, shade:{style:L.shade.style, color:L.shade.color, alpha:L.shade.alpha, size:0.5} }, o); }",
     "function logoEl(o){ return Object.assign({ id:'logo', type:'logo', variant:'lockup', shadow:false, shade:NO_SHADE() }, o); }")
@@ -110,7 +120,9 @@ function applyLook(withPhoto){
   const onPhoto = S.bg.kind === 'photo';
   for (const el of S.els) {
     if (el.type !== 'text') continue;
-    if (el.id === 'site') { el.color = '#ffffff'; el.shadow = false; continue; }
+    // the site line, the list cards and their gold numerals are coloured by the layout,
+    // which knows what they are sitting on — the look must not paint over them
+    if (el.id === 'site' || /^(num|item)-/.test(el.id)) continue;
     if (el.id === 'quote') { el.color = L.accent; el.shadow = false; continue; }
     if (el.id === 'attr') { el.shadow = false; continue; }
     const inNote = S.template === 'note' && el.id === 'headline';
@@ -137,6 +149,8 @@ rep_between('      <div class="tiles" id="tiles">', '      </div>\n      <div cl
           <svg viewBox="0 0 44 44"><rect x="2" y="2" width="40" height="40" rx="4" fill="#9fb8c4"/><path d="M2 26l11-9 9 7 7-5 13 10v8a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4z" fill="#7d9aa8"/><circle cx="31" cy="12" r="4" fill="#ffc000"/><rect x="2" y="33" width="40" height="9" fill="#1cc1e0"/></svg>Photo</button>
         <button class="tile" data-t="collage" aria-pressed="false">
           <svg viewBox="0 0 44 44"><rect x="2" y="2" width="40" height="40" rx="4" fill="#eef3f2"/><rect x="2" y="33" width="40" height="9" fill="#1cc1e0"/><rect x="6" y="7" width="15" height="12" fill="#fff" stroke="#c3cdd2"/><rect x="23" y="7" width="15" height="12" fill="#fff" stroke="#c3cdd2"/><rect x="6" y="21" width="32" height="9" fill="#fff" stroke="#c3cdd2"/></svg>Collage</button>
+        <button class="tile" data-t="list" aria-pressed="false">
+          <svg viewBox="0 0 44 44"><rect x="2" y="2" width="40" height="40" rx="4" fill="#eef3f2"/><rect x="2" y="33" width="40" height="9" fill="#1cc1e0"/><path d="M11 9h22" stroke="#03a2c6" stroke-width="2.2" stroke-linecap="round"/><rect x="4" y="14" width="11" height="14" rx="1.5" fill="#e5f4ee" stroke="#a9cfc8"/><rect x="16.5" y="12" width="11" height="14" rx="1.5" fill="#fbf0d7" stroke="#d8c79b"/><rect x="29" y="14" width="11" height="14" rx="1.5" fill="#fae2e0" stroke="#d8b3ae"/></svg>List</button>
         <button class="tile" data-t="quote" aria-pressed="false">
           <svg viewBox="0 0 44 44"><rect x="2" y="2" width="40" height="40" rx="4" fill="#c9a36b"/><rect x="9" y="7" width="26" height="30" rx="1.5" fill="#fffdf6" stroke="#ddd3bb"/><circle cx="22" cy="10" r="2.4" fill="#e05c4b"/><path d="M13 17h18M13 22h18M13 27h11" stroke="#8fb9cb" stroke-width="1.6" stroke-linecap="round"/></svg>Quote</button>
         <button class="tile" data-t="logo" aria-pressed="false">
@@ -205,6 +219,7 @@ rep("""        <button data-v="auto" aria-pressed="true">Auto</button>
         <button data-v="headline" aria-pressed="false">Headline</button>
         <button data-v="photo" aria-pressed="false">Photo</button>
         <button data-v="collage" aria-pressed="false">Collage</button>
+        <button data-v="list" aria-pressed="false">List</button>
         <button data-v="quote" aria-pressed="false">Quote</button>""")
 rep("<p>Type what it should say — first line is the headline, the next line the subline. Add a date or time and it becomes an event. Paste a client's quote for a review. Leave it blank for logo only. Keep pressing Generate until you like one, then tweak.</p>",
     "<p>Type the headline (first line) and an optional second line. A short phrase like <b>Ownership</b> becomes a sticky-note card. Paste a parent’s quote and it becomes a cork-board note. Leave it blank for a photo. Keep pressing Generate until you like one, then tweak.</p>")
@@ -212,7 +227,7 @@ rep('placeholder="Pre-Planning&#10;a simple process&#10;&#10;…or paste the who
     'placeholder="Ownership&#10;&#10;…or paste the whole caption here"')
 rep('<div class="kicker">Bakken-Young studio</div>', '<div class="kicker">Spring Forth studio</div>')
 rep('.welcome-card h2{margin:0 0 10px;font:600 40px/1.05 "Cormorant Garamond",Georgia,serif;color:var(--ink)}',
-    '.welcome-card h2{margin:0 0 10px;font:400 44px/1.05 "Gochi Hand",cursive;color:var(--ink)}')
+    '.welcome-card h2{margin:0 0 10px;font:400 42px/1.05 "Chewy",cursive;color:var(--ink)}')
 s = s.replace("rgba(25,68,31,.55)", "rgba(3,162,198,.55)").replace("rgba(25,68,31,0)", "rgba(3,162,198,0)")
 rep("['#tiles','#results','#drafts','#genBtn','#shufPhoto','#shufLook','#addText','#bgBtn','#importBtn','#looks']",
     "['#tiles','#results','#drafts','#genBtn','#shufPhoto','#shufLook','#addText','#bgBtn','#importBtn','#looks','#artChips','#collageBtn','#collageQuick']")
@@ -241,7 +256,11 @@ rep("function setTemplate(t){\n  pushUndo(); S.template = t; templateDefaults();
   else if (t === 'collage' && S.bg.kind !== 'collage') { if (await randomBackground('collage') === 'none') toast('A collage needs at least 3 library photos'); }
   else if (t === 'quote') { await randomBackground('quote'); }
   else if (S.bg.kind !== 'paper') { await randomBackground(t); }
-  templateDefaults(); layout(); if (IMG.bg && S.bg.kind === 'photo') autoContrast(false);
+  templateDefaults(); layout();
+  // House rule from the master: a headline never sits on bare paper. It arrives with a photo,
+  // and if the library is empty it becomes a sticky-note card instead of a hollow page.
+  if (t === 'headline') { if (await maybeAddPhoto()) layout(); else { S.template = 'note'; templateDefaults(); layout(); toast('Add photos to the library \u2014 showing a note card instead'); } }
+  if (IMG.bg && S.bg.kind === 'photo') autoContrast(false);
   syncControls(); renderInspector(); renderResults(); render();
 }""")
 rep("function snapshot(){ return JSON.stringify({ template:S.template, size:S.size, textPos:S.textPos, look:S.look, bg:S.bg, els:S.els }); }",
@@ -249,7 +268,7 @@ rep("function snapshot(){ return JSON.stringify({ template:S.template, size:S.si
 rep("state: { template:S.template, size:S.size, textPos:S.textPos, look:S.look, bg:clone(S.bg), els:clone(S.els) }",
     "state: { template:S.template, size:S.size, textPos:S.textPos, look:S.look, wave:S.wave, waveWas:S.waveWas, noteFill:S.noteFill, noteRot:S.noteRot, doodles:clone(S.doodles||[]), bg:clone(S.bg), els:clone(S.els) }")
 rep("  if (['tc','tl','tr','mid'].includes(o.textPos)) S.textPos = o.textPos;", "  if (['tc','tl','mid'].includes(o.textPos)) S.textPos = o.textPos;")
-rep("  if (['logo','headline','event','review'].includes(o.template)) S.template = o.template;", "  if (['logo','headline','photo','collage','quote','note'].includes(o.template)) S.template = o.template;")
+rep("  if (['logo','headline','event','review'].includes(o.template)) S.template = o.template;", "  if (['logo','headline','photo','collage','quote','note','list'].includes(o.template)) S.template = o.template;")
 rep("  if (typeof o.apiKey === 'string' && o.apiKey) apiKey = o.apiKey;\n", "")
 rep("JSON.stringify({ template:S.template, size:S.size, textPos:S.textPos, look:S.look, apiKey })", "JSON.stringify({ template:S.template, size:S.size, textPos:S.textPos, look:S.look, wave:S.wave })")
 rep("  if (['top','with','bottom'].includes(o.logoPos)) S.logoPos = o.logoPos;\n", "") if "o.logoPos" in s else None
@@ -292,7 +311,7 @@ rep("    else if (el.type === 'logo') Object.assign(el, { shadow:src.shadow, sha
     "    else if (el.type === 'logo') Object.assign(el, { shadow:src.shadow, variant:src.variant, shade:clone(src.shade) });\n    else if (el.type === 'note') Object.assign(el, { fill:src.fill, rot:src.rot, tape:src.tape, lines:src.lines, pin:src.pin });")
 rep("      for (const ex of extras) S.els.push(Object.assign(clone(ex), { x: ex.x/w0*w, y: ex.y/h0*hh, w: ex.w/w0*w, size: ex.size*Math.min(w/w0, hh/h0) }));",
     "      for (const ex of extras) S.els.push(Object.assign(clone(ex), { x: ex.x/w0*w, y: ex.y/h0*hh, w: ex.w/w0*w, size: ex.size*Math.min(w/w0, hh/h0) }));\n"
-    "      S.doodles = (S.bg.kind === 'photo' || S.bg.ground === 'cork') ? [] : makeDoodles(S.bg.seed || 1, w, hh);\n"
+    "" +
     "      const pr = byId('photo'), pr0 = fromEls.find(e => e.id === 'photo'); if (pr && pr0) { pr.w = pr0.w/w0*w; pr.x = pr0.x/w0*w; pr.y = pr0.y/h0*hh; }")
 rep("      if (IMG.bg && !LOOKS[S.look].dark) autoContrast(false);\n      const blob = await renderBlob();", "      if (IMG.bg && S.bg.kind === 'photo') autoContrast(false);\n      const blob = await renderBlob();")
 
@@ -340,8 +359,8 @@ rep_between("// ---------- Generate (randomizer) ----------", "// ---------- mis
 
 # ================= fonts / boot =================
 rep("  try { await Promise.all(['italic 600 40px','600 40px','700 40px','500 40px','400 40px','italic 500 40px','italic 700 40px'].map(f => document.fonts.load(`${f} \"Cormorant Garamond\"`))); } catch {}",
-    "  try { await Promise.all([document.fonts.load('400 40px \"Gochi Hand\"'), document.fonts.load('600 40px \"Caveat\"'),\n"
-    "    ...['400 40px','500 40px','600 40px','700 40px'].map(f => document.fonts.load(`${f} \"Quicksand\"`))]); } catch {}")
+    "  try { await Promise.all([document.fonts.load('400 40px \"Chewy\"'),\n"
+    "    ...['300 40px','400 40px','500 40px','600 40px','700 40px'].map(f => document.fonts.load(`${f} \"Roboto Slab\"`))]); } catch {}")
 rep("""  restore(); loadPhotoMem();
   const fromLink = keyFromLink();
   await new Promise(res => { const im = new Image(); im.onload = () => { IMG.logo = im; res(); }; im.onerror = res; im.src = LOGO_SRC; });
@@ -350,9 +369,14 @@ rep("""  restore(); loadPhotoMem();
 """  restore(); loadPhotoMem();
   await Promise.all(Object.entries(LOGO_SRCS).map(([k, url]) => new Promise(res => { const im = new Image(); im.onload = () => { LOGOS[k] = im; res(); }; im.onerror = res; im.src = url; })));
   IMG.src = { kind:'ground', ground:S.bg.ground };
-  if (!S.doodles || !S.doodles.length) S.doodles = makeDoodles(S.bg.seed, W(), H());
+  await loadArt();
   renderLooks(); templateDefaults(); layout(); syncControls(); fitCanvas(); renderDrafts();
-  loadLibrary();""")
+  await loadLibrary();
+  // the opening page obeys the same house rule as every other: a headline arrives with a photo
+  if (S.template === 'headline' && !byId('photo') && S.bg.kind === 'paper') {
+    if (await maybeAddPhoto()) layout(); else { S.template = 'note'; templateDefaults(); layout(); }
+    syncControls(); renderInspector(); render();
+  }""")
 
 for bad in ['Bakken', 'funeral', 'Funeral', 'cremat', 'by-prefs', 'by-drafts', 'by-photos', 'by-learn', 'Cormorant',
             'Pre-Planning', 'apiKey', 'fetchPhotos', 'BLOCK_WORDS', 'keyFromLink', 'DEFAULT_QUERY', 'pexels', 'Pexels']:
