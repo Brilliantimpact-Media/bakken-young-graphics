@@ -77,6 +77,10 @@ input[type=color]{width:34px;height:28px;padding:0;border:1px solid var(--line-s
 .tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
 .tile{border:1px solid var(--line-strong);border-radius:8px;background:var(--panel-2);padding:7px 4px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;font-size:11px;font-weight:600}
 .tile svg{width:38px;height:38px;display:block}
+.stickers{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:5px;margin-bottom:4px}
+.stickers button{border:1px solid var(--line);border-radius:7px;background:var(--panel-2);padding:5px;cursor:pointer;height:50px;min-width:0;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.stickers button:hover{border-color:var(--accent);background:var(--accent-soft)}
+.stickers img{max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;display:block}
 .tile[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft);box-shadow:inset 0 0 0 1px var(--accent)}
 .seg{display:flex;border:1px solid var(--line-strong);border-radius:7px;overflow:hidden}
 .seg button{flex:1;padding:6px 4px;border:0;background:var(--panel);cursor:pointer;font-size:12px}
@@ -248,6 +252,9 @@ canvas#c.dragging{cursor:grabbing}
       <h2>Background</h2>
       <div class="subh" style="margin-top:0">Paper</div>
       <div class="chips" id="artChips"></div>
+      <div class="subh">Stickers</div>
+      <p class="hint" style="margin:0 0 6px">Click one to drop it on the page, then drag it where you want it.</p>
+      <div class="stickers" id="stickerRow"></div>
       <div class="subh">Spring Forth photos</div>
       <div class="tabs" id="tabs" style="margin-top:0">
         <button data-tab="lib" aria-selected="true">Library</button>
@@ -375,7 +382,7 @@ const LOOKS = {
 };
 
 // ---------- state ----------
-let S = { template:'note', size:'portrait', textPos:'tc', look:'blue', wave:'bottom', noteFill:'#dff1ee', noteRot:-0.015,
+let S = { template:'note', size:'portrait', textPos:'tc', look:'blue', wave:'both', noteFill:'#dff1ee', noteRot:-0.015,
           bg:{kind:'paper', ground:'paper', seed:11, zoom:1, ox:0, oy:0, dim:0, fadePos:'none', fade:0.45, fadeSize:0.5, fadeColor:'#000000'}, els:[], sel:null };
 const IMG = { bg:null, src:null, lib:{} }; // src: {kind:'lib',id,url,...} | {kind:'own',data} | {kind:'ground',ground} | {kind:'collage',cells}
 let undo = [];
@@ -398,10 +405,9 @@ function text(id, str, o){
 }
 function logoEl(o){ return Object.assign({ id:'logo', type:'logo', variant:'lockup', shadow:false, shade:NO_SHADE() }, o); }
 
-// Footer lockup measured off the master (fractions of the 1080×1350 page):
-// shield height .085h, lockup centred on y .928h, left edge .062w, shield-to-text gap .025w,
-// two lines of .0455w on 1.12 line-height — "Visit us at" then the domain.
-const FOOT = { h:0.085, cy:0.928, x:0.062, gap:0.025, size:0.0455, lh:1.12, aspect:1.122 };
+// The wave frame carries the site lockup itself — it is part of the exported artwork, so
+// nothing here draws it. Every layout just has to keep its content clear of the frame:
+// `waveCeiling` is how far the top wave hangs, `waveFloor` how high the bottom wave rises.
 
 function layout(){
   const w = W(), h = H(), u = U();
@@ -410,53 +416,22 @@ function layout(){
   const pos = S.textPos || 'tc';
   const onPhoto = S.bg.kind === 'photo';
   const handSize = 78*u;
-
-  // ---- the site lockup: shield + "Visit us at" / the domain, as one measured unit ----
-  // House rule: every page carries it, and on the wave it sits where the band is deep enough
-  // to hold it — the master puts it left when the wave rises on the left, right when it doesn't.
-  function footer(){
-    const banded = (S.wave || 'bottom') !== 'none';
-    const onDark = banded || S.bg.ground === 'cork' || onPhoto;
-    const label = byId('site')?.text ?? 'Visit us at\nspringforthsv.org';
-    const markH = FOOT.h*h;
-    let markW = markH/FOOT.aspect, size = FOOT.size*w, gap = FOOT.gap*w;
-    const measure = () => { ctx.save(); ctx.font = `400 ${size}px ${SANS}`;
-      const t = Math.max(...label.split('\n').map(s => ctx.measureText(s).width)); ctx.restore(); return t; };
-    let tw = measure();
-    const room = w*(1 - FOOT.x*2);
-    if (markW + gap + tw > room) { size *= (room - markW - gap)/tw; tw = measure(); }
-    const total = markW + gap + tw, fw = total/w;
-    let x = FOOT.x*w, cy = FOOT.cy*h;
-    if (banded) {
-      const floor = 1 - ((typeof WAVE !== 'undefined' && WAVE && WAVE.gold) || 0.0148) - 0.014;
-      const slot = (x0) => { const top = bandTopOver(x0, x0+fw) + 0.016; return { x0, top, room:floor - top }; };
-      const need = Math.max(FOOT.h, 2*size*FOOT.lh/h);
-      const opts = [slot(FOOT.x), slot(1 - FOOT.x - fw), slot((1-fw)/2)];
-      const fit = opts.find(o => o.room >= need) || opts.reduce((a,b) => b.room > a.room ? b : a);
-      x = fit.x0*w; cy = (fit.top + Math.min(fit.room, need)/2)*h;
-    } else {
-      x = (w - total)/2;
-    }
-    const blockH = 2*size*FOOT.lh;
-    els.push(logoEl({ x, y:cy - markH/2, w:markW, variant:onDark ? 'mark-white' : 'mark', shadow:false }));
-    els.push(text('site', label, { x:x + markW + gap, y:cy - blockH/2, w:tw + size*0.2, size, weight:400,
-      align:'left', lh:FOOT.lh, font:'sans', color:onDark ? '#ffffff' : DEEP, color2:onDark ? GOLD : SKY, shadow:false }));
-  }
+  const head = (waveCeiling(0.05, 0.95) + 0.045)*h;       // first line of type clears the top wave
+  const stickers = (S.els || []).filter(e => e.type === 'sticker');
 
   if (S.template === 'note') {
-    // One card, sized to its words and optically centred in the space above the wave — the
+    // One card, sized to its words and optically centred in the space the frame leaves — the
     // master never leaves a paper page with a line of type and a hollow middle.
     const hl = byId('headline')?.text ?? 'Ownership';
     const hLines = hl.split('\n').reduce((n,l) => n + Math.max(1, Math.ceil(l.length/13)), 0);
     const textH = hLines * handSize * 1.22;
-    const top = h*0.085, floor = (S.wave === 'none' ? 0.845 : bandCrestOver(0.1, 0.9) - 0.028)*h;
+    const top = head, floor = (waveFloor(0.1, 0.9) - 0.028)*h;
     const nw = w*0.72, nh = Math.min(floor - top, Math.max(h*0.40, textH + h*0.13));
     const nx = (w - nw)/2, ny = top + (floor - top - nh)*0.5;
     els.push({ id:'note', type:'note', x:nx, y:ny, w:nw, h:nh, fill:S.noteFill || '#e5f4ee',
                tapeFill:S.tapeFill || TAPE_FILLS[0], rot:S.noteRot ?? -0.015, tape:true, kids:['headline'] });
     els.push(text('headline', hl, { x:nx + nw*0.08, y:ny + (nh - textH)/2, w:nw*0.84, size:handSize,
       align:'center', lh:1.22, color:DEEP, shadow:false }));
-    footer();
   }
   else if (S.template === 'list') {
     // their "Three questions …" / "Instead of … try:" format: a blue headline, then three
@@ -464,9 +439,9 @@ function layout(){
     const hl = byId('headline')?.text ?? 'Three questions we encourage parents to ask';
     const hs = 66*u;
     const hLines = Math.max(1, Math.ceil(hl.length/24));
-    els.push(text('headline', hl, { x:m, y:h*0.062, w:w-m*2, size:hs, align:'center', lh:1.18, color:DEEP, shadow:false }));
-    const top = h*0.062 + hLines*hs*1.18 + h*0.055;
-    const floor = (S.wave === 'none' ? 0.845 : bandCrestOver(0.06, 0.94) - 0.028)*h;
+    els.push(text('headline', hl, { x:m, y:head, w:w-m*2, size:hs, align:'center', lh:1.18, color:DEEP, shadow:false }));
+    const top = head + hLines*hs*1.18 + h*0.055;
+    const floor = (waveFloor(0.06, 0.94) - 0.028)*h;
     const gap = w*0.032, nw = (w - m*2 - gap*2)/3;
     const nh = Math.max(h*0.19, Math.min(h*0.33, floor - top - h*0.02));
     const y0 = top + (floor - top - nh)*0.52;
@@ -481,29 +456,26 @@ function layout(){
       els.push(text(id, byId(id)?.text ?? defaults[i], { x:nx+nw*0.09, y:ny+nh*0.20, w:nw*0.82, size:29*u,
         align:'center', lh:1.30, font:'sans', color:'#2f3a40', shadow:false }));
     }
-    footer();
   }
   else if (S.template === 'quote') {
     const q = byId('quote')?.text ?? '“It’s very hands on, student driven… I love that we allow them to fail early and cheaply.”';
     const a = byId('attr')?.text ?? '— a Spring Forth parent';
     // the note fills the board down to the wave rather than floating in the middle of it
-    const floor = (S.wave === 'none' ? 0.88 : bandCrestOver(0.06, 0.94) - 0.030)*h;
-    const nw = w*0.74, ny = h*0.115, nh = Math.max(h*0.44, floor - ny), nx = (w - nw)/2;
+    const floor = (waveFloor(0.06, 0.94) - 0.030)*h;
+    const ny = Math.max(h*0.115, head), nw = w*0.74, nh = Math.max(h*0.44, floor - ny), nx = (w - nw)/2;
     els.push({ id:'note', type:'note', x:nx, y:ny, w:nw, h:nh, fill:'#fffdf6', rot:S.noteRot ?? 0.02,
                tape:false, lines:true, pin:'#e05c4b', kids:['quote','attr'] });
     els.push(text('quote', q, { x:nx+nw*0.10, y:ny+nh*0.16, w:nw*0.80, size:46*u, align:'left', lh:1.30,
       font:'sans', color:DEEP, shadow:false }));
     els.push(text('attr', a, { x:nx+nw*0.10, y:ny+nh*0.80, w:nw*0.80, size:26*u, align:'right', lh:1.2,
       font:'sans', color:'#6d7f88', shadow:false }));
-    footer();
   }
   else if (S.template === 'collage') {
     const hl = byId('headline')?.text ?? '';
-    if (hl) els.push(text('headline', hl, { x:m, y:h*0.045, w:w-m*2, size:60*u, align:'center', lh:1.2, color:DEEP, shadow:false }));
-    footer();
+    if (hl) els.push(text('headline', hl, { x:m, y:head, w:w-m*2, size:60*u, align:'center', lh:1.2, color:DEEP, shadow:false }));
   }
   else if (S.template === 'logo') {
-    footer();
+    // the frame's own lockup is the whole point of this one — nothing else goes on the page
   }
   else { // 'headline' and 'photo' — a headline always sits with a photo
     const hl = byId('headline')?.text ?? 'Learning By Doing';
@@ -511,12 +483,11 @@ function layout(){
     const tw = pos === 'tl' ? w*0.76 : w - m*2;
     const align = pos === 'tl' ? 'left' : 'center';
     const hLines = Math.max(1, Math.ceil(hl.length/18));
-    const y0 = h*0.055;
+    const y0 = head;
     const col = onPhoto ? '#ffffff' : DEEP;
     els.push(text('headline', hl, { x:m, y:y0, w:tw, size:handSize, align, lh:1.22, color:col, shadow:onPhoto }));
     if (sb) els.push(text('sub', sb, { x:m, y:y0 + handSize*1.26*hLines, w:tw, size:34*u, align, lh:1.32,
       font:'sans', color:onPhoto ? '#ffffff' : '#6d7f88', shadow:onPhoto }));
-    footer();
   }
 
   // a framed photo belongs to the headline layout only — it never rides along under a card
@@ -524,17 +495,15 @@ function layout(){
   const notes = els.filter(e => e.type === 'note');           // notes render behind their own text
   for (const n of notes) { const i = els.indexOf(n); els.splice(i,1); els.unshift(n); }
   const p = els.findIndex(e => e.id === 'photo'); if (p > 0) els.unshift(els.splice(p,1)[0]);
+  els.push(...stickers);                                      // stickers are placed by hand, and stay put
   S.els = els;
   S.sel = null;
   applyLook(false);
 }
 
-
 function templateDefaults(){
   S.bg.dim = S.bg.kind === 'photo' ? 0.18 : 0;
   if (S.template === 'quote') {
-    // the cork board still carries the wave: it is the one element on every page, and the
-    // white lockup has nothing to sit on without it
     S.bg.ground = 'cork';
   } else {
     if (S.bg.ground === 'cork') S.bg.ground = 'paper';
@@ -550,7 +519,7 @@ function applyLook(withPhoto){
     if (el.type !== 'text') continue;
     // the site line, the list cards and their gold numerals are coloured by the layout,
     // which knows what they are sitting on — the look must not paint over them
-    if (el.id === 'site' || /^(num|item)-/.test(el.id)) continue;
+    if (/^(num|item)-/.test(el.id)) continue;
     if (el.id === 'quote') { el.color = L.accent; el.shadow = false; continue; }
     if (el.id === 'attr') { el.shadow = false; continue; }
     const inNote = S.template === 'note' && el.id === 'headline';
@@ -587,6 +556,7 @@ function bbox(ctx, el){
   }
   if (el.type === 'logo') return { x:el.x, y:el.y, w:el.w, h:el.w*logoAspect(el) };
   if (el.type === 'image') return { x:el.x, y:el.y, w:el.w, h:el.w*imageAspect(el) };
+  if (el.type === 'sticker') return { x:el.x, y:el.y, w:el.w, h:el.w*stickerAspect(el) };
   return { x:el.x, y:el.y, w:el.w, h:el.h };
 }
 // Visible extent of a text block (the widest line), so shading hugs the words rather than the whole text box.
@@ -602,20 +572,24 @@ function textExtent(ctx, el){
 // ---------- drawing ----------
 // ---------- Spring Forth art layer ----------
 // Everything here comes from the 2026 Canva master: the real crumpled-paper and cork
-// photographs and the wave footer, all lifted from the artwork itself.
+// photographs, the wave frame and the stickers, all exported from the artwork itself.
 const SKY = '#1cc1e0', DEEP = '#03a2c6', GOLD = '#ffc000', BRONZE = '#bb8a2d';
 const GROUNDS = { paper:'Crumpled paper', cork:'Cork board' };
 const NOTE_FILLS = [['#e5f4ee','Mint'],['#fbf0d7','Cream'],['#fae2e0','Peach'],['#ddeef8','Sky'],['#ffffff','White']];
 const TAPE_FILLS = ['#f8c97a','#bfe3f5','#cfe8cf','#f3e3c4'];
-IMG.tex = {}; let WAVE = null;
+IMG.tex = {}; IMG.stickers = {}; let WAVE = null; let STICKERS = [];
 
 function loadArt(){
   const one = (src) => new Promise(res => { const im = new Image(); im.onload = () => res(im); im.onerror = () => res(null); im.src = src; });
   return Promise.all([
     one('art/paper.jpg').then(i => IMG.tex.paper = i),
     one('art/cork.jpg').then(i => IMG.tex.cork = i),
-    Promise.all([one('art/wave-bottom.png'), fetch('art/wave-bottom.json').then(r => r.json())])
-      .then(([im, j]) => { WAVE = im ? Object.assign({ img:im }, j) : null; }).catch(() => WAVE = null),
+    Promise.all([one('art/wave-top.png'), one('art/wave-bottom.png'), fetch('art/wave.json').then(r => r.json())])
+      .then(([t, b, j]) => { WAVE = b ? Object.assign({ topImg:t, botImg:b }, j) : null; }).catch(() => WAVE = null),
+    fetch('art/stickers/index.json').then(r => r.json()).then(list => {
+      STICKERS = list;
+      return Promise.all(list.map(d => one('art/stickers/' + d.file).then(i => { if (i) IMG.stickers[d.file.replace('.png','')] = i; })));
+    }).catch(() => { STICKERS = []; }),
   ]);
 }
 function drawGround(ctx, w, h, style){
@@ -626,40 +600,47 @@ function drawGround(ctx, w, h, style){
   ctx.drawImage(im, (w-dw)/2, (h-dh)/2, dw, dh);
 }
 
-// ---------- the wave footer, traced from the real artwork ----------
-// wave.json holds, per column of the 1080px master, the top of the blue band and the top
-// of the white crest above it. Both are replayed scaled to whatever canvas we are on.
-// The footer wave is the real element, cut straight out of the master as a transparent PNG:
-// the #03a2c6 band with its wave edge, the #1cc1e0 crescent that rides above it on the left,
-// and the gold hairline along the very bottom. It is drawn full width, never redrawn by hand.
+// ---------- the wave frame ----------
+// Exported from Canva as two transparent PNGs: the top wave and the bottom wave, the latter
+// carrying the site lockup and the gold hairline. Both are drawn full width at their own
+// height; nothing about them is redrawn by hand.
 function drawWaves(ctx, w, h, where){
-  if (!where || where === 'none') return;
-  for (const pos of (where === 'both' ? ['bottom','top'] : [where])) {
-    if (!WAVE || !WAVE.img) { ctx.fillStyle = DEEP; ctx.fillRect(0, pos === 'top' ? 0 : h*0.847, w, h*0.153); continue; }
-    const bh = WAVE.h*h;
-    if (pos === 'top') { ctx.save(); ctx.translate(0, bh); ctx.scale(1, -1); ctx.drawImage(WAVE.img, 0, 0, w, bh); ctx.restore(); }
-    else ctx.drawImage(WAVE.img, 0, WAVE.top*h, w, bh);
-  }
+  if (!where || where === 'none' || !WAVE) return;
+  const both = where === 'both';
+  if ((both || where === 'top') && WAVE.topImg) ctx.drawImage(WAVE.topImg, 0, 0, w, WAVE.top.h*h);
+  if ((both || where === 'bottom') && WAVE.botImg) ctx.drawImage(WAVE.botImg, 0, WAVE.bottom.y*h, w, WAVE.bottom.h*h);
 }
-// How far down the page the band's top edge sits at a given fraction across the width \u2014
-// used to park the site lockup where the band is actually deep enough to hold it.
-function bandTopAt(fx){
-  const a = WAVE && WAVE.bandTopByCol;
-  if (!a) return 0.86;
-  return a[Math.max(0, Math.min(a.length-1, Math.round(fx*(a.length-1))))];
+// Where the frame's ink reaches at a given fraction across the width, so content can be
+// kept clear of it: `waveFloor` is the highest the bottom wave rises over a span, and
+// `waveCeiling` is the lowest the top wave hangs.
+function edgeAt(arr, fx){
+  if (!arr) return null;
+  return arr[Math.max(0, Math.min(arr.length-1, Math.round(fx*(arr.length-1))))];
 }
-// The band's lowest top edge over a span — where the band is deep enough to park the lockup.
-function bandTopOver(x0, x1){
-  let m = 0;
-  for (let f = Math.max(0,x0); f <= Math.min(1,x1); f += 0.004) m = Math.max(m, bandTopAt(f));
-  return m;
-}
-// The band's highest top edge over a span — the line content has to stay above to clear it.
-function bandCrestOver(x0, x1){
+function waveFloor(x0, x1){
+  if (!WAVE || (S.wave !== 'bottom' && S.wave !== 'both')) return 0.94;
   let m = 1;
-  for (let f = Math.max(0,x0); f <= Math.min(1,x1); f += 0.004) m = Math.min(m, bandTopAt(f));
+  for (let f = Math.max(0,x0); f <= Math.min(1,x1); f += 0.004) m = Math.min(m, edgeAt(WAVE.bottom.edge, f));
   return m;
 }
+function waveCeiling(x0, x1){
+  if (!WAVE || (S.wave !== 'top' && S.wave !== 'both')) return 0.02;
+  let m = 0;
+  for (let f = Math.max(0,x0); f <= Math.min(1,x1); f += 0.004) m = Math.max(m, edgeAt(WAVE.top.edge, f));
+  return m;
+}
+
+// ---------- stickers ----------
+// The hand-drawn marks from their sticker sheet. They are placed by hand, never scattered.
+function drawSticker(ctx, el){
+  const im = IMG.stickers[el.name]; if (!im) return;
+  ctx.save();
+  const hh = el.w * (im.naturalHeight/im.naturalWidth);
+  ctx.translate(el.x + el.w/2, el.y + hh/2); ctx.rotate(el.rot || 0); ctx.translate(-el.w/2, -hh/2);
+  ctx.drawImage(im, 0, 0, el.w, hh);
+  ctx.restore();
+}
+function stickerAspect(el){ const im = IMG.stickers[el.name]; return im ? im.naturalHeight/im.naturalWidth : 1; }
 
 
 // ---------- notes, tape, framed photos ----------
@@ -828,6 +809,7 @@ function drawScene(ctx, w, h, forExport){
     else if (el.type === 'logo') drawLogo(ctx, el);
     else if (el.type === 'image') drawImageEl(ctx, el);
     else if (el.type === 'note') drawNote(ctx, el);
+    else if (el.type === 'sticker') drawSticker(ctx, el);
   }
   if (!forExport && S.sel) {
     const el = byId(S.sel); if (!el) return;
@@ -953,7 +935,7 @@ cv.addEventListener('pointermove', e => {
     el.x = ax <= b0.x+1 ? ax : ax-nw;
     el.y = ay <= b0.y+1 ? ay : ay-nh;
     if (el.type === 'text') { el.w = drag.w0*f; el.size = Math.max(8, drag.size0*f); }
-    else if (el.type === 'logo' || el.type === 'image') el.w = drag.w0*f;
+    else if (el.type === 'logo' || el.type === 'image' || el.type === 'sticker') el.w = drag.w0*f;
     else { el.w = drag.w0*f; el.h = drag.h0*f; }
   }
   render();
@@ -1043,7 +1025,7 @@ function syncControls(){
   $('#textPosRow').style.display = S.template === 'headline' ? '' : 'none';
   $('#noteFillRow').style.display = S.template === 'note' ? '' : 'none';
   document.querySelectorAll('#waveSeg button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === (S.wave||'bottom'))));
-  renderNoteFills(); renderGroundChips();
+  renderNoteFills(); renderGroundChips(); renderStickerRow();
   const isPhoto = S.bg.kind === 'photo';
   ['dim','zoom','fade','fadeSize'].forEach(id => { const n = document.getElementById(id); if (n) n.closest('.row').style.opacity = isPhoto ? '' : '.4'; });
   $('#adjHint').hidden = isPhoto;
@@ -1058,10 +1040,13 @@ function syncControls(){
 
 function renderQuickFields(){
   const box = $('#quickFields');
-  const defs = S.template === 'headline' ? [['headline','Headline','textarea'],['sub','Second line','input'],['site','Footer line','textarea']]
-             : S.template === 'note' ? [['headline','On the note','textarea'],['site','Footer line','textarea']]
+  // the site line lives in the wave artwork itself, so there is nothing to edit for it
+  const defs = S.template === 'headline' ? [['headline','Headline','textarea'],['sub','Second line','input']]
+             : S.template === 'note' ? [['headline','On the note','textarea']]
              : S.template === 'quote' ? [['quote','Parent quote','textarea'],['attr','Attribution','input']]
-             : [['headline','Headline','textarea'],['site','Footer line','textarea']];
+             : S.template === 'list' ? [['headline','Headline','textarea'],['item-1','First card','textarea'],['item-2','Second card','textarea'],['item-3','Third card','textarea']]
+             : S.template === 'logo' ? []
+             : [['headline','Headline','textarea']];
   $('#textSec').style.display = defs.length ? '' : 'none';
   box.innerHTML = '';
   for (const [id,label,kind] of defs) {
@@ -1153,6 +1138,11 @@ function renderInspector(){
     box.append(row('Width', h('input',{type:'range',id:'insp-width',min:Math.round(W()*0.15),max:W(),value:Math.round(el.w),oninput:change(e=>{guard();el.w=+e.target.value;})})));
     box.append(row('Frame', seg([['tape','Taped'],['polaroid','Polaroid'],['plain','Plain']], ()=>el.style||'tape', v=>el.style=v)));
     box.append(row('Tilt', h('input',{type:'range',min:-12,max:12,value:Math.round((el.rot||0)*100),oninput:change(e=>{guard();el.rot=e.target.value/100;})})));
+  }
+  else if (el.type === 'sticker') {
+    box.append(h('p',{class:'hint',style:'margin-bottom:8px'}, 'A sticker from Spring Forth’s sheet. Drag to move, corners to resize.'));
+    box.append(row('Size', h('input',{type:'range',min:Math.round(W()*0.04),max:Math.round(W()*0.45),value:Math.round(el.w),oninput:change(e=>{guard();el.w=+e.target.value;})})));
+    box.append(row('Tilt', h('input',{type:'range',min:-40,max:40,value:Math.round((el.rot||0)*100),oninput:change(e=>{guard();el.rot=e.target.value/100;})})));
   }
   else if (el.type === 'note') {
     box.append(h('p',{class:'hint',style:'margin-bottom:8px'}, 'The card behind the writing. Moving it moves the text with it.'));
@@ -1286,7 +1276,7 @@ function addPhoto(p, im){
   const style = ['tape','polaroid','plain'][Math.floor(Math.random()*3)];
   if (!el) { el = { id:'photo', type:'image', src:p.url, libId:p.id, x:0, y:0, w:0, style, rot:(Math.random()-0.5)*0.09, seed:Math.floor(Math.random()*9999) }; S.els.unshift(el); }
   el.src = p.url; el.libId = p.id;
-  const texts = S.els.filter(e => e.type === 'text' && e.id !== 'site');
+  const texts = S.els.filter(e => e.type === 'text');
   const textBottom = texts.length ? Math.max(...texts.map(t => { const b = bbox(ctx, t); return b.y + b.h; })) : h*0.14;
   const top = textBottom + h*0.035, bottom = h*(S.wave === 'none' ? 0.92 : 0.80);
   const avail = Math.max(h*0.22, bottom - top);
@@ -1299,6 +1289,36 @@ function setGround(style, newSeed){
   if (newSeed || !S.bg.seed) S.bg.seed = Math.floor(Math.random()*100000) + 1;
   templateDefaults(); layout(); syncControls(); renderInspector(); renderResults(); render(); persist();
 }
+// Stickers: the hand-drawn marks off Spring Forth's own sheet. One click drops one in the
+// middle of the page; from there it is an ordinary element you can drag, resize and tilt.
+function renderStickerRow(){
+  const box = $('#stickerRow'); if (!box) return;
+  box.innerHTML = '';
+  for (const s of STICKERS) {
+    const name = s.file.replace('.png','');
+    box.append(h('button',{title:name.replace(/-/g,' '),onclick:()=>addSticker(name)},
+      h('img',{src:'art/stickers/' + s.file,alt:name})));
+  }
+}
+function addSticker(name){
+  pushUndo();
+  const w = W(), hh = H(), sw = w*0.14;
+  const im = IMG.stickers[name];
+  const sh = sw * (im ? im.naturalHeight/im.naturalWidth : 1);
+  // the master tucks these into the corners of the page, often lapping over a card edge.
+  // Drop each new one in the next free corner; from there it is yours to drag anywhere.
+  const top = (waveCeiling(0, 1) + 0.02)*hh, floor = (waveFloor(0, 1) - 0.02)*hh;
+  const spots = [[w*0.055, floor - sh], [w*0.945 - sw, floor - sh],
+                 [w*0.055, top], [w*0.945 - sw, top],
+                 [w*0.055, (top + floor - sh)/2], [w*0.945 - sw, (top + floor - sh)/2]];
+  const taken = S.els.filter(e => e.type === 'sticker').length;
+  const at = spots[taken % spots.length];
+  S.els.push({ id:'sticker-' + Date.now(), type:'sticker', name, x:at[0], y:at[1], w:sw,
+    rot:(Math.random()-0.5)*0.22 });
+  S.sel = S.els[S.els.length-1].id;
+  renderInspector(); render(); persist();
+}
+
 function renderGroundChips(){
   const box = $('#artChips'); box.innerHTML = '';
   for (const [k,l] of Object.entries(GROUNDS)) box.append(h('button',{class:'chip','aria-pressed':String(S.bg.kind !== 'photo' && S.bg.ground === k),onclick:()=>setGround(k, true)}, l));
@@ -1505,6 +1525,7 @@ function carryStyle(from, to){
     if (el.type === 'text') Object.assign(el, { text:src.text, color:src.color, italic:src.italic, weight:src.weight, shadow:src.shadow, upper:src.upper, align:src.align, lh:src.lh, rules:!!src.rules, font:src.font, ls:src.ls, shade:clone(src.shade || NO_SHADE()) });
     else if (el.type === 'logo') Object.assign(el, { shadow:src.shadow, variant:src.variant, shade:clone(src.shade) });
     else if (el.type === 'note') Object.assign(el, { fill:src.fill, rot:src.rot, tape:src.tape, lines:src.lines, pin:src.pin });
+    else if (el.type === 'sticker') Object.assign(el, { name:src.name, rot:src.rot });
     else if (el.type === 'box') Object.assign(el, { fill:src.fill, alpha:src.alpha, label:src.label, labelFill:src.labelFill, labelColor:src.labelColor });
   }
   return to;
@@ -1544,7 +1565,7 @@ $('#dlAllBtn').addEventListener('click', async () => {
 function hideWelcome(){ const w = $('#welcome'); if (w && !w.hidden) { w.hidden = true; fitCanvas(); } }
 $('#welcomeGen').addEventListener('click', () => { hideWelcome(); $('#genBtn').click(); });
 $('#welcomeSkip').addEventListener('click', hideWelcome);
-['#tiles','#results','#drafts','#genBtn','#shufPhoto','#shufLook','#addText','#bgBtn','#importBtn','#looks','#artChips','#collageBtn','#collageQuick'].forEach(sel => { const n = $(sel); if (n) n.addEventListener('click', hideWelcome, true); });
+['#tiles','#results','#drafts','#genBtn','#shufPhoto','#shufLook','#addText','#bgBtn','#importBtn','#looks','#artChips','#stickerRow','#collageBtn','#collageQuick'].forEach(sel => { const n = $(sel); if (n) n.addEventListener('click', hideWelcome, true); });
 $('#c').addEventListener('pointerdown', hideWelcome, true);
 
 // ---------- Generate (randomizer) — Spring Forth ----------

@@ -100,7 +100,7 @@ function addPhoto(p, im){
   const style = ['tape','polaroid','plain'][Math.floor(Math.random()*3)];
   if (!el) { el = { id:'photo', type:'image', src:p.url, libId:p.id, x:0, y:0, w:0, style, rot:(Math.random()-0.5)*0.09, seed:Math.floor(Math.random()*9999) }; S.els.unshift(el); }
   el.src = p.url; el.libId = p.id;
-  const texts = S.els.filter(e => e.type === 'text' && e.id !== 'site');
+  const texts = S.els.filter(e => e.type === 'text');
   const textBottom = texts.length ? Math.max(...texts.map(t => { const b = bbox(ctx, t); return b.y + b.h; })) : h*0.14;
   const top = textBottom + h*0.035, bottom = h*(S.wave === 'none' ? 0.92 : 0.80);
   const avail = Math.max(h*0.22, bottom - top);
@@ -113,6 +113,36 @@ function setGround(style, newSeed){
   if (newSeed || !S.bg.seed) S.bg.seed = Math.floor(Math.random()*100000) + 1;
   templateDefaults(); layout(); syncControls(); renderInspector(); renderResults(); render(); persist();
 }
+// Stickers: the hand-drawn marks off Spring Forth's own sheet. One click drops one in the
+// middle of the page; from there it is an ordinary element you can drag, resize and tilt.
+function renderStickerRow(){
+  const box = $('#stickerRow'); if (!box) return;
+  box.innerHTML = '';
+  for (const s of STICKERS) {
+    const name = s.file.replace('.png','');
+    box.append(h('button',{title:name.replace(/-/g,' '),onclick:()=>addSticker(name)},
+      h('img',{src:'art/stickers/' + s.file,alt:name})));
+  }
+}
+function addSticker(name){
+  pushUndo();
+  const w = W(), hh = H(), sw = w*0.14;
+  const im = IMG.stickers[name];
+  const sh = sw * (im ? im.naturalHeight/im.naturalWidth : 1);
+  // the master tucks these into the corners of the page, often lapping over a card edge.
+  // Drop each new one in the next free corner; from there it is yours to drag anywhere.
+  const top = (waveCeiling(0, 1) + 0.02)*hh, floor = (waveFloor(0, 1) - 0.02)*hh;
+  const spots = [[w*0.055, floor - sh], [w*0.945 - sw, floor - sh],
+                 [w*0.055, top], [w*0.945 - sw, top],
+                 [w*0.055, (top + floor - sh)/2], [w*0.945 - sw, (top + floor - sh)/2]];
+  const taken = S.els.filter(e => e.type === 'sticker').length;
+  const at = spots[taken % spots.length];
+  S.els.push({ id:'sticker-' + Date.now(), type:'sticker', name, x:at[0], y:at[1], w:sw,
+    rot:(Math.random()-0.5)*0.22 });
+  S.sel = S.els[S.els.length-1].id;
+  renderInspector(); render(); persist();
+}
+
 function renderGroundChips(){
   const box = $('#artChips'); box.innerHTML = '';
   for (const [k,l] of Object.entries(GROUNDS)) box.append(h('button',{class:'chip','aria-pressed':String(S.bg.kind !== 'photo' && S.bg.ground === k),onclick:()=>setGround(k, true)}, l));

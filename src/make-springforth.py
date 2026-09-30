@@ -81,7 +81,7 @@ rep("""const LOOKS = {
   gold: { label:'Gold writing', accent:'#bb8a2d', text:'#8a7a55', shadow:false, dim:null, fade:null, swatch:['#fbfaf6','#bb8a2d'] },
 };""")
 rep("let S = { template:'headline', size:'square', textPos:'tc', look:'classic',\n          bg:{zoom:1, ox:0, oy:0, dim:0.35, fadePos:'none', fade:0.45, fadeSize:0.55, fadeColor:'#000000'}, els:[], sel:null };",
-    "let S = { template:'note', size:'portrait', textPos:'tc', look:'blue', wave:'bottom', noteFill:'#dff1ee', noteRot:-0.015,\n          bg:{kind:'paper', ground:'paper', seed:11, zoom:1, ox:0, oy:0, dim:0, fadePos:'none', fade:0.45, fadeSize:0.5, fadeColor:'#000000'}, els:[], sel:null };")
+    "let S = { template:'note', size:'portrait', textPos:'tc', look:'blue', wave:'both', noteFill:'#dff1ee', noteRot:-0.015,\n          bg:{kind:'paper', ground:'paper', seed:11, zoom:1, ox:0, oy:0, dim:0, fadePos:'none', fade:0.45, fadeSize:0.5, fadeColor:'#000000'}, els:[], sel:null };")
 rep("const BUILT_IN_KEY = 'dMBOWE33ohoJ8Weu0lSEIQhWNDpSnHnC3n9Vkhs3l7I4cfYOKDJgZ7Tf';\nlet page = 1, lastQuery = '', results = [], apiKey = BUILT_IN_KEY, tab = 'search';",
     "let page = 1, lastQuery = '', results = [];")
 rep("const IMG = { bg:null, logo:null, src:null }; // src: {kind:'pexels',id,url,tiny,photographer,alt} | {kind:'own',data}",
@@ -92,7 +92,7 @@ rep("function logoAspect(){ return IMG.logo ? IMG.logo.naturalHeight / IMG.logo.
     "  return im ? im.naturalHeight / im.naturalWidth : (base === 'wordmark' ? 0.134 : 1.12); }\n"
     "function logoAspect(el){ return markAspect((el && el.variant) || 'lockup'); }")
 rep("if (el.type === 'logo') return { x:el.x, y:el.y, w:el.w, h:el.w*logoAspect() };",
-    "if (el.type === 'logo') return { x:el.x, y:el.y, w:el.w, h:el.w*logoAspect(el) };\n  if (el.type === 'image') return { x:el.x, y:el.y, w:el.w, h:el.w*imageAspect(el) };")
+    "if (el.type === 'logo') return { x:el.x, y:el.y, w:el.w, h:el.w*logoAspect(el) };\n  if (el.type === 'image') return { x:el.x, y:el.y, w:el.w, h:el.w*imageAspect(el) };\n  if (el.type === 'sticker') return { x:el.x, y:el.y, w:el.w, h:el.w*stickerAspect(el) };")
 rep("function drawLogo(ctx, el){\n  const h = el.w * logoAspect();", "function drawLogo(ctx, el){\n  const h = el.w * logoAspect(el);")
 
 # Two-tone text: the footer's second line (the domain) is gold against the blue band.
@@ -106,9 +106,9 @@ rep("function logoEl(o){ const L = LOOKS[S.look]; return Object.assign({ id:'log
 # ================= backgrounds, notes, framed photos =================
 rep_between("function drawBokeh(w, h){", "// Soft feathered rectangle", blk('backgrounds.js'))
 rep("    else if (el.type === 'logo') drawLogo(ctx, el);\n  }\n  if (!forExport && S.sel) {",
-    "    else if (el.type === 'logo') drawLogo(ctx, el);\n    else if (el.type === 'image') drawImageEl(ctx, el);\n    else if (el.type === 'note') drawNote(ctx, el);\n  }\n  if (!forExport && S.sel) {")
+    "    else if (el.type === 'logo') drawLogo(ctx, el);\n    else if (el.type === 'image') drawImageEl(ctx, el);\n    else if (el.type === 'note') drawNote(ctx, el);\n    else if (el.type === 'sticker') drawSticker(ctx, el);\n  }\n  if (!forExport && S.sel) {")
 rep("    else if (el.type === 'logo') el.w = drag.w0*f;\n    else { el.w = drag.w0*f; el.h = drag.h0*f; }",
-    "    else if (el.type === 'logo' || el.type === 'image') el.w = drag.w0*f;\n    else { el.w = drag.w0*f; el.h = drag.h0*f; }")
+    "    else if (el.type === 'logo' || el.type === 'image' || el.type === 'sticker') el.w = drag.w0*f;\n    else { el.w = drag.w0*f; el.h = drag.h0*f; }")
 
 # ================= layout + look =================
 rep_between("function layout(){", "// Apply the current look's colors", blk('layout.js'))
@@ -122,7 +122,7 @@ function applyLook(withPhoto){
     if (el.type !== 'text') continue;
     // the site line, the list cards and their gold numerals are coloured by the layout,
     // which knows what they are sitting on — the look must not paint over them
-    if (el.id === 'site' || /^(num|item)-/.test(el.id)) continue;
+    if (/^(num|item)-/.test(el.id)) continue;
     if (el.id === 'quote') { el.color = L.accent; el.shadow = false; continue; }
     if (el.id === 'attr') { el.shadow = false; continue; }
     const inNote = S.template === 'note' && el.id === 'headline';
@@ -157,6 +157,12 @@ rep_between('      <div class="tiles" id="tiles">', '      </div>\n      <div cl
           <svg viewBox="0 0 44 44"><rect x="2" y="2" width="40" height="40" rx="4" fill="#9fb8c4"/><path d="M2 24l12-8 10 7 6-4 12 9v6a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4z" fill="#7d9aa8"/><rect x="2" y="31" width="40" height="11" fill="#03a2c6"/><rect x="13" y="34" width="18" height="5" rx="2" fill="#fff"/></svg>Logo</button>
 """)
 rep(".tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}", ".tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}")
+rep(".tile svg{width:38px;height:38px;display:block}",
+    ".tile svg{width:38px;height:38px;display:block}\n"
+    ".stickers{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:5px;margin-bottom:4px}\n"
+    ".stickers button{border:1px solid var(--line);border-radius:7px;background:var(--panel-2);padding:5px;cursor:pointer;height:50px;min-width:0;overflow:hidden;display:flex;align-items:center;justify-content:center}\n"
+    ".stickers button:hover{border-color:var(--accent);background:var(--accent-soft)}\n"
+    ".stickers img{max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;display:block}")
 rep(".tile{border:1px solid var(--line-strong);border-radius:8px;background:var(--panel-2);padding:8px 6px;",
     ".tile{border:1px solid var(--line-strong);border-radius:8px;background:var(--panel-2);padding:7px 4px;")
 rep("""      <div class="row" id="textPosRow"><label>Text</label>
@@ -186,6 +192,9 @@ s = s[:i] + """    <div class="sec">
       <h2>Background</h2>
       <div class="subh" style="margin-top:0">Paper</div>
       <div class="chips" id="artChips"></div>
+      <div class="subh">Stickers</div>
+      <p class="hint" style="margin:0 0 6px">Click one to drop it on the page, then drag it where you want it.</p>
+      <div class="stickers" id="stickerRow"></div>
       <div class="subh">Spring Forth photos</div>
       <div class="tabs" id="tabs" style="margin-top:0">
         <button data-tab="lib" aria-selected="true">Library</button>
@@ -230,7 +239,7 @@ rep('.welcome-card h2{margin:0 0 10px;font:600 40px/1.05 "Cormorant Garamond",Ge
     '.welcome-card h2{margin:0 0 10px;font:400 42px/1.05 "Chewy",cursive;color:var(--ink)}')
 s = s.replace("rgba(25,68,31,.55)", "rgba(3,162,198,.55)").replace("rgba(25,68,31,0)", "rgba(3,162,198,0)")
 rep("['#tiles','#results','#drafts','#genBtn','#shufPhoto','#shufLook','#addText','#bgBtn','#importBtn','#looks']",
-    "['#tiles','#results','#drafts','#genBtn','#shufPhoto','#shufLook','#addText','#bgBtn','#importBtn','#looks','#artChips','#collageBtn','#collageQuick']")
+    "['#tiles','#results','#drafts','#genBtn','#shufPhoto','#shufLook','#addText','#bgBtn','#importBtn','#looks','#artChips','#stickerRow','#collageBtn','#collageQuick']")
 
 # ================= controls / sync =================
 rep("$('#textPos').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; pushUndo(); S.textPos = b.dataset.v; templateDefaults(); layout(); syncControls(); renderInspector(); render(); persist(); });",
@@ -244,7 +253,7 @@ rep("  $('#textPosRow').style.display = (S.template === 'headline' || S.template
 """  $('#textPosRow').style.display = S.template === 'headline' ? '' : 'none';
   $('#noteFillRow').style.display = S.template === 'note' ? '' : 'none';
   document.querySelectorAll('#waveSeg button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === (S.wave||'bottom'))));
-  renderNoteFills(); renderGroundChips();
+  renderNoteFills(); renderGroundChips(); renderStickerRow();
   const isPhoto = S.bg.kind === 'photo';
   ['dim','zoom','fade','fadeSize'].forEach(id => { const n = document.getElementById(id); if (n) n.closest('.row').style.opacity = isPhoto ? '' : '.4'; });
   $('#adjHint').hidden = isPhoto;""")
@@ -279,10 +288,13 @@ rep("(IMG.src?.kind === 'pexels' ? ` · Photo: ${IMG.src.photographer} / Pexels`
 rep("""  const defs = S.template === 'headline' ? [['headline','Headline','input'],['sub','Subheadline','input']]
              : S.template === 'event' ? [['headline','Event title','input'],['sub','Details (date, time, place)','textarea']]
              : S.template === 'review' ? [['quote','Review quote','textarea'],['attr','Attribution','input']] : [];""",
-"""  const defs = S.template === 'headline' ? [['headline','Headline','textarea'],['sub','Second line','input'],['site','Footer line','textarea']]
-             : S.template === 'note' ? [['headline','On the note','textarea'],['site','Footer line','textarea']]
+"""  // the site line lives in the wave artwork itself, so there is nothing to edit for it
+  const defs = S.template === 'headline' ? [['headline','Headline','textarea'],['sub','Second line','input']]
+             : S.template === 'note' ? [['headline','On the note','textarea']]
              : S.template === 'quote' ? [['quote','Parent quote','textarea'],['attr','Attribution','input']]
-             : [['headline','Headline','textarea'],['site','Footer line','textarea']];""")
+             : S.template === 'list' ? [['headline','Headline','textarea'],['item-1','First card','textarea'],['item-2','Second card','textarea'],['item-3','Third card','textarea']]
+             : S.template === 'logo' ? []
+             : [['headline','Headline','textarea']];""")
 
 # ================= inspector: logo variants, framed photo, note =================
 rep("    box.append(h('p',{class:'hint',style:'margin-bottom:8px'}, 'Bakken-Young logo'));",
@@ -294,6 +306,11 @@ rep("  else if (el.type === 'box') {\n    box.append(h('div',{class:'field'}, h(
     box.append(row('Width', h('input',{type:'range',id:'insp-width',min:Math.round(W()*0.15),max:W(),value:Math.round(el.w),oninput:change(e=>{guard();el.w=+e.target.value;})})));
     box.append(row('Frame', seg([['tape','Taped'],['polaroid','Polaroid'],['plain','Plain']], ()=>el.style||'tape', v=>el.style=v)));
     box.append(row('Tilt', h('input',{type:'range',min:-12,max:12,value:Math.round((el.rot||0)*100),oninput:change(e=>{guard();el.rot=e.target.value/100;})})));
+  }
+  else if (el.type === 'sticker') {
+    box.append(h('p',{class:'hint',style:'margin-bottom:8px'}, 'A sticker from Spring Forth\u2019s sheet. Drag to move, corners to resize.'));
+    box.append(row('Size', h('input',{type:'range',min:Math.round(W()*0.04),max:Math.round(W()*0.45),value:Math.round(el.w),oninput:change(e=>{guard();el.w=+e.target.value;})})));
+    box.append(row('Tilt', h('input',{type:'range',min:-40,max:40,value:Math.round((el.rot||0)*100),oninput:change(e=>{guard();el.rot=e.target.value/100;})})));
   }
   else if (el.type === 'note') {
     box.append(h('p',{class:'hint',style:'margin-bottom:8px'}, 'The card behind the writing. Moving it moves the text with it.'));
@@ -308,7 +325,7 @@ rep("    box.append(chk('ALL CAPS', ()=>el.upper, v=>el.upper=v));\n    if (el.a
     "    box.append(chk('ALL CAPS', ()=>el.upper, v=>el.upper=v));\n    box.append(row('Font', seg([['hand','Handwriting'],['sans','Clean sans']], ()=>el.font||'hand', v=>el.font=v)));\n    if (el.align === 'center')")
 rep("rules:!!src.rules, shade:clone(src.shade || NO_SHADE()) });", "rules:!!src.rules, font:src.font, ls:src.ls, shade:clone(src.shade || NO_SHADE()) });")
 rep("    else if (el.type === 'logo') Object.assign(el, { shadow:src.shadow, shade:clone(src.shade) });",
-    "    else if (el.type === 'logo') Object.assign(el, { shadow:src.shadow, variant:src.variant, shade:clone(src.shade) });\n    else if (el.type === 'note') Object.assign(el, { fill:src.fill, rot:src.rot, tape:src.tape, lines:src.lines, pin:src.pin });")
+    "    else if (el.type === 'logo') Object.assign(el, { shadow:src.shadow, variant:src.variant, shade:clone(src.shade) });\n    else if (el.type === 'note') Object.assign(el, { fill:src.fill, rot:src.rot, tape:src.tape, lines:src.lines, pin:src.pin });\n    else if (el.type === 'sticker') Object.assign(el, { name:src.name, rot:src.rot });")
 rep("      for (const ex of extras) S.els.push(Object.assign(clone(ex), { x: ex.x/w0*w, y: ex.y/h0*hh, w: ex.w/w0*w, size: ex.size*Math.min(w/w0, hh/h0) }));",
     "      for (const ex of extras) S.els.push(Object.assign(clone(ex), { x: ex.x/w0*w, y: ex.y/h0*hh, w: ex.w/w0*w, size: ex.size*Math.min(w/w0, hh/h0) }));\n"
     "" +

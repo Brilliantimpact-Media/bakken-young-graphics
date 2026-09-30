@@ -1,19 +1,23 @@
 // ---------- Spring Forth art layer ----------
 // Everything here comes from the 2026 Canva master: the real crumpled-paper and cork
-// photographs and the wave footer, all lifted from the artwork itself.
+// photographs, the wave frame and the stickers, all exported from the artwork itself.
 const SKY = '#1cc1e0', DEEP = '#03a2c6', GOLD = '#ffc000', BRONZE = '#bb8a2d';
 const GROUNDS = { paper:'Crumpled paper', cork:'Cork board' };
 const NOTE_FILLS = [['#e5f4ee','Mint'],['#fbf0d7','Cream'],['#fae2e0','Peach'],['#ddeef8','Sky'],['#ffffff','White']];
 const TAPE_FILLS = ['#f8c97a','#bfe3f5','#cfe8cf','#f3e3c4'];
-IMG.tex = {}; let WAVE = null;
+IMG.tex = {}; IMG.stickers = {}; let WAVE = null; let STICKERS = [];
 
 function loadArt(){
   const one = (src) => new Promise(res => { const im = new Image(); im.onload = () => res(im); im.onerror = () => res(null); im.src = src; });
   return Promise.all([
     one('art/paper.jpg').then(i => IMG.tex.paper = i),
     one('art/cork.jpg').then(i => IMG.tex.cork = i),
-    Promise.all([one('art/wave-bottom.png'), fetch('art/wave-bottom.json').then(r => r.json())])
-      .then(([im, j]) => { WAVE = im ? Object.assign({ img:im }, j) : null; }).catch(() => WAVE = null),
+    Promise.all([one('art/wave-top.png'), one('art/wave-bottom.png'), fetch('art/wave.json').then(r => r.json())])
+      .then(([t, b, j]) => { WAVE = b ? Object.assign({ topImg:t, botImg:b }, j) : null; }).catch(() => WAVE = null),
+    fetch('art/stickers/index.json').then(r => r.json()).then(list => {
+      STICKERS = list;
+      return Promise.all(list.map(d => one('art/stickers/' + d.file).then(i => { if (i) IMG.stickers[d.file.replace('.png','')] = i; })));
+    }).catch(() => { STICKERS = []; }),
   ]);
 }
 function drawGround(ctx, w, h, style){
@@ -24,40 +28,47 @@ function drawGround(ctx, w, h, style){
   ctx.drawImage(im, (w-dw)/2, (h-dh)/2, dw, dh);
 }
 
-// ---------- the wave footer, traced from the real artwork ----------
-// wave.json holds, per column of the 1080px master, the top of the blue band and the top
-// of the white crest above it. Both are replayed scaled to whatever canvas we are on.
-// The footer wave is the real element, cut straight out of the master as a transparent PNG:
-// the #03a2c6 band with its wave edge, the #1cc1e0 crescent that rides above it on the left,
-// and the gold hairline along the very bottom. It is drawn full width, never redrawn by hand.
+// ---------- the wave frame ----------
+// Exported from Canva as two transparent PNGs: the top wave and the bottom wave, the latter
+// carrying the site lockup and the gold hairline. Both are drawn full width at their own
+// height; nothing about them is redrawn by hand.
 function drawWaves(ctx, w, h, where){
-  if (!where || where === 'none') return;
-  for (const pos of (where === 'both' ? ['bottom','top'] : [where])) {
-    if (!WAVE || !WAVE.img) { ctx.fillStyle = DEEP; ctx.fillRect(0, pos === 'top' ? 0 : h*0.847, w, h*0.153); continue; }
-    const bh = WAVE.h*h;
-    if (pos === 'top') { ctx.save(); ctx.translate(0, bh); ctx.scale(1, -1); ctx.drawImage(WAVE.img, 0, 0, w, bh); ctx.restore(); }
-    else ctx.drawImage(WAVE.img, 0, WAVE.top*h, w, bh);
-  }
+  if (!where || where === 'none' || !WAVE) return;
+  const both = where === 'both';
+  if ((both || where === 'top') && WAVE.topImg) ctx.drawImage(WAVE.topImg, 0, 0, w, WAVE.top.h*h);
+  if ((both || where === 'bottom') && WAVE.botImg) ctx.drawImage(WAVE.botImg, 0, WAVE.bottom.y*h, w, WAVE.bottom.h*h);
 }
-// How far down the page the band's top edge sits at a given fraction across the width \u2014
-// used to park the site lockup where the band is actually deep enough to hold it.
-function bandTopAt(fx){
-  const a = WAVE && WAVE.bandTopByCol;
-  if (!a) return 0.86;
-  return a[Math.max(0, Math.min(a.length-1, Math.round(fx*(a.length-1))))];
+// Where the frame's ink reaches at a given fraction across the width, so content can be
+// kept clear of it: `waveFloor` is the highest the bottom wave rises over a span, and
+// `waveCeiling` is the lowest the top wave hangs.
+function edgeAt(arr, fx){
+  if (!arr) return null;
+  return arr[Math.max(0, Math.min(arr.length-1, Math.round(fx*(arr.length-1))))];
 }
-// The band's lowest top edge over a span — where the band is deep enough to park the lockup.
-function bandTopOver(x0, x1){
-  let m = 0;
-  for (let f = Math.max(0,x0); f <= Math.min(1,x1); f += 0.004) m = Math.max(m, bandTopAt(f));
-  return m;
-}
-// The band's highest top edge over a span — the line content has to stay above to clear it.
-function bandCrestOver(x0, x1){
+function waveFloor(x0, x1){
+  if (!WAVE || (S.wave !== 'bottom' && S.wave !== 'both')) return 0.94;
   let m = 1;
-  for (let f = Math.max(0,x0); f <= Math.min(1,x1); f += 0.004) m = Math.min(m, bandTopAt(f));
+  for (let f = Math.max(0,x0); f <= Math.min(1,x1); f += 0.004) m = Math.min(m, edgeAt(WAVE.bottom.edge, f));
   return m;
 }
+function waveCeiling(x0, x1){
+  if (!WAVE || (S.wave !== 'top' && S.wave !== 'both')) return 0.02;
+  let m = 0;
+  for (let f = Math.max(0,x0); f <= Math.min(1,x1); f += 0.004) m = Math.max(m, edgeAt(WAVE.top.edge, f));
+  return m;
+}
+
+// ---------- stickers ----------
+// The hand-drawn marks from their sticker sheet. They are placed by hand, never scattered.
+function drawSticker(ctx, el){
+  const im = IMG.stickers[el.name]; if (!im) return;
+  ctx.save();
+  const hh = el.w * (im.naturalHeight/im.naturalWidth);
+  ctx.translate(el.x + el.w/2, el.y + hh/2); ctx.rotate(el.rot || 0); ctx.translate(-el.w/2, -hh/2);
+  ctx.drawImage(im, 0, 0, el.w, hh);
+  ctx.restore();
+}
+function stickerAspect(el){ const im = IMG.stickers[el.name]; return im ? im.naturalHeight/im.naturalWidth : 1; }
 
 
 // ---------- notes, tape, framed photos ----------
