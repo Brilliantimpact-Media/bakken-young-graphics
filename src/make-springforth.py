@@ -65,7 +65,7 @@ const LS = { prefs:'by-prefs-v4', drafts:'by-drafts-v1', photos:'by-photos-v1' }
   ['#03a2c6','Deep blue'],['#1cc1e0','Sky'],['#ffc000','Yellow'],['#bb8a2d','Bronze'],['#ffffff','White'],['#6d7f88','Slate'],['#2f3a40','Charcoal']
 ];
 const SHADE_COLORS = [['#000000','Black'],['#03a2c6','Deep blue'],['#1cc1e0','Sky'],['#bb8a2d','Bronze'],['#ffffff','White']];
-const LS = { prefs:'sfa-prefs-v1', drafts:'sfa-drafts-v1', photos:'sfa-photos-v1' };""")
+const LS = { prefs:'sfa-prefs-v1', drafts:'sfa-drafts-v1', photos:'sfa-photos-v1', calendar:'sfa-calendar-v1' };""")
 rep("const LOGO_SRC = 'data:image/png;base64,__LOGO_B64__';",
     "const LOGO_SRCS = { 'mark':'data:image/png;base64,__MARK_B64__', 'mark-white':'data:image/png;base64,__MARKW_B64__',\n"
     "  'lockup':'data:image/png;base64,__LOCKUP_B64__', 'lockup-white':'data:image/png;base64,__LOCKUPW_B64__',\n"
@@ -164,7 +164,17 @@ rep(".tile svg{width:38px;height:38px;display:block}",
     ".stickers{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:5px;margin-bottom:4px}\n"
     ".stickers button{border:1px solid var(--line);border-radius:7px;background:var(--panel-2);padding:5px;cursor:pointer;height:50px;min-width:0;overflow:hidden;display:flex;align-items:center;justify-content:center}\n"
     ".stickers button:hover{border-color:var(--accent);background:var(--accent-soft)}\n"
-    ".stickers img{max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;display:block}")
+    ".stickers img{max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;display:block}" + "\n"
+    ".cal-list{display:flex;flex-direction:column;gap:4px;max-height:270px;overflow:auto}\n"
+    ".cal-row{display:flex;align-items:center;gap:8px;text-align:left;border:1px solid var(--line);border-radius:8px;background:var(--panel-2);padding:6px 8px;cursor:pointer;font:inherit;color:inherit}\n"
+    ".cal-row:hover{border-color:var(--accent)}\n"
+    ".cal-row[aria-pressed=\"true\"]{border-color:var(--accent);background:var(--accent-soft);box-shadow:inset 0 0 0 1px var(--accent)}\n"
+    ".cal-when{flex:0 0 52px;font-weight:700;font-size:11px;opacity:.85}\n"
+    ".cal-body{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}\n"
+    ".cal-hook{font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}\n"
+    ".cal-bucket{font-size:10px;opacity:.6;text-transform:uppercase;letter-spacing:.04em}\n"
+    ".cal-done{flex:0 0 14px;color:var(--accent);font-weight:700}\n"
+    ".cal-post{white-space:pre-wrap;font-size:12px;line-height:1.45;max-height:150px;overflow:auto;background:var(--panel-2);border:1px solid var(--line);border-radius:8px;padding:8px;margin:0}")
 rep(".tile{border:1px solid var(--line-strong);border-radius:8px;background:var(--panel-2);padding:8px 6px;",
     ".tile{border:1px solid var(--line-strong);border-radius:8px;background:var(--panel-2);padding:7px 4px;")
 rep("""      <div class="row" id="textPosRow"><label>Text</label>
@@ -190,7 +200,17 @@ rep("""      <div class="row" id="textPosRow"><label>Text</label>
       <div class="row" id="noteFillRow"><label>Note</label><div class="swatches" id="noteFills"></div></div>""")
 # background section replaces the Pexels search section
 i = s.index('    <div class="sec">\n      <h2>Background photo'); j = s.index('    <div class="sec">\n      <h2>Photo adjustments')
-s = s[:i] + """    <div class="sec">
+s = s[:i] + """    <div class="sec" id="calSec" hidden>
+      <h2>Calendar <button class="btn link" id="calOpen" title="Open the schedule in Google Sheets">Open calendar</button></h2>
+      <div class="row"><label for="calMonth">Month</label><select id="calMonth"></select></div>
+      <p class="hint" id="calStatus"></p>
+      <div class="cal-list" id="calList"></div>
+      <div id="calPost" hidden>
+        <div class="subh">Post text <button class="btn link" id="calCopy">Copy</button></div>
+        <p class="cal-post" id="calPostText"></p>
+      </div>
+    </div>
+    <div class="sec">
       <h2>Background</h2>
       <div class="subh" style="margin-top:0">Paper</div>
       <div class="chips" id="artChips"></div>
@@ -359,7 +379,10 @@ rep("""  IMG.bg = null; IMG.src = null;
     if (S.bg.kind === 'collage' && S.bg.cells) await Promise.all(S.bg.cells.map(c => libImage(c.url).catch(() => null)));
   } catch { toast('An image for this draft couldn’t be loaded'); }
   finally { $('#loading').classList.remove('show'); }""")
-rep("  return `bakken-young-${slug}-${w}x${hh}.png`;", "  return `springforth-${slug}-${w}x${hh}.png`;")
+rep("  return `bakken-young-${slug}-${w}x${hh}.png`;",
+    "  // a graphic made for a calendar post is named after it, so a month\u2019s files sort by date\n"
+    "  const cal = (size == null) && calFilename(); if (cal) return cal;\n"
+    "  return `springforth-${slug}-${w}x${hh}.png`;")
 rep("  const base = (S.template === 'headline' || S.template === 'event') ? (byId('headline')?.text || 'headline') : S.template === 'review' ? 'featured-review' : 'logo';",
     "  const base = byId('headline')?.text || (S.template === 'quote' ? 'parent-quote' : S.template === 'collage' ? 'collage' : S.template);")
 rep("""function draftName(){
@@ -376,6 +399,12 @@ rep("""function draftName(){
 # ================= generator =================
 rep_between("// ---------- Generate (randomizer) ----------", "// ---------- misc ----------", blk('generate.js'))
 
+rep("    saveBlob(blob, filename()); markUsed(); if (tab !== 'search') renderResults();",
+    "    saveBlob(blob, filename()); markUsed(); markPostDone(selectedPost()); renderResults();")
+
+# ================= social calendar =================
+rep("// ---------- misc ----------", blk('calendar.js') + "\n// ---------- misc ----------")
+
 # ================= fonts / boot =================
 rep("  try { await Promise.all(['italic 600 40px','600 40px','700 40px','500 40px','400 40px','italic 500 40px','italic 700 40px'].map(f => document.fonts.load(`${f} \"Cormorant Garamond\"`))); } catch {}",
     "  try { await Promise.all([document.fonts.load('400 40px \"Chewy\"'),\n"
@@ -390,6 +419,7 @@ rep("""  restore(); loadPhotoMem();
   IMG.src = { kind:'ground', ground:S.bg.ground };
   await loadArt();
   renderLooks(); templateDefaults(); layout(); syncControls(); fitCanvas(); renderDrafts();
+  wireCalendar();
   await loadLibrary();
   // the opening page obeys the same house rule as every other: a headline arrives with a photo
   if (S.template === 'headline' && !byId('photo') && S.bg.kind === 'paper') {

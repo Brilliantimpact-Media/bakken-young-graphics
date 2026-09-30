@@ -25,6 +25,20 @@ window.BI_CLIENTS = [
     tagline: 'Social graphics',
     accent: '#03a2c6',
     accent2: '#1cc1e0',
-    logo: 'springforth/logo.png'
+    logo: 'springforth/logo.png',
+    // The monthly posting schedule. One tab per month, shared as "anyone with the link can
+    // view", read straight from the browser with no key. headerRow/firstPostRow are the
+    // sheet's own row numbers, kept for reference — the reader finds the header row by its
+    // contents, because the CSV endpoint drops empty leading rows. The column letters are
+    // the fallback for headers that have no text of their own (DATE is one).
+    calendar: {
+      sheetId: '193QX-MsW4weMBOw9WRUNWAtE6iNmF5EMj1Rge5n3dcY',
+      url: 'https://docs.google.com/spreadsheets/d/193QX-MsW4weMBOw9WRUNWAtE6iNmF5EMj1Rge5n3dcY/edit',
+      headerRow: 10,
+      firstPostRow: 12,
+      cols: { week:'B', day:'C', date:'J', bucket:'K', hook:'L', image:'M', post:'N' },
+      // phase 2: an Apps Script web app that files the PNG in Drive and writes column M
+      driveEndpoint: null
+    }
   }
 ];
