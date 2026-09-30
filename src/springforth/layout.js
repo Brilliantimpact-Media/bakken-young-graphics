@@ -77,7 +77,7 @@ function layout(){
       els.push(text('num-'+(i+1), String(i+1), { x:nx, y:ny - 62*u, w:nw, size:58*u, align:'center', lh:1,
         color:GOLD, shadow:false }));
       els.push({ id:'note-'+(i+1), type:'note', x:nx, y:ny, w:nw, h:nh, fill:NOTE_FILLS[i%NOTE_FILLS.length][0],
-                 tapeFill:TAPE_FILLS[i%TAPE_FILLS.length], rot:(i-1)*0.016, tape:true, kids:[id] });
+                 rot:(i-1)*0.016, tape:false, kids:[id] });
       els.push(text(id, byId(id)?.text ?? defaults[i], { x:nx+nw*0.09, y:ny+nh*0.20, w:nw*0.82, size:29*u,
         align:'center', lh:1.30, font:'sans', color:'#2f3a40', shadow:false }));
     }
