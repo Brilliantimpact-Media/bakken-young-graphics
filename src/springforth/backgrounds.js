@@ -98,6 +98,14 @@ function cardFor(el){
   const rec = IMG.notes[meta.name];
   return { meta, tape: rec && rec.tapeImg };
 }
+// How far the tape hangs down into the card, for a card of this width. The torn strip on
+// the cyan card reaches about a fifth of the way down, so writing has to start below it.
+function tapeDepth(fill, cardW){
+  const meta = NOTE_CARDS.find(c => c.fill === (fill || '').toLowerCase());
+  if (!meta || !meta.tape) return 0;
+  const tw = meta.tape.wf*cardW;
+  return Math.max(0, meta.tape.top*cardW + tw*(meta.tape.h/meta.tape.w));
+}
 function drawNote(ctx, el){
   ctx.save();
   ctx.translate(el.x + el.w/2, el.y + el.h/2); ctx.rotate(el.rot || 0); ctx.translate(-el.w/2, -el.h/2);

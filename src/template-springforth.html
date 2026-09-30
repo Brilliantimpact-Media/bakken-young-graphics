@@ -426,11 +426,14 @@ function layout(){
     const hLines = hl.split('\n').reduce((n,l) => n + Math.max(1, Math.ceil(l.length/13)), 0);
     const textH = hLines * handSize * 1.22;
     const top = head, floor = (waveFloor(0.1, 0.9) - 0.028)*h;
-    const nw = w*0.72, nh = Math.min(floor - top, Math.max(h*0.40, textH + h*0.13));
+    const nw = w*0.72;
+    const tape = tapeDepth(S.noteFill, nw), pad = nw*0.055;   // writing starts clear of the tape
+    const nh = Math.min(floor - top, Math.max(h*0.40, textH + tape + pad*2));
     const nx = (w - nw)/2, ny = top + (floor - top - nh)*0.5;
     els.push({ id:'note', type:'note', x:nx, y:ny, w:nw, h:nh, fill:S.noteFill || '#e5f4ee',
                tapeFill:S.tapeFill || TAPE_FILLS[0], rot:S.noteRot ?? -0.015, tape:true, kids:['headline'] });
-    els.push(text('headline', hl, { x:nx + nw*0.08, y:ny + (nh - textH)/2, w:nw*0.84, size:handSize,
+    const ty = ny + tape + pad + Math.max(0, (nh - tape - pad*2 - textH)/2);
+    els.push(text('headline', hl, { x:nx + nw*0.08, y:ty, w:nw*0.84, size:handSize,
       align:'center', lh:1.22, color:DARK_CARDS.includes(S.noteFill) ? '#ffffff' : DEEP, shadow:false }));
   }
   else if (S.template === 'list') {
@@ -676,6 +679,14 @@ function cardFor(el){
   if (!meta || el.tape === false || el.lines) return null;
   const rec = IMG.notes[meta.name];
   return { meta, tape: rec && rec.tapeImg };
+}
+// How far the tape hangs down into the card, for a card of this width. The torn strip on
+// the cyan card reaches about a fifth of the way down, so writing has to start below it.
+function tapeDepth(fill, cardW){
+  const meta = NOTE_CARDS.find(c => c.fill === (fill || '').toLowerCase());
+  if (!meta || !meta.tape) return 0;
+  const tw = meta.tape.wf*cardW;
+  return Math.max(0, meta.tape.top*cardW + tw*(meta.tape.h/meta.tape.w));
 }
 function drawNote(ctx, el){
   ctx.save();
