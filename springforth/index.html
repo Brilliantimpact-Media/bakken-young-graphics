@@ -460,14 +460,19 @@ function layout(){
   else if (S.template === 'quote') {
     const q = byId('quote')?.text ?? '“It’s very hands on, student driven… I love that we allow them to fail early and cheaply.”';
     const a = byId('attr')?.text ?? '— a Spring Forth parent';
-    // the note fills the board down to the wave rather than floating in the middle of it
+    // the card is cut to the length of the quote, with a couple of spare rules under it —
+    // the master never pins up a notepad that trails off empty
     const floor = (waveFloor(0.06, 0.94) - 0.030)*h;
-    const ny = Math.max(h*0.115, head), nw = w*0.74, nh = Math.max(h*0.44, floor - ny), nx = (w - nw)/2;
+    const top = Math.max(h*0.105, head), nw = w*0.74, nx = (w - nw)/2, qs = 46*u;
+    const probe = text('quote', q, { x:nx+nw*0.10, y:0, w:nw*0.80, size:qs, align:'left', lh:1.30, font:'sans', color:DEEP, shadow:false });
+    const qh = bbox(ctx, probe).h;
+    const nh = Math.max(h*0.34, Math.min(floor - top, qh + qs*2.9));
+    const ny = top + (floor - top - nh)*0.46;          // pinned in the middle of the board
     els.push({ id:'note', type:'note', x:nx, y:ny, w:nw, h:nh, fill:'#fffdf6', rot:S.noteRot ?? 0.02,
-               tape:false, lines:true, pin:'#e05c4b', kids:['quote','attr'] });
-    els.push(text('quote', q, { x:nx+nw*0.10, y:ny+nh*0.16, w:nw*0.80, size:46*u, align:'left', lh:1.30,
-      font:'sans', color:DEEP, shadow:false }));
-    els.push(text('attr', a, { x:nx+nw*0.10, y:ny+nh*0.80, w:nw*0.80, size:26*u, align:'right', lh:1.2,
+               tape:false, lines:true, pin:'#02d594', kids:['quote','attr'] });
+    probe.y = ny + nh*0.17;
+    els.push(probe);
+    els.push(text('attr', a, { x:nx+nw*0.10, y:ny + nh*0.17 + qh + qs*0.75, w:nw*0.80, size:26*u, align:'right', lh:1.2,
       font:'sans', color:'#6d7f88', shadow:false }));
   }
   else if (S.template === 'collage') {
