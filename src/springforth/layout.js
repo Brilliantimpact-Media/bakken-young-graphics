@@ -127,16 +127,8 @@ function layout(){
   S.els = els;
   S.sel = null;
   applyLook(false);
-  refreshDoodles();
 }
 
-// Doodles are placed last, once the content boxes are known, and only in free margins.
-function refreshDoodles(){
-  if (S.bg.kind === 'photo' || S.bg.ground === 'cork') { S.doodles = []; return; }
-  const boxes = S.els.filter(e => e.type !== 'logo' && e.id !== 'site').map(e => bbox(ctx, e));
-  const blob = S.els.filter(e => e.type === 'text' && e.id !== 'site').map(e => e.text).join(' ');
-  S.doodles = placeDoodles(blob, W(), H(), boxes, S.bg.seed || 1);
-}
 
 function templateDefaults(){
   S.bg.dim = S.bg.kind === 'photo' ? 0.18 : 0;

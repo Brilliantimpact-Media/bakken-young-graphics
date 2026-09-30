@@ -116,8 +116,7 @@ function setGround(style, newSeed){
 function renderGroundChips(){
   const box = $('#artChips'); box.innerHTML = '';
   for (const [k,l] of Object.entries(GROUNDS)) box.append(h('button',{class:'chip','aria-pressed':String(S.bg.kind !== 'photo' && S.bg.ground === k),onclick:()=>setGround(k, true)}, l));
-  box.append(h('button',{class:'btn sm',title:'Same paper, fresh crumple and doodles',onclick:()=>setGround(S.bg.ground, true)}, '↻ Variation'));
-  box.append(h('button',{class:'btn sm',title:'Re-pick the gold doodles',onclick:()=>{ pushUndo(); S.bg.seed = Math.floor(Math.random()*99999); refreshDoodles(); render(); }}, '\u2726 Doodles'));
+  box.append(h('button',{class:'btn sm',title:'Same paper, a fresh crumple',onclick:()=>setGround(S.bg.ground, true)}, '↻ Variation'));
 }
 // Collage: 3–4 library photos, framed and tilted, never two crops of the same shot.
 async function makeCollage(kind){

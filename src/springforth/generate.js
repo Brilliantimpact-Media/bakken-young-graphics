@@ -123,7 +123,7 @@ async function randomBackground(template){
   }
   if (template === 'quote') {
     S.bg.kind = 'paper'; S.bg.ground = 'cork'; IMG.bg = null; IMG.src = { kind:'ground', ground:'cork' };
-    S.doodles = []; return 'cork';
+    return 'cork';
   }
   if (template === 'collage') {
     if (pool.length < 3) return 'none';
@@ -135,11 +135,10 @@ async function randomBackground(template){
     const from = favs.length >= 3 && Math.random() < 0.35 ? favs : pool;
     const p = from[Math.floor(Math.random()*from.length)];
     IMG.bg = await libImage(p.url); IMG.src = Object.assign({ kind:'lib' }, p);
-    S.bg.kind = 'photo'; S.doodles = []; return 'photo';
+    S.bg.kind = 'photo'; return 'photo';
   }
-  // note / headline: crumpled paper with doodles
+  // note / headline: crumpled paper
   S.bg.kind = 'paper'; S.bg.ground = 'paper'; IMG.bg = null; IMG.src = { kind:'ground', ground:'paper' };
-  refreshDoodles();
   return 'paper';
 }
 // House rule: paper never carries a headline on its own. A headline layout always gets a
@@ -223,7 +222,7 @@ async function shufflePhoto(){
 function shuffleLook(){
   pushUndo();
   S.bg.seed = Math.floor(Math.random()*100000) + 1;
-  S.bg.seed = Math.floor(Math.random()*100000) + 1; refreshDoodles();
+  S.bg.seed = Math.floor(Math.random()*100000) + 1;
   randomStyle(); syncControls(); renderInspector(); render(); persist();
 }
 $('#genBtn').addEventListener('click', () => { $('#genStatus').textContent = ''; renderTopics(); $('#gen').hidden = false; setTimeout(() => $('#genText').focus(), 0); });

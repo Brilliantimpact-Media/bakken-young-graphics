@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Derive Spring Forth Academy's studio template from the shared engine.
 
-Spring Forth's look is a scrapbook: crumpled paper, a blue wave footer, gold doodles, sticky
+Spring Forth's look is a scrapbook: crumpled paper, a blue wave footer, sticky
 notes, taped photos and cork-board parent quotes. All of that art is generated in code and lives
 in src/springforth/*.js; the engine (canvas editor, drafts, undo, export, welcome card) is shared.
 
@@ -81,7 +81,7 @@ rep("""const LOOKS = {
   gold: { label:'Gold writing', accent:'#bb8a2d', text:'#8a7a55', shadow:false, dim:null, fade:null, swatch:['#fbfaf6','#bb8a2d'] },
 };""")
 rep("let S = { template:'headline', size:'square', textPos:'tc', look:'classic',\n          bg:{zoom:1, ox:0, oy:0, dim:0.35, fadePos:'none', fade:0.45, fadeSize:0.55, fadeColor:'#000000'}, els:[], sel:null };",
-    "let S = { template:'note', size:'portrait', textPos:'tc', look:'blue', wave:'bottom', noteFill:'#dff1ee', noteRot:-0.015, doodles:[],\n          bg:{kind:'paper', ground:'paper', seed:11, zoom:1, ox:0, oy:0, dim:0, fadePos:'none', fade:0.45, fadeSize:0.5, fadeColor:'#000000'}, els:[], sel:null };")
+    "let S = { template:'note', size:'portrait', textPos:'tc', look:'blue', wave:'bottom', noteFill:'#dff1ee', noteRot:-0.015,\n          bg:{kind:'paper', ground:'paper', seed:11, zoom:1, ox:0, oy:0, dim:0, fadePos:'none', fade:0.45, fadeSize:0.5, fadeColor:'#000000'}, els:[], sel:null };")
 rep("const BUILT_IN_KEY = 'dMBOWE33ohoJ8Weu0lSEIQhWNDpSnHnC3n9Vkhs3l7I4cfYOKDJgZ7Tf';\nlet page = 1, lastQuery = '', results = [], apiKey = BUILT_IN_KEY, tab = 'search';",
     "let page = 1, lastQuery = '', results = [];")
 rep("const IMG = { bg:null, logo:null, src:null }; // src: {kind:'pexels',id,url,tiny,photographer,alt} | {kind:'own',data}",
@@ -264,9 +264,9 @@ rep("function setTemplate(t){\n  pushUndo(); S.template = t; templateDefaults();
   syncControls(); renderInspector(); renderResults(); render();
 }""")
 rep("function snapshot(){ return JSON.stringify({ template:S.template, size:S.size, textPos:S.textPos, look:S.look, bg:S.bg, els:S.els }); }",
-    "function snapshot(){ return JSON.stringify({ template:S.template, size:S.size, textPos:S.textPos, look:S.look, wave:S.wave, waveWas:S.waveWas, noteFill:S.noteFill, noteRot:S.noteRot, doodles:S.doodles, bg:S.bg, els:S.els }); }")
+    "function snapshot(){ return JSON.stringify({ template:S.template, size:S.size, textPos:S.textPos, look:S.look, wave:S.wave, waveWas:S.waveWas, noteFill:S.noteFill, noteRot:S.noteRot, bg:S.bg, els:S.els }); }")
 rep("state: { template:S.template, size:S.size, textPos:S.textPos, look:S.look, bg:clone(S.bg), els:clone(S.els) }",
-    "state: { template:S.template, size:S.size, textPos:S.textPos, look:S.look, wave:S.wave, waveWas:S.waveWas, noteFill:S.noteFill, noteRot:S.noteRot, doodles:clone(S.doodles||[]), bg:clone(S.bg), els:clone(S.els) }")
+    "state: { template:S.template, size:S.size, textPos:S.textPos, look:S.look, wave:S.wave, waveWas:S.waveWas, noteFill:S.noteFill, noteRot:S.noteRot, bg:clone(S.bg), els:clone(S.els) }")
 rep("  if (['tc','tl','tr','mid'].includes(o.textPos)) S.textPos = o.textPos;", "  if (['tc','tl','mid'].includes(o.textPos)) S.textPos = o.textPos;")
 rep("  if (['logo','headline','event','review'].includes(o.template)) S.template = o.template;", "  if (['logo','headline','photo','collage','quote','note','list'].includes(o.template)) S.template = o.template;")
 rep("  if (typeof o.apiKey === 'string' && o.apiKey) apiKey = o.apiKey;\n", "")
@@ -318,7 +318,7 @@ rep("      if (IMG.bg && !LOOKS[S.look].dark) autoContrast(false);\n      const 
 # ================= photo memory + search → library =================
 rep_between("// ---------- photo memory (favorites + recently used) ----------", "// ---------- own photo ----------", blk('library.js') + "\n")
 rep("    IMG.bg = img; IMG.src = { kind:'own', data: shrinkForStorage(img) };\n    S.bg.ox = S.bg.oy = 0; S.bg.zoom = 1; $('#zoom').value = 100;\n    autoContrast(false); fitCanvas(); toast('Photo added');",
-    "    IMG.bg = img; IMG.src = { kind:'own', data: shrinkForStorage(img) };\n    S.bg.kind = 'photo'; S.bg.cells = null; S.doodles = []; S.bg.ox = S.bg.oy = 0; S.bg.zoom = 1; $('#zoom').value = 100;\n    if (S.template === 'note' || S.template === 'quote') S.template = 'headline';\n    templateDefaults(); layout(); autoContrast(false); syncControls(); renderInspector(); fitCanvas(); toast('Photo added');")
+    "    IMG.bg = img; IMG.src = { kind:'own', data: shrinkForStorage(img) };\n    S.bg.kind = 'photo'; S.bg.cells = null; S.bg.ox = S.bg.oy = 0; S.bg.zoom = 1; $('#zoom').value = 100;\n    if (S.template === 'note' || S.template === 'quote') S.template = 'headline';\n    templateDefaults(); layout(); autoContrast(false); syncControls(); renderInspector(); fitCanvas(); toast('Photo added');")
 rep("""  IMG.bg = null; IMG.src = null;
   if (d.photo) {
     $('#loading').classList.add('show');

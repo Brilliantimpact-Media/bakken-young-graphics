@@ -1,11 +1,11 @@
 // ---------- Spring Forth art layer ----------
 // Everything here comes from the 2026 Canva master: the real crumpled-paper and cork
-// photographs, the traced wave footer, and 55 doodles lifted from the artwork itself.
+// photographs and the wave footer, all lifted from the artwork itself.
 const SKY = '#1cc1e0', DEEP = '#03a2c6', GOLD = '#ffc000', BRONZE = '#bb8a2d';
 const GROUNDS = { paper:'Crumpled paper', cork:'Cork board' };
 const NOTE_FILLS = [['#e5f4ee','Mint'],['#fbf0d7','Cream'],['#fae2e0','Peach'],['#ddeef8','Sky'],['#ffffff','White']];
 const TAPE_FILLS = ['#f8c97a','#bfe3f5','#cfe8cf','#f3e3c4'];
-IMG.tex = {}; IMG.doodles = {}; let WAVE = null;
+IMG.tex = {}; let WAVE = null;
 
 function loadArt(){
   const one = (src) => new Promise(res => { const im = new Image(); im.onload = () => res(im); im.onerror = () => res(null); im.src = src; });
@@ -14,9 +14,6 @@ function loadArt(){
     one('art/cork.jpg').then(i => IMG.tex.cork = i),
     Promise.all([one('art/wave-bottom.png'), fetch('art/wave-bottom.json').then(r => r.json())])
       .then(([im, j]) => { WAVE = im ? Object.assign({ img:im }, j) : null; }).catch(() => WAVE = null),
-    fetch('art/doodles/index.json').then(r => r.json()).then(list =>
-      Promise.all(list.map(d => one('art/doodles/' + d.file).then(i => { if (i) IMG.doodles[d.file.replace('.png','')] = i; })))
-    ).catch(() => {}),
   ]);
 }
 function drawGround(ctx, w, h, style){
@@ -62,72 +59,6 @@ function bandCrestOver(x0, x1){
   return m;
 }
 
-// ---------- doodles: real artwork, keyword-matched, kept out of the content ----------
-// Only the doodles that came out of the master clean — hand-drawn gold marks, nothing
-// reconstructed and nothing carrying a scrap of the page it was lifted from.
-const DOODLE_TAGS = {
-  question: ['question-2','question-3'],
-  crown:    ['crown'], heart: ['heart-outline','heart-filled-1','heart-filled-2'],
-  star:     ['star-outline-1','star-outline-3','star-outline-4'],
-  bolt:     ['bolt-2'],
-  smile:    ['smiley','smile-4','smile-5'],
-  child:    ['figure-girl'], bird: ['bird'], music: ['music-note'], money: ['money-bag-1','money-bag-2'],
-  grade:    ['letter-a'], leaf: ['leaf'],
-  filler:   ['dashes-1','star-outline-1','heart-outline','smile-4'],
-  num:      ['num-3'],
-};
-const DOODLE_WORDS = [
-  [/\?|what|why|how|which|wonder|curious|different|ask/i, 'question'],
-  [/master|leader|best|honest|excellence|champion/i,      'crown'],
-  [/love|care|support|kind|family|together|communit|belong|alone/i, 'heart'],
-  [/quality|ownership|growth|proud|celebrat|shine|achieve|grow/i,   'star'],
-  [/energy|power|spark|drive|momentum|action/i,           'bolt'],
-  [/joy|fun|happy|positive|attitude|smile|delight/i,      'smile'],
-  [/child|kid|student|learner|young|youth/i,              'child'],
-  [/spring forth|fly|soar|freedom|forth/i,                'bird'],
-  [/music|art|sing|creativ/i,                             'music'],
-  [/cost|money|price|invest|tuition|worth/i,              'money'],
-  [/doing|complete|done|mastery|persist|practice/i,       'check'],
-  [/enroll|grade|school year|tour|apply|register/i,       'grade'],
-  [/nature|outdoor|garden|grow/i,                         'leaf'],
-];
-function doodlesFor(textBlob, rnd){
-  const picked = [];
-  for (const [re, tag] of DOODLE_WORDS) if (re.test(textBlob) && !picked.includes(tag)) picked.push(tag);
-  while (picked.length < 2) picked.push('filler');
-  return picked.slice(0, 3);
-}
-// Zones are the page margins; anything overlapping the content box is dropped.
-function placeDoodles(textBlob, w, h, boxes, seedN){
-  if (!Object.keys(IMG.doodles).length) return [];
-  let s = (Math.abs(seedN||1)*9301+49297) % 233280 || 11;
-  const rnd = () => (s = (s*9301+49297) % 233280) / 233280;
-  const tags = doodlesFor(textBlob, rnd);
-  const zones = [[0.06,0.07,0.26,0.20],[0.72,0.07,0.94,0.20],[0.04,0.34,0.22,0.52],
-                 [0.78,0.34,0.96,0.52],[0.07,0.60,0.26,0.76],[0.74,0.60,0.94,0.76]];
-  const free = zones.filter(z => {
-    const r = { x:z[0]*w, y:z[1]*h, w:(z[2]-z[0])*w, h:(z[3]-z[1])*h };
-    return !boxes.some(b => r.x < b.x+b.w+w*0.02 && r.x+r.w > b.x-w*0.02 && r.y < b.y+b.h+h*0.015 && r.y+r.h > b.y-h*0.015);
-  });
-  const order = free.sort(() => rnd() - 0.5);
-  const out = [];
-  for (let i = 0; i < Math.min(tags.length, order.length); i++) {
-    const pool = DOODLE_TAGS[tags[i]] || DOODLE_TAGS.filler;
-    const name = pool[Math.floor(rnd()*pool.length)];
-    const im = IMG.doodles[name]; if (!im) continue;
-    const z = order[i];
-    const zw = (z[2]-z[0])*w, zh = (z[3]-z[1])*h;
-    const scale = Math.min(zw/im.naturalWidth, zh/im.naturalHeight) * (0.72 + rnd()*0.26);
-    const dw = im.naturalWidth*scale, dh = im.naturalHeight*scale;
-    out.push({ name, x: z[0]*w + (zw-dw)/2, y: z[1]*h + (zh-dh)/2, w: dw, h: dh, rot: (rnd()-0.5)*0.30 });
-  }
-  return out;
-}
-function drawDoodle(ctx, d){
-  const im = IMG.doodles[d.name]; if (!im) return;
-  ctx.save(); ctx.translate(d.x + d.w/2, d.y + d.h/2); ctx.rotate(d.rot||0);
-  ctx.drawImage(im, -d.w/2, -d.h/2, d.w, d.h); ctx.restore();
-}
 
 // ---------- notes, tape, framed photos ----------
 function drawTape(ctx, cx, cy, len, rot, fill){
@@ -211,6 +142,5 @@ function drawPhoto(ctx, w, h, bg){
 function drawBackground(ctx, w, h){
   drawPhoto(ctx, w, h, S.bg);
   if (S.bg.kind === 'photo' && S.bg.dim > 0) { ctx.fillStyle = `rgba(0,0,0,${S.bg.dim})`; ctx.fillRect(0,0,w,h); }
-  if (S.doodles && S.doodles.length) for (const d of S.doodles) drawDoodle(ctx, d);
   drawWaves(ctx, w, h, S.wave || 'bottom');
 }
