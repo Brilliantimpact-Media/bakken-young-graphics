@@ -17,5 +17,14 @@ window.BI_CLIENTS = [
     accent: '#034226',
     accent2: '#006c40',
     logo: 'mcmillan/logo.png'
+  },
+  {
+    slug: 'springforth',
+    name: 'Spring Forth',
+    full: 'Spring Forth Academy',
+    tagline: 'Social graphics',
+    accent: '#03a2c6',
+    accent2: '#1cc1e0',
+    logo: 'springforth/logo.png'
   }
 ];

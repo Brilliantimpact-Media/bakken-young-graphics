@@ -21,5 +21,18 @@ def build_mcmillan():
     (ROOT/'mcmillan').mkdir(exist_ok=True)
     (ROOT/'mcmillan/index.html').write_text(html); print('mcmillan      ok')
 
+
+def build_springforth():
+    src = ROOT/'src/template-springforth.html'
+    if not src.exists(): print('springforth   (no template yet)'); return
+    A = ROOT/'assets/springforth'
+    html = src.read_text()
+    for key, f in [('__MARK_B64__','mark-color.png'), ('__MARKW_B64__','mark-white.png'),
+                   ('__LOCKUP_B64__','lockup-color.png'), ('__LOCKUPW_B64__','lockup-white.png'),
+                   ('__WORD_B64__','wordmark-h.png'), ('__WORDW_B64__','wordmark-h-white.png')]:
+        html = html.replace(key, b64(A/f))
+    (ROOT/'springforth').mkdir(exist_ok=True)
+    (ROOT/'springforth/index.html').write_text(html); print('springforth   ok')
+
 if __name__ == '__main__':
-    build_bakken_young(); build_mcmillan()
+    build_bakken_young(); build_mcmillan(); build_springforth()
