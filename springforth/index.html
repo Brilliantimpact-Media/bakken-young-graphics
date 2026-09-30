@@ -227,6 +227,18 @@ canvas#c.dragging{cursor:grabbing}
 
 <main class="app">
   <aside class="panel" id="left">
+    <div class="sec" id="calSec" hidden>
+      <h2>Calendar <button class="btn link" id="calOpen" title="Open the schedule in Google Sheets">Open calendar</button></h2>
+      <div class="cal-nav">
+        <button class="btn sm" id="calPrev" title="Previous month with a tab" aria-label="Previous month">‹</button>
+        <select id="calMonth" aria-label="Month"></select>
+        <button class="btn sm" id="calNext" title="Next month with a tab" aria-label="Next month">›</button>
+      </div>
+      <p class="hint" id="calStatus"></p>
+      <div class="cal-grid" id="calGrid"></div>
+      <div class="cal-legend" id="calLegend"></div>
+      <div id="calDetail"></div>
+    </div>
     <div class="sec">
       <h2>Template</h2>
       <div class="tiles" id="tiles">
@@ -278,18 +290,6 @@ canvas#c.dragging{cursor:grabbing}
       <div id="quickFields"></div>
     </div>
 
-    <div class="sec" id="calSec" hidden>
-      <h2>Calendar <button class="btn link" id="calOpen" title="Open the schedule in Google Sheets">Open calendar</button></h2>
-      <div class="cal-nav">
-        <button class="btn sm" id="calPrev" title="Previous month with a tab" aria-label="Previous month">‹</button>
-        <select id="calMonth" aria-label="Month"></select>
-        <button class="btn sm" id="calNext" title="Next month with a tab" aria-label="Next month">›</button>
-      </div>
-      <p class="hint" id="calStatus"></p>
-      <div class="cal-grid" id="calGrid"></div>
-      <div class="cal-legend" id="calLegend"></div>
-      <div id="calDetail"></div>
-    </div>
     <div class="sec">
       <h2>Background</h2>
       <div class="subh" style="margin-top:0">Paper</div>

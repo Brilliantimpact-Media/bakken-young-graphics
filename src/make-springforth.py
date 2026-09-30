@@ -218,9 +218,9 @@ rep("""      <div class="row" id="textPosRow"><label>Text</label>
           <button data-v="none" aria-pressed="false">None</button>
         </div></div>
       <div class="row" id="noteFillRow"><label>Note</label><div class="swatches" id="noteFills"></div></div>""")
-# background section replaces the Pexels search section
-i = s.index('    <div class="sec">\n      <h2>Background photo'); j = s.index('    <div class="sec">\n      <h2>Photo adjustments')
-s = s[:i] + """    <div class="sec" id="calSec" hidden>
+# the calendar opens the rail: the schedule is where the work starts
+rep('  <aside class="panel" id="left">\n',
+    '  <aside class="panel" id="left">\n' + """    <div class="sec" id="calSec" hidden>
       <h2>Calendar <button class="btn link" id="calOpen" title="Open the schedule in Google Sheets">Open calendar</button></h2>
       <div class="cal-nav">
         <button class="btn sm" id="calPrev" title="Previous month with a tab" aria-label="Previous month">‹</button>
@@ -232,7 +232,11 @@ s = s[:i] + """    <div class="sec" id="calSec" hidden>
       <div class="cal-legend" id="calLegend"></div>
       <div id="calDetail"></div>
     </div>
-    <div class="sec">
+""")
+
+# background section replaces the Pexels search section
+i = s.index('    <div class="sec">\n      <h2>Background photo'); j = s.index('    <div class="sec">\n      <h2>Photo adjustments')
+s = s[:i] + """    <div class="sec">
       <h2>Background</h2>
       <div class="subh" style="margin-top:0">Paper</div>
       <div class="chips" id="artChips"></div>
