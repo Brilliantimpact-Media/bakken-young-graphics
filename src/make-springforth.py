@@ -165,16 +165,36 @@ rep(".tile svg{width:38px;height:38px;display:block}",
     ".stickers button{border:1px solid var(--line);border-radius:7px;background:var(--panel-2);padding:5px;cursor:pointer;height:50px;min-width:0;overflow:hidden;display:flex;align-items:center;justify-content:center}\n"
     ".stickers button:hover{border-color:var(--accent);background:var(--accent-soft)}\n"
     ".stickers img{max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;display:block}" + "\n"
-    ".cal-list{display:flex;flex-direction:column;gap:4px;max-height:270px;overflow:auto}\n"
-    ".cal-row{display:flex;align-items:center;gap:8px;text-align:left;border:1px solid var(--line);border-radius:8px;background:var(--panel-2);padding:6px 8px;cursor:pointer;font:inherit;color:inherit}\n"
-    ".cal-row:hover{border-color:var(--accent)}\n"
-    ".cal-row[aria-pressed=\"true\"]{border-color:var(--accent);background:var(--accent-soft);box-shadow:inset 0 0 0 1px var(--accent)}\n"
-    ".cal-when{flex:0 0 52px;font-weight:700;font-size:11px;opacity:.85}\n"
-    ".cal-body{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}\n"
-    ".cal-hook{font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}\n"
-    ".cal-bucket{font-size:10px;opacity:.6;text-transform:uppercase;letter-spacing:.04em}\n"
-    ".cal-done{flex:0 0 14px;color:var(--accent);font-weight:700}\n"
-    ".cal-post{white-space:pre-wrap;font-size:12px;line-height:1.45;max-height:150px;overflow:auto;background:var(--panel-2);border:1px solid var(--line);border-radius:8px;padding:8px;margin:0}")
+    ".cal-nav{display:grid;grid-template-columns:auto 1fr auto;gap:6px;align-items:center;margin-bottom:6px}\n"
+    ".cal-nav select{width:100%}\n"
+    ".cal-nav .btn[disabled]{opacity:.35;cursor:default}\n"
+    ".cal-grid{display:grid;grid-template-columns:auto repeat(7,minmax(0,1fr));gap:2px;margin:6px 0}\n"
+    ".cg-corner,.cg-dow{font-size:9px;opacity:.55;text-align:center;padding:2px 0;letter-spacing:.02em}\n"
+    ".cg-wk{font:inherit;font-size:9px;font-weight:700;opacity:.7;background:none;border:0;color:inherit;cursor:pointer;padding:0 3px 0 0;border-radius:5px}\n"
+    ".cg-wk:disabled{opacity:.25;cursor:default}\n"
+    ".cg-wk[aria-pressed=\"true\"]{opacity:1;color:var(--accent)}\n"
+    ".cg-day{position:relative;font:inherit;border:1px solid transparent;border-radius:6px;background:none;color:inherit;aspect-ratio:1;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;padding:0;cursor:default}\n"
+    ".cg-day.out .cg-num{opacity:.28}\n"
+    ".cg-num{font-size:10px;line-height:1}\n"
+    ".cg-day.today{border-color:var(--line-strong)}\n"
+    ".cg-day.has{cursor:pointer;background:var(--panel-2)}\n"
+    ".cg-day.has:hover{border-color:var(--accent)}\n"
+    ".cg-day[aria-pressed=\"true\"]{border-color:var(--accent);background:var(--accent-soft);box-shadow:inset 0 0 0 1px var(--accent)}\n"
+    ".cg-dot{width:6px;height:6px;border-radius:50%;display:block}\n"
+    ".cg-tick{font-size:9px;line-height:1;color:var(--accent);font-weight:700}\n"
+    ".cal-legend{display:flex;flex-wrap:wrap;gap:4px 10px;font-size:9px;opacity:.75;margin-bottom:8px}\n"
+    ".cg-key{display:inline-flex;align-items:center;gap:4px}\n"
+    ".cg-key i{width:6px;height:6px;border-radius:50%;display:block}\n"
+    ".cd-wrap{display:flex;flex-direction:column;gap:8px}\n"
+    ".cd-side{display:grid;grid-template-columns:repeat(auto-fit,minmax(118px,1fr));gap:6px}\n"
+    ".cd-card{font:inherit;color:inherit;text-align:left;border:1px solid var(--line);border-radius:8px;background:var(--panel-2);padding:7px;display:flex;flex-direction:column;gap:4px;min-width:0;cursor:pointer}\n"
+    ".cd-card:hover{border-color:var(--accent)}\n"
+    ".cd-card.on{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}\n"
+    ".cd-use{font-size:9px;opacity:.7;text-transform:uppercase;letter-spacing:.04em}\n"
+    ".cd-head{display:flex;justify-content:space-between;gap:6px;align-items:baseline;font-size:11px;flex-wrap:wrap}\n"
+    ".cd-bucket{font-size:9px;text-transform:uppercase;letter-spacing:.04em;opacity:.85;text-align:right}\n"
+    ".cd-hook{font-size:12px;line-height:1.35}\n"
+    ".cal-post{white-space:pre-wrap;font-size:11px;line-height:1.45;max-height:132px;overflow:auto;background:var(--panel-2);border:1px solid var(--line);border-radius:8px;padding:8px;margin:0}")
 rep(".tile{border:1px solid var(--line-strong);border-radius:8px;background:var(--panel-2);padding:8px 6px;",
     ".tile{border:1px solid var(--line-strong);border-radius:8px;background:var(--panel-2);padding:7px 4px;")
 rep("""      <div class="row" id="textPosRow"><label>Text</label>
@@ -202,13 +222,15 @@ rep("""      <div class="row" id="textPosRow"><label>Text</label>
 i = s.index('    <div class="sec">\n      <h2>Background photo'); j = s.index('    <div class="sec">\n      <h2>Photo adjustments')
 s = s[:i] + """    <div class="sec" id="calSec" hidden>
       <h2>Calendar <button class="btn link" id="calOpen" title="Open the schedule in Google Sheets">Open calendar</button></h2>
-      <div class="row"><label for="calMonth">Month</label><select id="calMonth"></select></div>
-      <p class="hint" id="calStatus"></p>
-      <div class="cal-list" id="calList"></div>
-      <div id="calPost" hidden>
-        <div class="subh">Post text <button class="btn link" id="calCopy">Copy</button></div>
-        <p class="cal-post" id="calPostText"></p>
+      <div class="cal-nav">
+        <button class="btn sm" id="calPrev" title="Previous month with a tab" aria-label="Previous month">‹</button>
+        <select id="calMonth" aria-label="Month"></select>
+        <button class="btn sm" id="calNext" title="Next month with a tab" aria-label="Next month">›</button>
       </div>
+      <p class="hint" id="calStatus"></p>
+      <div class="cal-grid" id="calGrid"></div>
+      <div class="cal-legend" id="calLegend"></div>
+      <div id="calDetail"></div>
     </div>
     <div class="sec">
       <h2>Background</h2>

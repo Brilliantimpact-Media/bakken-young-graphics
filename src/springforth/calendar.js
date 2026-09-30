@@ -3,16 +3,28 @@
 // "anyone with the link can view". The studio reads it straight from the browser through
 // the gviz CSV endpoint, which needs no key and answers with CORS headers.
 //
-// Two things about that endpoint shape this code:
+// Three things about that endpoint shape this code:
 //   * when the named tab does not exist it silently returns the FIRST sheet rather than an
-//     error, so every month is verified against the dates that come back before it is shown;
+//     error, so every month is verified against the dates that come back before it is used;
 //   * it drops fully empty leading rows, so the header row is not where the sheet's own row
 //     numbers say it is. The header row is found by its contents, and the configured column
 //     letters are only a fallback for headers that never made it into the sheet (DATE has no
-//     header text of its own).
+//     header text of its own);
+//   * tab names are inconsistent ("September 2026" but "Oct 2026"), so both spellings are
+//     tried and whichever one validates wins.
 const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 const DAY_ABBR = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-const CAL = { cfg:null, ym:null, posts:[], sel:null, tab:null, state:'idle', note:'' };
+const DOW = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+// All four come off their own pages. Sky and deep blue were the obvious pair for the first
+// two buckets, but at dot size they are the same colour, so Equipping takes the green from
+// the pushpin on their cork-board quotes instead.
+const BUCKETS = [
+  ['inspiring', 'Inspiring Growth', '#1cc1e0'],
+  ['equipping', 'Equipping',        '#02d594'],
+  ['community', 'Community',        '#ffc000'],
+  ['enroll',    'Enrollment',       '#bb8a2d'],
+];
+const CAL = { months:[], cur:null, view:null, state:'idle', note:'', probing:false };
 const CLIENT_SLUG = 'springforth';
 
 // clients.js is loaded at the end of the body, so this resolves lazily rather than at parse
@@ -20,6 +32,15 @@ const CLIENT_SLUG = 'springforth';
 function calCfg(){
   const c = (window.BI_CLIENTS || []).find(x => x.slug === CLIENT_SLUG);
   return (c && c.calendar) || null;
+}
+function bucketOf(name){
+  const s = (name || '').toLowerCase();
+  if (!s) return null;
+  if (s.startsWith('inspir')) return BUCKETS[0];
+  if (s.startsWith('equip')) return BUCKETS[1];
+  if (s.startsWith('commun')) return BUCKETS[2];
+  if (s.startsWith('enroll')) return BUCKETS[3];   // their sheet also spells it "Enrollement"
+  return null;
 }
 
 // Google's CSV: quoted fields, doubled quotes inside them, and real newlines inside a field.
@@ -39,7 +60,10 @@ function parseCsv(text){
   return rows;
 }
 const colLetter = (s) => { let n = 0; for (const ch of String(s).toUpperCase()) n = n*26 + (ch.charCodeAt(0)-64); return n-1; };
-
+const monthKey = (y, m) => y + '-' + m;
+function isoDate(d){
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
 function tabNames(y, m){ return [MONTHS[m] + ' ' + y, MONTHS[m].slice(0,3) + ' ' + y]; }
 function tabUrl(sheetId, tab){
   return 'https://docs.google.com/spreadsheets/d/' + sheetId +
@@ -57,12 +81,9 @@ function parseDate(s){
 function readTab(text, cfg, y, m){
   const rows = parseCsv(text);
   const hdr = rows.findIndex(r => r.some(c => /HOOK\s*TEXT/i.test(c)) && r.some(c => /^\s*POST\s*$/i.test(c)));
-  if (hdr < 0) return { posts:[], reason:'no-header' };
+  if (hdr < 0) return null;
   const head = rows[hdr].map(c => c.trim().toUpperCase());
-  const at = (name, letter) => {
-    const i = head.indexOf(name);
-    return i >= 0 ? i : colLetter(cfg.cols[letter]);
-  };
+  const at = (name, letter) => { const i = head.indexOf(name); return i >= 0 ? i : colLetter(cfg.cols[letter]); };
   const ci = { week:at('WEEK','week'), day:at('DAY','day'), date:at('DATE','date'),
                bucket:at('BUCKET','bucket'), hook:at('HOOK TEXT','hook'), post:at('POST','post') };
   const cell = (r, i) => (i >= 0 && i < r.length ? r[i].trim() : '');
@@ -70,55 +91,80 @@ function readTab(text, cfg, y, m){
   for (const r of rows.slice(hdr+1)) {
     const d = parseDate(cell(r, ci.date));
     if (!d) continue;
-    posts.push({ date:d, iso:isoDate(d), week:cell(r, ci.week), day:cell(r, ci.day),
+    posts.push({ date:d, iso:isoDate(d), week:parseInt(cell(r, ci.week), 10) || null, day:cell(r, ci.day),
                  bucket:cell(r, ci.bucket), hook:cell(r, ci.hook), post:cell(r, ci.post) });
   }
-  // gviz answers a missing tab with the first sheet, so the dates decide whether this is
-  // really the month that was asked for
+  if (!posts.length) return null;
+  // gviz answers a missing tab with the first sheet, so the dates decide whether this really
+  // is the month that was asked for
   const mine = posts.filter(p => p.date.getFullYear() === y && p.date.getMonth() === m);
-  if (!posts.length) return { posts:[], reason:'empty' };
-  if (mine.length < posts.length/2) return { posts:[], reason:'wrong-month' };
-  return { posts:mine, reason:'ok' };
-}
-function isoDate(d){
-  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+  return mine.length >= posts.length/2 ? mine : null;
 }
 
-async function loadMonth(y, m){
-  const cfg = calCfg();
-  if (!cfg) { CAL.state = 'off'; return; }
-  CAL.ym = { y, m }; CAL.state = 'loading'; CAL.posts = []; CAL.tab = null; CAL.note = '';
-  renderCalendar();
-  let lastErr = null;
-  for (const tab of tabNames(y, m)) {
-    let text;
+// ---------- discovery ----------
+// Every month tab from two back to three ahead is probed at once, both spellings, and the
+// posts are kept. A tab added to the sheet later shows up on the next reload with nothing
+// to change here.
+async function tryMonth(cfg, y, m){
+  const got = await Promise.all(tabNames(y, m).map(async tab => {
     try {
       const r = await fetch(tabUrl(cfg.sheetId, tab), { cache:'no-store' });
-      if (!r.ok) { lastErr = 'http ' + r.status; continue; }
-      text = await r.text();
-    } catch (e) { lastErr = 'network'; continue; }
-    const got = readTab(text, cfg, y, m);
-    if (got.reason === 'ok') {
-      CAL.posts = got.posts; CAL.tab = tab; CAL.state = 'ready';
-      const blank = got.posts.filter(p => !p.hook).length;
-      if (blank) CAL.note = blank === got.posts.length
-        ? 'No hook text in the sheet this month — headlines start from the phrase bank.'
-        : blank + ' of these have no hook text yet — those start from the phrase bank.';
-      pickUpcoming();
-      renderCalendar();
-      return;
-    }
-    lastErr = got.reason;
+      if (!r.ok) return null;
+      const posts = readTab(await r.text(), cfg, y, m);
+      return posts ? { tab, posts } : null;
+    } catch { return null; }
+  }));
+  const hit = got.find(Boolean);
+  if (!hit) return null;
+  hit.posts.sort((a,b) => a.date - b.date);
+  return { y, m, key:monthKey(y,m), label:MONTHS[m] + ' ' + y, tab:hit.tab, posts:hit.posts };
+}
+async function discoverMonths(){
+  const cfg = calCfg(); if (!cfg) return [];
+  const now = new Date();
+  const want = [];
+  for (let i = -2; i <= 3; i++) { const d = new Date(now.getFullYear(), now.getMonth()+i, 1); want.push([d.getFullYear(), d.getMonth()]); }
+  const found = await Promise.all(want.map(([y,m]) => tryMonth(cfg, y, m)));
+  return found.filter(Boolean);
+}
+
+// ---------- the month grid ----------
+// Monday-start weeks. The row labels come from the sheet's own WEEK column rather than being
+// counted here: on a month that opens on a Sunday the sheet skips the stub week, so counting
+// would be one out. Rows without a post take their number from the offset to a row that has one.
+function buildGrid(month){
+  const first = new Date(month.y, month.m, 1);
+  const start = new Date(first);
+  start.setDate(first.getDate() - ((first.getDay()+6) % 7));
+  const rows = [];
+  for (let r = 0; r < 6; r++) {
+    const days = [];
+    for (let c = 0; c < 7; c++) { const d = new Date(start); d.setDate(start.getDate() + r*7 + c); days.push(d); }
+    if (!days.some(d => d.getMonth() === month.m && d.getFullYear() === month.y)) { if (rows.length) break; else continue; }
+    const iso = days.map(isoDate);
+    rows.push({ days, iso, posts: month.posts.filter(p => iso.includes(p.iso)), label:null });
   }
-  CAL.state = lastErr === 'network' ? 'offline' : 'missing';
-  renderCalendar();
+  const anchor = rows.findIndex(r => r.posts.some(p => p.week));
+  if (anchor >= 0) {
+    const base = rows[anchor].posts.find(p => p.week).week;
+    rows.forEach((r, i) => { const n = base + (i - anchor); r.label = n > 0 ? n : null; });
+  } else rows.forEach((r, i) => { r.label = i + 1; });
+  return rows;
 }
-function pickUpcoming(){
-  const today = new Date(); today.setHours(0,0,0,0);
-  const next = CAL.posts.find(p => p.date >= today) || CAL.posts[CAL.posts.length-1];
-  CAL.sel = next ? next.iso : null;
+function curMonth(){ return CAL.months.find(x => x.key === CAL.cur) || null; }
+function curGrid(){ const m = curMonth(); return m ? (m._grid || (m._grid = buildGrid(m))) : []; }
+function viewPosts(){
+  const m = curMonth(); if (!m || !CAL.view) return [];
+  if (CAL.view.kind === 'day') { const p = m.posts.find(x => x.iso === CAL.view.iso); return p ? [p] : []; }
+  const row = curGrid()[CAL.view.row];
+  return row ? row.posts : [];
 }
-function selectedPost(){ return CAL.posts.find(p => p.iso === CAL.sel) || null; }
+function selectedPost(){
+  const v = viewPosts();
+  if (!v.length) return null;
+  if (CAL.view && CAL.view.kind === 'day') return v[0];
+  return v.find(p => p.iso === CAL.view.used) || null;
+}
 
 // Which posts already have a graphic. Local to this browser for now; phase 2 replaces this
 // with what is actually sitting in the Drive folder.
@@ -126,13 +172,18 @@ let calDone = {};
 function loadCalDone(){ try { calDone = JSON.parse(localStorage.getItem(LS.calendar) || '{}') || {}; } catch { calDone = {}; } }
 function saveCalDone(){ try { localStorage.setItem(LS.calendar, JSON.stringify(calDone)); } catch {} }
 function doneKey(p){ return (calCfg() || {}).sheetId + '|' + p.iso; }
+function isDone(p){ return !!calDone[doneKey(p)]; }
 function markPostDone(p){ if (!p) return; calDone[doneKey(p)] = Date.now(); saveCalDone(); renderCalendar(); }
 
 // Choosing a post fills the headline box from its hook text, and falls back to the phrase
 // bank when the sheet has none yet. The box stays editable either way.
 function usePost(iso){
-  const p = CAL.posts.find(x => x.iso === iso); if (!p) return;
-  CAL.sel = iso;
+  const m = curMonth(); if (!m) return;
+  const p = m.posts.find(x => x.iso === iso); if (!p) return;
+  // staying inside the open week just moves the choice along it; anything else is a day view
+  const row = CAL.view && CAL.view.kind === 'week' ? curGrid()[CAL.view.row] : null;
+  if (row && row.iso.includes(iso)) CAL.view.used = iso;
+  else CAL.view = { kind:'day', iso };
   pushUndo();
   let head = p.hook;
   if (!head) {
@@ -142,7 +193,8 @@ function usePost(iso){
   if (S.template === 'logo' || S.template === 'photo') { S.template = 'note'; templateDefaults(); }
   layout();
   const el = byId('headline');
-  if (el) el.text = head; else { S.template = 'note'; templateDefaults(); layout(); const e2 = byId('headline'); if (e2) e2.text = head; }
+  if (el) el.text = head;
+  else { S.template = 'note'; templateDefaults(); layout(); const e2 = byId('headline'); if (e2) e2.text = head; }
   renderQuickFields(); syncControls(); renderInspector(); render(); persist();
   renderCalendar();
 }
@@ -153,65 +205,135 @@ function calFilename(){
   return 'SpringForth_' + p.iso + '_' + DAY_ABBR[p.date.getDay()] + '.png';
 }
 
-// ---------- panel ----------
-function monthOptions(){
-  const out = []; const now = new Date();
-  for (let i = -6; i <= 6; i++) {
-    const d = new Date(now.getFullYear(), now.getMonth()+i, 1);
-    out.push({ y:d.getFullYear(), m:d.getMonth(), label:MONTHS[d.getMonth()] + ' ' + d.getFullYear() });
+// ---------- where to open ----------
+// The current week's post, or — once the month is winding down and next month's tab is
+// there — next month's first week, which is what Karissa is actually working on by then.
+function openDefault(){
+  const now = new Date(); now.setHours(0,0,0,0);
+  const here = CAL.months.find(x => x.y === now.getFullYear() && x.m === now.getMonth());
+  if (now.getDate() >= 15) {
+    const nx = new Date(now.getFullYear(), now.getMonth()+1, 1);
+    const next = CAL.months.find(x => x.y === nx.getFullYear() && x.m === nx.getMonth());
+    if (next) { CAL.cur = next.key; const g = curGrid(); const row = g.findIndex(r => r.posts.length); CAL.view = { kind:'week', row: row < 0 ? 0 : row }; return; }
   }
-  return out;
+  const month = here || CAL.months[0];
+  if (!month) return;
+  CAL.cur = month.key;
+  const g = curGrid();
+  const row = g.findIndex(r => r.iso.includes(isoDate(now)));
+  if (row >= 0 && g[row].posts.length) {
+    const p = g[row].posts.find(x => x.date >= now) || g[row].posts[0];
+    CAL.view = { kind:'day', iso:p.iso };
+  } else {
+    const nextP = month.posts.find(p => p.date >= now) || month.posts[0];
+    CAL.view = nextP ? { kind:'day', iso:nextP.iso } : { kind:'week', row:0 };
+  }
 }
+
+// ---------- panel ----------
 function renderCalendar(){
   const sec = $('#calSec'); if (!sec) return;
-  const cfg = calCfg();
-  if (!cfg) { sec.hidden = true; return; }
+  if (!calCfg()) { sec.hidden = true; return; }
   sec.hidden = false;
-  const sel = $('#calMonth');
-  if (sel && !sel.options.length) {
-    for (const o of monthOptions()) sel.append(h('option',{value:o.y+'-'+o.m}, o.label));
-    sel.value = (CAL.ym ? CAL.ym.y + '-' + CAL.ym.m : '');
+  const status = $('#calStatus'), grid = $('#calGrid'), detail = $('#calDetail'), sel = $('#calMonth');
+  if (CAL.state === 'loading') { status.textContent = 'Reading the calendar…'; grid.innerHTML = ''; detail.innerHTML = ''; return; }
+  if (CAL.state === 'offline') { status.textContent = 'Couldn’t reach the calendar. You can still type a headline yourself.'; grid.innerHTML = ''; detail.innerHTML = ''; return; }
+  if (!CAL.months.length) { status.textContent = 'No month tabs found in the sheet. Type a headline yourself.'; grid.innerHTML = ''; detail.innerHTML = ''; return; }
+
+  sel.innerHTML = '';
+  for (const m of CAL.months) sel.append(h('option',{value:m.key}, m.label));
+  sel.value = CAL.cur;
+  const i = CAL.months.findIndex(x => x.key === CAL.cur);
+  $('#calPrev').disabled = i <= 0;
+  $('#calNext').disabled = i < 0 || i >= CAL.months.length-1;
+
+  const month = curMonth();
+  const blank = month.posts.filter(p => !p.hook).length;
+  status.textContent = month.posts.length + ' post' + (month.posts.length === 1 ? '' : 's') + ' · tab “' + month.tab + '”'
+    + (blank === month.posts.length ? ' · no hook text yet, headlines come from the phrase bank'
+       : blank ? ' · ' + blank + ' with no hook text yet' : '');
+
+  grid.innerHTML = '';
+  grid.append(h('div',{class:'cg-corner'}, ''));
+  for (const d of DOW) grid.append(h('div',{class:'cg-dow'}, d));
+  const today = isoDate(new Date());
+  curGrid().forEach((row, r) => {
+    const on = CAL.view && CAL.view.kind === 'week' && CAL.view.row === r;
+    grid.append(h('button',{class:'cg-wk','aria-pressed':String(!!on),disabled:!row.posts.length,
+      title:row.posts.length ? 'Show this week’s posts' : 'No posts this week',
+      onclick:()=>{ CAL.view = { kind:'week', row:r }; renderCalendar(); }},
+      row.label ? 'Wk' + row.label : ''));
+    row.days.forEach((d, c) => {
+      const iso = isoDate(d);
+      const p = row.posts.find(x => x.iso === iso);
+      const out = d.getMonth() !== month.m || d.getFullYear() !== month.y;
+      const b = p ? bucketOf(p.bucket) : null;
+      const cls = ['cg-day']; if (out) cls.push('out'); if (p) cls.push('has');
+      if (iso === today) cls.push('today');
+      const on = CAL.view && ((CAL.view.kind === 'day' && CAL.view.iso === iso) ||
+                              (CAL.view.kind === 'week' && CAL.view.row === r && p));
+      const cell = h('button',{class:cls.join(' '),'aria-pressed':String(!!on),disabled:!p,
+        title:p ? (p.bucket || 'Post') + ' — ' + (p.hook || 'no hook text yet') : '',
+        onclick:()=>{ if (p) usePost(iso); }},
+        h('span',{class:'cg-num'}, String(d.getDate())));
+      if (p) cell.append(isDone(p)
+        ? h('span',{class:'cg-tick',title:'Graphic downloaded'}, '✓')
+        : h('span',{class:'cg-dot',style:'background:' + (b ? b[2] : '#8fa3ad')}));
+      grid.append(cell);
+    });
+  });
+
+  const legend = $('#calLegend'); legend.innerHTML = '';
+  for (const [,label,color] of BUCKETS)
+    legend.append(h('span',{class:'cg-key'}, h('i',{style:'background:'+color}), label));
+
+  detail.innerHTML = '';
+  const posts = viewPosts();
+  if (!posts.length) { detail.append(h('p',{class:'hint'}, 'Pick a day with a dot to load that post.')); return; }
+  // In a week view the posts sit side by side as compact cards — the rail is too narrow to
+  // carry two captions at once, so the caption below follows whichever one is chosen.
+  const shown = posts.find(p => p.iso === CAL.view.used) || posts[0];
+  const wrap = h('div',{class:'cd-wrap' + (posts.length > 1 ? ' cd-side' : '')});
+  for (const p of posts) {
+    const b = bucketOf(p.bucket);
+    const loaded = CAL.view.kind === 'day' || CAL.view.used === p.iso;
+    wrap.append(h('button',{class:'cd-card' + (p === shown ? ' on' : ''),onclick:()=>usePost(p.iso),
+      title: loaded ? 'Reload this headline' : 'Load this post'},
+      h('span',{class:'cd-head'},
+        h('b',{}, DAY_ABBR[p.date.getDay()] + ' ' + (p.date.getMonth()+1) + '/' + p.date.getDate()),
+        h('span',{class:'cd-bucket',style:b ? 'color:'+b[2] : ''}, p.bucket || '')),
+      h('span',{class:'cd-hook'}, p.hook || '\u2014 no hook text yet \u2014'),
+      h('span',{class:'cd-use'}, loaded ? '\u2713 headline loaded' : 'Use this post')));
   }
-  const status = $('#calStatus'), list = $('#calList'), cap = $('#calPost');
-  list.innerHTML = '';
-  if (CAL.state === 'loading') { status.textContent = 'Reading the calendar…'; cap.hidden = true; return; }
-  if (CAL.state === 'offline') { status.textContent = 'Couldn’t reach the calendar. You can still type a headline yourself.'; cap.hidden = true; return; }
-  if (CAL.state === 'missing') { status.textContent = 'No tab for this month in the sheet yet. Type a headline yourself, or pick another month.'; cap.hidden = true; return; }
-  if (CAL.state !== 'ready') { status.textContent = ''; cap.hidden = true; return; }
-  status.textContent = CAL.posts.length + ' post' + (CAL.posts.length === 1 ? '' : 's') + ' · tab “' + CAL.tab + '”'
-    + (CAL.note ? ' · ' + CAL.note : '');
-  for (const p of CAL.posts) {
-    const done = !!calDone[doneKey(p)];
-    const row = h('button',{class:'cal-row','aria-pressed':String(p.iso === CAL.sel),onclick:()=>usePost(p.iso)},
-      h('span',{class:'cal-when'}, DAY_ABBR[p.date.getDay()] + ' ' + (p.date.getMonth()+1) + '/' + p.date.getDate()),
-      h('span',{class:'cal-body'},
-        h('span',{class:'cal-hook'}, p.hook || '— no hook text yet —'),
-        h('span',{class:'cal-bucket'}, p.bucket || '')),
-      h('span',{class:'cal-done',title:done ? 'A graphic has been downloaded for this post' : ''}, done ? '✓' : ''));
-    list.append(row);
+  detail.append(wrap);
+  if (shown && shown.post) {
+    detail.append(h('div',{class:'subh'}, 'Post text \u00b7 ' + DAY_ABBR[shown.date.getDay()] + ' ' + (shown.date.getMonth()+1) + '/' + shown.date.getDate(),
+      h('button',{class:'btn link',onclick:async()=>{
+        try { await navigator.clipboard.writeText(shown.post); toast('Post text copied'); }
+        catch { toast('Couldn\u2019t copy \u2014 select the text and copy it by hand'); }
+      }}, 'Copy')));
+    detail.append(h('p',{class:'cal-post'}, shown.post));
   }
-  const p = selectedPost();
-  if (p && p.post) {
-    cap.hidden = false;
-    $('#calPostText').textContent = p.post;
-  } else cap.hidden = true;
 }
+
 async function wireCalendar(){
   if (!window.BI_CLIENTS) await new Promise(r => window.addEventListener('load', r, { once:true }));
   const cfg = calCfg();
   if (!cfg) { const sec = $('#calSec'); if (sec) sec.hidden = true; return; }
-  $('#calMonth').addEventListener('change', e => {
-    const [y,m] = e.target.value.split('-').map(Number);
-    loadMonth(y, m);
-  });
-  $('#calOpen').addEventListener('click', () => window.open(cfg.url, '_blank', 'noopener'));
-  $('#calCopy').addEventListener('click', async () => {
-    const p = selectedPost(); if (!p) return;
-    try { await navigator.clipboard.writeText(p.post); toast('Post text copied'); }
-    catch { toast('Couldn’t copy — select the text and copy it by hand'); }
-  });
   loadCalDone();
-  const now = new Date();
-  $('#calMonth').value = now.getFullYear() + '-' + now.getMonth();
-  loadMonth(now.getFullYear(), now.getMonth());
+  $('#calOpen').addEventListener('click', () => window.open(cfg.url, '_blank', 'noopener'));
+  $('#calMonth').addEventListener('change', e => { CAL.cur = e.target.value; CAL.view = { kind:'week', row:0 }; const g = curGrid(); const r = g.findIndex(x => x.posts.length); CAL.view.row = r < 0 ? 0 : r; renderCalendar(); });
+  const step = (d) => { const i = CAL.months.findIndex(x => x.key === CAL.cur) + d;
+    if (i < 0 || i >= CAL.months.length) return;
+    CAL.cur = CAL.months[i].key; const g = curGrid(); const r = g.findIndex(x => x.posts.length);
+    CAL.view = { kind:'week', row: r < 0 ? 0 : r }; renderCalendar(); };
+  $('#calPrev').addEventListener('click', () => step(-1));
+  $('#calNext').addEventListener('click', () => step(1));
+  CAL.state = 'loading'; renderCalendar();
+  try {
+    CAL.months = await discoverMonths();
+    CAL.state = CAL.months.length ? 'ready' : 'empty';
+  } catch { CAL.state = 'offline'; }
+  if (CAL.state === 'ready') openDefault();
+  renderCalendar();
 }
