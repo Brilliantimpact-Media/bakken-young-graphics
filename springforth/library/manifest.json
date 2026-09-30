@@ -1,68 +1,512 @@
 {
  "images": [
   {
-   "file": "sfa-69.jpg",
-   "thumb": "sfa-69-thumb.jpg",
+   "file": "page-2026-02-25-a.jpg",
+   "thumb": "page-2026-02-25-a-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "2026-02-25"
+   ],
+   "group": "2026-02-25"
+  },
+  {
+   "file": "page-2026-03-02-a.jpg",
+   "thumb": "page-2026-03-02-a-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "2026-03-02"
+   ],
+   "group": "2026-03-02"
+  },
+  {
+   "file": "page-2026-04-09-a.jpg",
+   "thumb": "page-2026-04-09-a-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "2026-04-09"
+   ],
+   "group": "2026-04-09"
+  },
+  {
+   "file": "page-2026-04-15-a.jpg",
+   "thumb": "page-2026-04-15-a-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "2026-04-15"
+   ],
+   "group": "2026-04-15"
+  },
+  {
+   "file": "page-2026-04-23-a.jpg",
+   "thumb": "page-2026-04-23-a-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "2026-04-23"
+   ],
+   "group": "2026-04-23"
+  },
+  {
+   "file": "page-2026-04-29-a.jpg",
+   "thumb": "page-2026-04-29-a-thumb.jpg",
+   "kind": "outdoor",
+   "tags": [
+    "2026-04-29"
+   ],
+   "group": "2026-04-29"
+  },
+  {
+   "file": "page-2026-05-06-a.jpg",
+   "thumb": "page-2026-05-06-a-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "2026-05-06"
+   ],
+   "group": "2026-05-06"
+  },
+  {
+   "file": "page-2026-06-19-a.jpg",
+   "thumb": "page-2026-06-19-a-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "2026-06-19"
+   ],
+   "group": "2026-06-19"
+  },
+  {
+   "file": "page-2026-06-20-a.jpg",
+   "thumb": "page-2026-06-20-a-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "2026-06-20"
+   ],
+   "group": "2026-06-20"
+  },
+  {
+   "file": "page-2026-06-27-a.jpg",
+   "thumb": "page-2026-06-27-a-thumb.jpg",
+   "kind": "outdoor",
+   "tags": [
+    "2026-06-27"
+   ],
+   "group": "2026-06-27"
+  },
+  {
+   "file": "page-2026-07-16-a.jpg",
+   "thumb": "page-2026-07-16-a-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "2026-07-16"
+   ],
+   "group": "2026-07-16"
+  },
+  {
+   "file": "page-2026-07-21-a.jpg",
+   "thumb": "page-2026-07-21-a-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "2026-07-21"
+   ],
+   "group": "2026-07-21"
+  },
+  {
+   "file": "page-2026-07-23-a.jpg",
+   "thumb": "page-2026-07-23-a-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "2026-07-23"
+   ],
+   "group": "2026-07-23"
+  },
+  {
+   "file": "page-65-a.jpg",
+   "thumb": "page-65-a-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "65"
+   ],
+   "group": "65"
+  },
+  {
+   "file": "page-70-a.jpg",
+   "thumb": "page-70-a-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "70"
+   ],
+   "group": "70"
+  },
+  {
+   "file": "page-73-a.jpg",
+   "thumb": "page-73-a-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "73"
+   ],
+   "group": "73"
+  },
+  {
+   "file": "page-2026-02-02-b0.jpg",
+   "thumb": "page-2026-02-02-b0-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "2026-02-02"
+   ],
+   "group": "2026-02-02"
+  },
+  {
+   "file": "page-2026-02-11-b0.jpg",
+   "thumb": "page-2026-02-11-b0-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "2026-02-11"
+   ],
+   "group": "2026-02-11"
+  },
+  {
+   "file": "page-2026-02-16-b0.jpg",
+   "thumb": "page-2026-02-16-b0-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "2026-02-16"
+   ],
+   "group": "2026-02-16"
+  },
+  {
+   "file": "page-2026-02-18-b0.jpg",
+   "thumb": "page-2026-02-18-b0-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "2026-02-18"
+   ],
+   "group": "2026-02-18"
+  },
+  {
+   "file": "page-2026-02-23-b0.jpg",
+   "thumb": "page-2026-02-23-b0-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "2026-02-23"
+   ],
+   "group": "2026-02-23"
+  },
+  {
+   "file": "page-2026-03-04-1-b0.jpg",
+   "thumb": "page-2026-03-04-1-b0-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "2026-03-04-1"
+   ],
+   "group": "2026-03-04-1"
+  },
+  {
+   "file": "page-2026-03-04-1-b1.jpg",
+   "thumb": "page-2026-03-04-1-b1-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "2026-03-04-1"
+   ],
+   "group": "2026-03-04-1"
+  },
+  {
+   "file": "page-2026-03-04-2-b0.jpg",
+   "thumb": "page-2026-03-04-2-b0-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "2026-03-04-2"
+   ],
+   "group": "2026-03-04-2"
+  },
+  {
+   "file": "page-2026-03-04-2-b1.jpg",
+   "thumb": "page-2026-03-04-2-b1-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "2026-03-04-2"
+   ],
+   "group": "2026-03-04-2"
+  },
+  {
+   "file": "page-2026-03-04-3-b0.jpg",
+   "thumb": "page-2026-03-04-3-b0-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "2026-03-04-3"
+   ],
+   "group": "2026-03-04-3"
+  },
+  {
+   "file": "page-2026-03-04-3-b1.jpg",
+   "thumb": "page-2026-03-04-3-b1-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "2026-03-04-3"
+   ],
+   "group": "2026-03-04-3"
+  },
+  {
+   "file": "page-2026-03-04-4-b0.jpg",
+   "thumb": "page-2026-03-04-4-b0-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "2026-03-04-4"
+   ],
+   "group": "2026-03-04-4"
+  },
+  {
+   "file": "page-2026-03-09-b0.jpg",
+   "thumb": "page-2026-03-09-b0-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "2026-03-09"
+   ],
+   "group": "2026-03-09"
+  },
+  {
+   "file": "page-2026-03-16-b0.jpg",
+   "thumb": "page-2026-03-16-b0-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "2026-03-16"
+   ],
+   "group": "2026-03-16"
+  },
+  {
+   "file": "page-2026-03-23-b0.jpg",
+   "thumb": "page-2026-03-23-b0-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "2026-03-23"
+   ],
+   "group": "2026-03-23"
+  },
+  {
+   "file": "page-2026-03-25-b0.jpg",
+   "thumb": "page-2026-03-25-b0-thumb.jpg",
+   "kind": "outdoor",
+   "tags": [
+    "2026-03-25"
+   ],
+   "group": "2026-03-25"
+  },
+  {
+   "file": "page-2026-03-30-b0.jpg",
+   "thumb": "page-2026-03-30-b0-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "2026-03-30"
+   ],
+   "group": "2026-03-30"
+  },
+  {
+   "file": "page-2026-04-06-b0.jpg",
+   "thumb": "page-2026-04-06-b0-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "2026-04-06"
+   ],
+   "group": "2026-04-06"
+  },
+  {
+   "file": "page-2026-05-04-b0.jpg",
+   "thumb": "page-2026-05-04-b0-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "2026-05-04"
+   ],
+   "group": "2026-05-04"
+  },
+  {
+   "file": "page-2026-05-11-b0.jpg",
+   "thumb": "page-2026-05-11-b0-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "2026-05-11"
+   ],
+   "group": "2026-05-11"
+  },
+  {
+   "file": "page-2026-06-18-b0.jpg",
+   "thumb": "page-2026-06-18-b0-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "2026-06-18"
+   ],
+   "group": "2026-06-18"
+  },
+  {
+   "file": "page-2026-06-22-b0.jpg",
+   "thumb": "page-2026-06-22-b0-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "2026-06-22"
+   ],
+   "group": "2026-06-22"
+  },
+  {
+   "file": "page-2026-06-22-b1.jpg",
+   "thumb": "page-2026-06-22-b1-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "2026-06-22"
+   ],
+   "group": "2026-06-22"
+  },
+  {
+   "file": "page-2026-06-30-b0.jpg",
+   "thumb": "page-2026-06-30-b0-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "2026-06-30"
+   ],
+   "group": "2026-06-30"
+  },
+  {
+   "file": "page-2026-07-01-b0.jpg",
+   "thumb": "page-2026-07-01-b0-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "2026-07-01"
+   ],
+   "group": "2026-07-01"
+  },
+  {
+   "file": "page-2026-07-01-b1.jpg",
+   "thumb": "page-2026-07-01-b1-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "2026-07-01"
+   ],
+   "group": "2026-07-01"
+  },
+  {
+   "file": "page-2026-07-05-b0.jpg",
+   "thumb": "page-2026-07-05-b0-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "2026-07-05"
+   ],
+   "group": "2026-07-05"
+  },
+  {
+   "file": "page-2026-07-27-b0.jpg",
+   "thumb": "page-2026-07-27-b0-thumb.jpg",
+   "kind": "outdoor",
+   "tags": [
+    "2026-07-27"
+   ],
+   "group": "2026-07-27"
+  },
+  {
+   "file": "page-67-b0.jpg",
+   "thumb": "page-67-b0-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "67"
+   ],
+   "group": "67"
+  },
+  {
+   "file": "page-67-b1.jpg",
+   "thumb": "page-67-b1-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "67"
+   ],
+   "group": "67"
+  },
+  {
+   "file": "page-68-b0.jpg",
+   "thumb": "page-68-b0-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "68"
+   ],
+   "group": "68"
+  },
+  {
+   "file": "page-68-b1.jpg",
+   "thumb": "page-68-b1-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "68"
+   ],
+   "group": "68"
+  },
+  {
+   "file": "page-74-b2.jpg",
+   "thumb": "page-74-b2-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "74"
+   ],
+   "group": "74"
+  },
+  {
+   "file": "page-75-b0.jpg",
+   "thumb": "page-75-b0-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "75"
+   ],
+   "group": "75"
+  },
+  {
+   "file": "group-69.jpg",
+   "thumb": "group-69-thumb.jpg",
    "kind": "team",
    "tags": [
     "whole school",
-    "group photo",
-    "banner"
+    "group photo"
    ],
    "group": "school-photo-2026"
   },
   {
-   "file": "sfa-70.jpg",
-   "thumb": "sfa-70-thumb.jpg",
+   "file": "group-70.jpg",
+   "thumb": "group-70-thumb.jpg",
    "kind": "team",
    "tags": [
     "whole school",
-    "group photo",
-    "banner"
+    "group photo"
    ],
    "group": "school-photo-2026"
   },
   {
-   "file": "sfa-71.jpg",
-   "thumb": "sfa-71-thumb.jpg",
+   "file": "group-71.jpg",
+   "thumb": "group-71-thumb.jpg",
    "kind": "team",
    "tags": [
     "whole school",
-    "group photo",
-    "banner"
+    "group photo"
    ],
    "group": "school-photo-2026"
   },
   {
-   "file": "sfa-72.jpg",
-   "thumb": "sfa-72-thumb.jpg",
+   "file": "group-72.jpg",
+   "thumb": "group-72-thumb.jpg",
    "kind": "team",
    "tags": [
     "whole school",
-    "group photo",
-    "banner"
+    "group photo"
    ],
    "group": "school-photo-2026"
   },
   {
-   "file": "sfa-91.jpg",
-   "thumb": "sfa-91-thumb.jpg",
+   "file": "group-91.jpg",
+   "thumb": "group-91-thumb.jpg",
    "kind": "team",
    "tags": [
     "whole school",
-    "group photo",
-    "banner"
+    "group photo"
    ],
    "group": "school-photo-2026"
   },
   {
-   "file": "sfa-92.jpg",
-   "thumb": "sfa-92-thumb.jpg",
+   "file": "group-92.jpg",
+   "thumb": "group-92-thumb.jpg",
    "kind": "team",
    "tags": [
     "whole school",
-    "group photo",
-    "banner"
+    "group photo"
    ],
    "group": "school-photo-2026"
   }

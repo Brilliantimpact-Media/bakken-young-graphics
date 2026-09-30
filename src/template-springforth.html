@@ -1104,9 +1104,10 @@ function syncControls(){
 
 function renderQuickFields(){
   const box = $('#quickFields');
-  const defs = S.template === 'headline' ? [['headline','Headline','input'],['sub','Subheadline','input']]
-             : S.template === 'event' ? [['headline','Event title','input'],['sub','Details (date, time, place)','textarea']]
-             : S.template === 'review' ? [['quote','Review quote','textarea'],['attr','Attribution','input']] : [];
+  const defs = S.template === 'headline' ? [['headline','Headline','textarea'],['sub','Second line','input'],['site','Footer line','textarea']]
+             : S.template === 'note' ? [['headline','On the note','textarea'],['site','Footer line','textarea']]
+             : S.template === 'quote' ? [['quote','Parent quote','textarea'],['attr','Attribution','input']]
+             : [['headline','Headline','textarea'],['site','Footer line','textarea']];
   $('#textSec').style.display = defs.length ? '' : 'none';
   box.innerHTML = '';
   for (const [id,label,kind] of defs) {

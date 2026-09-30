@@ -38,8 +38,8 @@ h1 .mark::before{content:"";position:absolute;left:-.04em;right:-.04em;top:.28em
 .card{position:relative;display:flex;flex-direction:column;gap:14px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;box-shadow:var(--shadow);text-decoration:none;transition:transform .15s,box-shadow .15s}
 .card:hover{transform:translateY(-3px);box-shadow:0 4px 10px rgba(20,24,36,.08),0 28px 50px rgba(30,164,226,.16)}
 .card:focus-visible{outline:3px solid var(--cyan);outline-offset:3px}
-.card .swatch{height:120px;border-radius:10px;display:grid;place-items:center;color:#fff;font:600 22px/1 "Cormorant Garamond",Georgia,serif;letter-spacing:.02em;text-align:center;padding:12px}
-.card .swatch img{max-width:78%;max-height:70%;object-fit:contain;filter:drop-shadow(0 2px 6px rgba(0,0,0,.35))}
+.card .swatch{height:120px;border-radius:10px;display:grid;place-items:center;overflow:hidden;color:#fff;font:600 22px/1 "Cormorant Garamond",Georgia,serif;letter-spacing:.02em;text-align:center;padding:12px}
+.card .swatch img{max-width:78%;max-height:84px;width:auto;height:auto;object-fit:contain;filter:drop-shadow(0 2px 6px rgba(0,0,0,.35))}
 .card h2{margin:0;font:700 18px/1.2 "Exo 2",sans-serif;color:var(--ink)}
 .card p{margin:0;font-size:14px;color:var(--muted)}
 .card .go{margin-top:auto;display:inline-flex;align-items:center;gap:8px;font:700 13px/1 "Exo 2",sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--magenta)}

@@ -257,6 +257,14 @@ rep_between("// A setup link (", "// ---------- export ----------", "")
 rep("(IMG.src?.kind === 'pexels' ? ` · Photo: ${IMG.src.photographer} / Pexels` : '')",
     "(S.bg.kind === 'collage' ? ' · Collage' : S.bg.kind === 'photo' && IMG.src?.kind === 'lib' ? ` · ${IMG.src.file}` : ` · ${GROUNDS[S.bg.ground] || 'Paper'}`)")
 
+rep("""  const defs = S.template === 'headline' ? [['headline','Headline','input'],['sub','Subheadline','input']]
+             : S.template === 'event' ? [['headline','Event title','input'],['sub','Details (date, time, place)','textarea']]
+             : S.template === 'review' ? [['quote','Review quote','textarea'],['attr','Attribution','input']] : [];""",
+"""  const defs = S.template === 'headline' ? [['headline','Headline','textarea'],['sub','Second line','input'],['site','Footer line','textarea']]
+             : S.template === 'note' ? [['headline','On the note','textarea'],['site','Footer line','textarea']]
+             : S.template === 'quote' ? [['quote','Parent quote','textarea'],['attr','Attribution','input']]
+             : [['headline','Headline','textarea'],['site','Footer line','textarea']];""")
+
 # ================= inspector: logo variants, framed photo, note =================
 rep("    box.append(h('p',{class:'hint',style:'margin-bottom:8px'}, 'Bakken-Young logo'));",
     "    box.append(row('Logo', seg([['lockup','Stacked'],['mark','Shield'],['wordmark','Wide']], ()=>(el.variant||'lockup').replace('-white',''), v=>el.variant = v + (String(el.variant||'').includes('white') ? '-white' : ''))));\n"
