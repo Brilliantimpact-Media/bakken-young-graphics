@@ -879,6 +879,806 @@
     "younger"
    ],
    "group": "oct-2026-11"
+  },
+  {
+   "file": "sfa-00.jpg",
+   "thumb": "sfa-00-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "math",
+    "hands-on",
+    "younger",
+    "focus"
+   ],
+   "group": "sfa-00"
+  },
+  {
+   "file": "sfa-01.jpg",
+   "thumb": "sfa-01-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "math",
+    "hands-on",
+    "younger"
+   ],
+   "group": "sfa-01"
+  },
+  {
+   "file": "sfa-02.jpg",
+   "thumb": "sfa-02-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "real-world",
+    "hands-on",
+    "parents",
+    "guides",
+    "helping",
+    "kindness"
+   ],
+   "group": "sfa-02"
+  },
+  {
+   "file": "sfa-03.jpg",
+   "thumb": "sfa-03-thumb.jpg",
+   "kind": "event",
+   "tags": [
+    "field-trip",
+    "fun",
+    "weak"
+   ],
+   "group": "sfa-03"
+  },
+  {
+   "file": "sfa-04.jpg",
+   "thumb": "sfa-04-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "math",
+    "hands-on",
+    "younger",
+    "together",
+    "focus"
+   ],
+   "group": "sfa-04"
+  },
+  {
+   "file": "sfa-05.jpg",
+   "thumb": "sfa-05-thumb.jpg",
+   "kind": "outdoor",
+   "tags": [
+    "outdoor",
+    "nature",
+    "group",
+    "community",
+    "field-trip"
+   ],
+   "group": "sfa-05"
+  },
+  {
+   "file": "sfa-06.jpg",
+   "thumb": "sfa-06-thumb.jpg",
+   "kind": "event",
+   "tags": [
+    "field-trip",
+    "fun",
+    "older",
+    "friends"
+   ],
+   "group": "sfa-06"
+  },
+  {
+   "file": "sfa-07.jpg",
+   "thumb": "sfa-07-thumb.jpg",
+   "kind": "event",
+   "tags": [
+    "field-trip",
+    "play",
+    "movement",
+    "fun"
+   ],
+   "group": "sfa-07"
+  },
+  {
+   "file": "sfa-08.jpg",
+   "thumb": "sfa-08-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "reading",
+    "focus",
+    "younger",
+    "together"
+   ],
+   "group": "sfa-08"
+  },
+  {
+   "file": "sfa-09.jpg",
+   "thumb": "sfa-09-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "hands-on",
+    "real-world",
+    "focus",
+    "older"
+   ],
+   "group": "sfa-09"
+  },
+  {
+   "file": "sfa-10.jpg",
+   "thumb": "sfa-10-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "schoolwork",
+    "focus",
+    "older",
+    "hands-on"
+   ],
+   "group": "sfa-10"
+  },
+  {
+   "file": "sfa-11.jpg",
+   "thumb": "sfa-11-thumb.jpg",
+   "kind": "outdoor",
+   "tags": [
+    "outdoor",
+    "field-trip",
+    "friends",
+    "fun"
+   ],
+   "group": "sfa-11"
+  },
+  {
+   "file": "sfa-12.jpg",
+   "thumb": "sfa-12-thumb.jpg",
+   "kind": "event",
+   "tags": [
+    "field-trip",
+    "play",
+    "movement",
+    "fun"
+   ],
+   "group": "sfa-12"
+  },
+  {
+   "file": "sfa-13.jpg",
+   "thumb": "sfa-13-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "hands-on",
+    "games",
+    "younger",
+    "together"
+   ],
+   "group": "sfa-13"
+  },
+  {
+   "file": "sfa-15.jpg",
+   "thumb": "sfa-15-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "art",
+    "creative",
+    "hands-on",
+    "proud",
+    "smiling"
+   ],
+   "group": "sfa-15"
+  },
+  {
+   "file": "sfa-16.jpg",
+   "thumb": "sfa-16-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "play",
+    "movement",
+    "younger",
+    "fun"
+   ],
+   "group": "sfa-16"
+  },
+  {
+   "file": "sfa-17.jpg",
+   "thumb": "sfa-17-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "writing",
+    "schoolwork",
+    "focus",
+    "younger"
+   ],
+   "group": "sfa-17"
+  },
+  {
+   "file": "sfa-18.jpg",
+   "thumb": "sfa-18-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "writing",
+    "art",
+    "schoolwork",
+    "together",
+    "younger"
+   ],
+   "group": "sfa-18"
+  },
+  {
+   "file": "sfa-19.jpg",
+   "thumb": "sfa-19-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "writing",
+    "schoolwork",
+    "focus",
+    "younger"
+   ],
+   "group": "sfa-19"
+  },
+  {
+   "file": "sfa-20.jpg",
+   "thumb": "sfa-20-thumb.jpg",
+   "kind": "outdoor",
+   "tags": [
+    "outdoor",
+    "nature",
+    "field-trip",
+    "science",
+    "real-world"
+   ],
+   "group": "sfa-20"
+  },
+  {
+   "file": "sfa-21.jpg",
+   "thumb": "sfa-21-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "friends",
+    "together",
+    "community",
+    "smiling",
+    "older",
+    "celebration"
+   ],
+   "group": "sfa-21"
+  },
+  {
+   "file": "sfa-24.jpg",
+   "thumb": "sfa-24-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "building",
+    "project",
+    "teamwork",
+    "hands-on",
+    "older"
+   ],
+   "group": "sfa-24"
+  },
+  {
+   "file": "sfa-26.jpg",
+   "thumb": "sfa-26-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "art",
+    "creative",
+    "hands-on",
+    "together"
+   ],
+   "group": "sfa-26"
+  },
+  {
+   "file": "sfa-27.jpg",
+   "thumb": "sfa-27-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "games",
+    "focus",
+    "thinking",
+    "science",
+    "younger"
+   ],
+   "group": "sfa-27"
+  },
+  {
+   "file": "sfa-28.jpg",
+   "thumb": "sfa-28-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "reading",
+    "discussion",
+    "guides",
+    "younger",
+    "together"
+   ],
+   "group": "sfa-28"
+  },
+  {
+   "file": "sfa-29.jpg",
+   "thumb": "sfa-29-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "art",
+    "creative",
+    "hands-on",
+    "focus"
+   ],
+   "group": "sfa-29"
+  },
+  {
+   "file": "sfa-30.jpg",
+   "thumb": "sfa-30-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "exhibition",
+    "project",
+    "proud",
+    "art",
+    "presenting"
+   ],
+   "group": "sfa-30"
+  },
+  {
+   "file": "sfa-32.jpg",
+   "thumb": "sfa-32-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "art",
+    "creative",
+    "focus"
+   ],
+   "group": "sfa-32"
+  },
+  {
+   "file": "sfa-33.jpg",
+   "thumb": "sfa-33-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "art",
+    "creative",
+    "focus",
+    "older"
+   ],
+   "group": "sfa-33"
+  },
+  {
+   "file": "sfa-34.jpg",
+   "thumb": "sfa-34-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "exhibition",
+    "project",
+    "proud",
+    "presenting",
+    "guides"
+   ],
+   "group": "sfa-34"
+  },
+  {
+   "file": "sfa-35.jpg",
+   "thumb": "sfa-35-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "math",
+    "schoolwork",
+    "focus",
+    "younger"
+   ],
+   "group": "sfa-35"
+  },
+  {
+   "file": "sfa-36.jpg",
+   "thumb": "sfa-36-thumb.jpg",
+   "kind": "outdoor",
+   "tags": [
+    "outdoor",
+    "nature",
+    "play",
+    "science",
+    "younger"
+   ],
+   "group": "sfa-36"
+  },
+  {
+   "file": "sfa-37.jpg",
+   "thumb": "sfa-37-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "science",
+    "experiment",
+    "hands-on",
+    "cook",
+    "real-world"
+   ],
+   "group": "sfa-37"
+  },
+  {
+   "file": "sfa-38.jpg",
+   "thumb": "sfa-38-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "discussion",
+    "weak"
+   ],
+   "group": "sfa-38"
+  },
+  {
+   "file": "sfa-39.jpg",
+   "thumb": "sfa-39-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "play",
+    "movement",
+    "group"
+   ],
+   "group": "sfa-39"
+  },
+  {
+   "file": "sfa-40.jpg",
+   "thumb": "sfa-40-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "cook",
+    "real-world",
+    "hands-on",
+    "science",
+    "smiling"
+   ],
+   "group": "sfa-40"
+  },
+  {
+   "file": "sfa-41.jpg",
+   "thumb": "sfa-41-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "science",
+    "experiment",
+    "building",
+    "project",
+    "older"
+   ],
+   "group": "sfa-41"
+  },
+  {
+   "file": "sfa-42.jpg",
+   "thumb": "sfa-42-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "schoolwork",
+    "writing",
+    "focus",
+    "older"
+   ],
+   "group": "sfa-42"
+  },
+  {
+   "file": "sfa-43.jpg",
+   "thumb": "sfa-43-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "schoolwork",
+    "together",
+    "discussion",
+    "younger",
+    "focus"
+   ],
+   "group": "sfa-43"
+  },
+  {
+   "file": "sfa-44.jpg",
+   "thumb": "sfa-44-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "presenting",
+    "discussion",
+    "leadership",
+    "older"
+   ],
+   "group": "sfa-44"
+  },
+  {
+   "file": "sfa-45.jpg",
+   "thumb": "sfa-45-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "writing",
+    "schoolwork",
+    "math",
+    "focus",
+    "younger"
+   ],
+   "group": "sfa-45"
+  },
+  {
+   "file": "sfa-46.jpg",
+   "thumb": "sfa-46-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "reading",
+    "focus",
+    "younger"
+   ],
+   "group": "sfa-46"
+  },
+  {
+   "file": "sfa-47.jpg",
+   "thumb": "sfa-47-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "reading",
+    "younger",
+    "together"
+   ],
+   "group": "sfa-47"
+  },
+  {
+   "file": "sfa-48.jpg",
+   "thumb": "sfa-48-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "math",
+    "schoolwork",
+    "focus",
+    "younger",
+    "hands-on"
+   ],
+   "group": "sfa-48"
+  },
+  {
+   "file": "sfa-49.jpg",
+   "thumb": "sfa-49-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "parents",
+    "guides",
+    "community"
+   ],
+   "group": "sfa-49"
+  },
+  {
+   "file": "sfa-50.jpg",
+   "thumb": "sfa-50-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "parents",
+    "exhibition",
+    "community",
+    "weak"
+   ],
+   "group": "sfa-50"
+  },
+  {
+   "file": "sfa-52.jpg",
+   "thumb": "sfa-52-thumb.jpg",
+   "kind": "event",
+   "tags": [
+    "field-trip",
+    "play",
+    "fun"
+   ],
+   "group": "sfa-52"
+  },
+  {
+   "file": "sfa-54.jpg",
+   "thumb": "sfa-54-thumb.jpg",
+   "kind": "outdoor",
+   "tags": [
+    "outdoor",
+    "guides",
+    "real-world",
+    "teamwork"
+   ],
+   "group": "sfa-54"
+  },
+  {
+   "file": "sfa-55.jpg",
+   "thumb": "sfa-55-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "schoolwork",
+    "writing",
+    "focus",
+    "older"
+   ],
+   "group": "sfa-55"
+  },
+  {
+   "file": "sfa-56.jpg",
+   "thumb": "sfa-56-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "reading",
+    "together",
+    "younger"
+   ],
+   "group": "sfa-56"
+  },
+  {
+   "file": "sfa-58.jpg",
+   "thumb": "sfa-58-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "play",
+    "movement",
+    "group",
+    "weak"
+   ],
+   "group": "sfa-58"
+  },
+  {
+   "file": "sfa-59.jpg",
+   "thumb": "sfa-59-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "schoolwork",
+    "writing",
+    "focus",
+    "younger"
+   ],
+   "group": "sfa-59"
+  },
+  {
+   "file": "sfa-60.jpg",
+   "thumb": "sfa-60-thumb.jpg",
+   "kind": "outdoor",
+   "tags": [
+    "outdoor",
+    "building",
+    "project",
+    "nature"
+   ],
+   "group": "sfa-60"
+  },
+  {
+   "file": "sfa-61.jpg",
+   "thumb": "sfa-61-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "discussion",
+    "leadership",
+    "younger",
+    "presenting"
+   ],
+   "group": "sfa-61"
+  },
+  {
+   "file": "sfa-63.jpg",
+   "thumb": "sfa-63-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "play",
+    "movement",
+    "weak"
+   ],
+   "group": "sfa-63"
+  },
+  {
+   "file": "sfa-64.jpg",
+   "thumb": "sfa-64-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "schoolwork",
+    "writing",
+    "focus",
+    "older"
+   ],
+   "group": "sfa-64"
+  },
+  {
+   "file": "sfa-66.jpg",
+   "thumb": "sfa-66-thumb.jpg",
+   "kind": "event",
+   "tags": [
+    "field-trip",
+    "fun",
+    "friends",
+    "younger"
+   ],
+   "group": "sfa-66"
+  },
+  {
+   "file": "sfa-67.jpg",
+   "thumb": "sfa-67-thumb.jpg",
+   "kind": "event",
+   "tags": [
+    "field-trip",
+    "play",
+    "fun",
+    "younger"
+   ],
+   "group": "sfa-67"
+  },
+  {
+   "file": "sfa-68.jpg",
+   "thumb": "sfa-68-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "schoolwork",
+    "math",
+    "focus",
+    "younger"
+   ],
+   "group": "sfa-68"
+  },
+  {
+   "file": "sfa-69.jpg",
+   "thumb": "sfa-69-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "play",
+    "movement",
+    "weak"
+   ],
+   "group": "sfa-69"
+  },
+  {
+   "file": "sfa-70.jpg",
+   "thumb": "sfa-70-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "play",
+    "movement",
+    "group",
+    "weak"
+   ],
+   "group": "sfa-70"
+  },
+  {
+   "file": "sfa-71.jpg",
+   "thumb": "sfa-71-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "writing",
+    "reading",
+    "schoolwork",
+    "younger",
+    "hands-on"
+   ],
+   "group": "sfa-71"
+  },
+  {
+   "file": "sfa-73.jpg",
+   "thumb": "sfa-73-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "schoolwork",
+    "focus",
+    "younger"
+   ],
+   "group": "sfa-73"
+  },
+  {
+   "file": "sfa-74.jpg",
+   "thumb": "sfa-74-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "schoolwork",
+    "focus",
+    "older",
+    "hands-on"
+   ],
+   "group": "sfa-74"
+  },
+  {
+   "file": "sfa-75.jpg",
+   "thumb": "sfa-75-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "discussion",
+    "together",
+    "younger"
+   ],
+   "group": "sfa-75"
+  },
+  {
+   "file": "sfa-65.jpg",
+   "thumb": "sfa-65-thumb.jpg",
+   "kind": "outdoor",
+   "tags": [
+    "outdoor",
+    "nature",
+    "building",
+    "project",
+    "teamwork"
+   ],
+   "group": "2026-07-21"
   }
  ]
 }
