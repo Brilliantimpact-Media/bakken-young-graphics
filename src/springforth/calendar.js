@@ -87,12 +87,16 @@ function readTab(text, cfg, y, m){
   const ci = { week:at('WEEK','week'), day:at('DAY','day'), date:at('DATE','date'),
                bucket:at('BUCKET','bucket'), hook:at('HOOK TEXT','hook'), post:at('POST','post') };
   const cell = (r, i) => (i >= 0 && i < r.length ? r[i].trim() : '');
+  // An "x" in HOOK TEXT means this post's graphic carries no headline at all — photo only.
+  // An empty cell just means nobody has written one yet, so the phrase bank suggests one.
+  const markOf = r => /^[x\u2713\u2714]$/i.test(cell(r, ci.hook));
+  const hookOf = r => { const t = cell(r, ci.hook); return markOf(r) || /^[-\u2013\u2014.]$/.test(t) ? '' : t; };
   const posts = [];
   for (const r of rows.slice(hdr+1)) {
     const d = parseDate(cell(r, ci.date));
     if (!d) continue;
     posts.push({ date:d, iso:isoDate(d), week:parseInt(cell(r, ci.week), 10) || null, day:cell(r, ci.day),
-                 bucket:cell(r, ci.bucket), hook:cell(r, ci.hook), post:cell(r, ci.post) });
+                 bucket:cell(r, ci.bucket), hook:hookOf(r), noHead:markOf(r), post:cell(r, ci.post) });
   }
   if (!posts.length) return null;
   // gviz answers a missing tab with the first sheet, so the dates decide whether this really
@@ -213,6 +217,7 @@ function seededPick(list, seed){
   return list[x % list.length];
 }
 function headlineFor(p){
+  if (p.noHead) return '';
   if (p.hook) return p.hook;
   const topic = topicForBucket(p.bucket) || detectTopic(captionBody(p.post)) || 'values';
   const heads = (BANK[topic] && BANK[topic].heads) || BANK.values.heads;
@@ -224,6 +229,14 @@ function headlineFor(p){
 function usePost(iso){
   const m = curMonth(); if (!m) return;
   const p = m.posts.find(x => x.iso === iso); if (!p) return;
+  if (p.noHead) {
+    // nothing to write on the page: leave the canvas alone and point at the photo-only options
+    if (CAL.view && CAL.view.kind === 'week' && curGrid()[CAL.view.row]?.iso.includes(iso)) CAL.view.used = iso;
+    else CAL.view = { kind:'day', iso };
+    renderCalendar();
+    toast('No headline for this post (x in the sheet) \u2014 press Generate from calendar for photo-only options');
+    return;
+  }
   // staying inside the open week just moves the choice along it; anything else is a day view
   const row = CAL.view && CAL.view.kind === 'week' ? curGrid()[CAL.view.row] : null;
   if (row && row.iso.includes(iso)) CAL.view.used = iso;
@@ -272,6 +285,7 @@ function openDefault(){
 
 // ---------- panel ----------
 function renderCalendar(){
+  updateCalGen();
   const sec = $('#calSec'); if (!sec) return;
   if (!calCfg()) { sec.hidden = true; return; }
   sec.hidden = false;
@@ -288,10 +302,11 @@ function renderCalendar(){
   $('#calNext').disabled = i < 0 || i >= CAL.months.length-1;
 
   const month = curMonth();
-  const blank = month.posts.filter(p => !p.hook).length;
+  const photoOnly = month.posts.filter(p => p.noHead).length;
+  const blank = month.posts.filter(p => !p.hook && !p.noHead).length;
   status.textContent = month.posts.length + ' post' + (month.posts.length === 1 ? '' : 's') + ' · tab “' + month.tab + '”'
-    + (blank === month.posts.length ? ' · no hook text yet, headlines come from the phrase bank'
-       : blank ? ' · ' + blank + ' with no hook text yet' : '');
+    + (photoOnly ? ' · ' + photoOnly + ' photo only (x)' : '')
+    + (blank ? ' · ' + blank + ' with no hook text yet' : '');
 
   grid.innerHTML = '';
   grid.append(h('div',{class:'cg-corner'}, ''));
@@ -313,7 +328,7 @@ function renderCalendar(){
       const on = CAL.view && ((CAL.view.kind === 'day' && CAL.view.iso === iso) ||
                               (CAL.view.kind === 'week' && CAL.view.row === r && p));
       const cell = h('button',{class:cls.join(' '),'aria-pressed':String(!!on),disabled:!p,
-        title:p ? (p.bucket || 'Post') + ' — ' + (p.hook || 'no hook text yet') : '',
+        title:p ? (p.bucket || 'Post') + ' — ' + (p.noHead ? 'photo only, no headline' : p.hook || 'no hook text yet') : '',
         onclick:()=>{ if (p) usePost(iso); }},
         h('span',{class:'cg-num'}, String(d.getDate())));
       if (p) cell.append(isDone(p)
@@ -342,10 +357,12 @@ function renderCalendar(){
       h('span',{class:'cd-head'},
         h('b',{}, DAY_ABBR[p.date.getDay()] + ' ' + (p.date.getMonth()+1) + '/' + p.date.getDate()),
         h('span',{class:'cd-bucket',style:b ? 'color:'+b[2] : ''}, p.bucket || '')),
-      h('span',{class:'cd-hook'}, p.hook || '\u2014 no hook text yet \u2014'),
-      h('span',{class:'cd-use'}, loaded ? '\u2713 headline loaded' : 'Use this post')));
+      h('span',{class:'cd-hook'}, p.noHead ? 'Photo only \u2014 no headline' : p.hook || '\u2014 no hook text yet \u2014'),
+      h('span',{class:'cd-use'}, p.noHead ? 'Photo only' : loaded ? '\u2713 headline loaded' : 'Use this post')));
   }
   detail.append(wrap);
+  detail.append(h('button',{class:'btn gen sm cd-gen',onclick:generateFromPost,
+    title:'Three graphics matched to this post\u2019s caption and bucket'}, '\u{1F4C5} Generate options for this post'));
   if (shown && shown.post) {
     detail.append(h('div',{class:'subh'}, 'Post text \u00b7 ' + DAY_ABBR[shown.date.getDay()] + ' ' + (shown.date.getMonth()+1) + '/' + shown.date.getDate(),
       h('button',{class:'btn link',onclick:async()=>{

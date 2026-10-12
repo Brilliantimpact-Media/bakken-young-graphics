@@ -194,6 +194,13 @@ rep(".tile svg{width:38px;height:38px;display:block}",
     ".cd-head{display:flex;justify-content:space-between;gap:6px;align-items:baseline;font-size:11px;flex-wrap:wrap}\n"
     ".cd-bucket{font-size:9px;text-transform:uppercase;letter-spacing:.04em;opacity:.85;text-align:right}\n"
     ".cd-hook{font-size:12px;line-height:1.35}\n"
+    ".cd-gen{width:100%;margin-top:8px}\n"
+    ".opts-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}\n"
+    ".opt{font:inherit;color:inherit;border:1px solid var(--line);border-radius:8px;background:var(--panel-2);padding:5px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;min-width:0}\n"
+    ".opt:hover{border-color:var(--accent)}\n"
+    ".opt[aria-pressed=\"true\"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent);background:var(--accent-soft)}\n"
+    ".opt img{width:100%;height:auto;max-height:180px;object-fit:contain;display:block;border-radius:4px}\n"
+    ".opt span{font-size:11px;opacity:.8}\n"
     ".cal-post{white-space:pre-wrap;font-size:11px;line-height:1.45;max-height:132px;overflow:auto;background:var(--panel-2);border:1px solid var(--line);border-radius:8px;padding:8px;margin:0}")
 rep(".tile{border:1px solid var(--line-strong);border-radius:8px;background:var(--panel-2);padding:8px 6px;",
     ".tile{border:1px solid var(--line-strong);border-radius:8px;background:var(--panel-2);padding:7px 4px;")
@@ -262,6 +269,19 @@ s = s[:i] + """    <div class="sec">
 
 """ + s[j:]
 rep('<button class="btn sm" id="shufPhoto" title="Keep the layout, try a different photo">Shuffle photo</button>', '<button class="btn sm" id="shufPhoto" title="Keep the text, try a different background">Shuffle background</button>')
+rep('<button class="btn sm gen" id="genBtn" title="Build a complete graphic from your text with a random photo, look and layout">✨ Generate</button>',
+    '<button class="btn sm gen" id="calGen" disabled title="Pick a post in the calendar first">📅 Generate from calendar</button>\n'
+    '      <button class="btn sm" id="genBtn" title="Build a graphic from your own text with a random photo, look and layout — not tied to the calendar">✨ Random</button>')
+# the three calendar options sit at the top of the right rail, in view beside the canvas
+rep('''  <aside class="panel" id="right">
+    <div class="sec">''',
+    '''  <aside class="panel" id="right">
+    <div class="sec opts" id="opts" hidden>
+      <h2>Options for this post <button class="btn link" id="optsClose" title="Hide the options">Close</button></h2>
+      <div class="opts-row" id="optsRow"></div>
+      <button class="btn sm" id="optsMore" style="width:100%;margin-top:8px" title="Three more, with the next-best photos">More options</button>
+    </div>
+    <div class="sec">''')
 rep('<button class="btn sm" id="addText">+ Add text</button>',
     '<button class="btn sm" id="collageQuick" title="Generate a photo collage">⊞ Collage</button>\n      <button class="btn sm" id="addText">+ Add text</button>')
 rep('<h2>Photo adjustments <button class="btn link" id="autoBtn" title="Set Darken and Fade based on how bright the photo is behind the logo and text">Auto-adjust</button></h2>',
@@ -287,7 +307,7 @@ rep('.welcome-card h2{margin:0 0 10px;font:600 40px/1.05 "Cormorant Garamond",Ge
     '.welcome-card h2{margin:0 0 10px;font:400 42px/1.05 "Chewy",cursive;color:var(--ink)}')
 s = s.replace("rgba(25,68,31,.55)", "rgba(3,162,198,.55)").replace("rgba(25,68,31,0)", "rgba(3,162,198,0)")
 rep("['#tiles','#results','#drafts','#genBtn','#shufPhoto','#shufLook','#addText','#bgBtn','#importBtn','#looks']",
-    "['#tiles','#results','#drafts','#genBtn','#shufPhoto','#shufLook','#addText','#bgBtn','#importBtn','#looks','#artChips','#stickerRow','#collageBtn','#collageQuick']")
+    "['#tiles','#results','#drafts','#genBtn','#calGen','#shufPhoto','#shufLook','#addText','#bgBtn','#importBtn','#looks','#artChips','#stickerRow','#collageBtn','#collageQuick']")
 
 # ================= controls / sync =================
 rep("$('#textPos').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; pushUndo(); S.textPos = b.dataset.v; templateDefaults(); layout(); syncControls(); renderInspector(); render(); persist(); });",
@@ -450,7 +470,7 @@ rep("    saveBlob(blob, filename()); markUsed(); if (tab !== 'search') renderRes
     "    saveBlob(blob, filename()); markUsed(); markPostDone(selectedPost()); renderResults();")
 
 # ================= social calendar =================
-rep("// ---------- misc ----------", blk('calendar.js') + "\n// ---------- misc ----------")
+rep("// ---------- misc ----------", blk('calendar.js') + "\n" + blk('context.js') + "\n// ---------- misc ----------")
 
 # ================= fonts / boot =================
 rep("  try { await Promise.all(['italic 600 40px','600 40px','700 40px','500 40px','400 40px','italic 500 40px','italic 700 40px'].map(f => document.fonts.load(`${f} \"Cormorant Garamond\"`))); } catch {}",

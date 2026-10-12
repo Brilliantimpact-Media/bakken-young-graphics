@@ -149,11 +149,12 @@ function renderGroundChips(){
   box.append(h('button',{class:'btn sm',title:'Same paper, a fresh crumple',onclick:()=>setGround(S.bg.ground, true)}, '↻ Variation'));
 }
 // Collage: 3–4 library photos, framed and tilted, never two crops of the same shot.
-async function makeCollage(kind){
+// `chosen` (already ranked for a calendar post) is used in order instead of a random draw.
+async function makeCollage(kind, chosen){
   const pool0 = LIB.filter(p => !kind || kind === 'all' || p.kind === kind);
-  const pool = pool0.length >= 3 ? pool0 : LIB;
+  const pool = chosen || (pool0.length >= 3 ? pool0 : LIB);
   if (pool.length < 3) { toast('Need at least 3 library photos for a collage'); return false; }
-  const shuffled = pool.slice().sort(() => Math.random() - 0.5);
+  const shuffled = chosen ? chosen.slice() : pool.slice().sort(() => Math.random() - 0.5);
   const seen = new Set(), picked = [];
   for (const p of shuffled) { if (seen.has(p.group)) continue; seen.add(p.group); picked.push(p); if (picked.length === 4) break; }
   if (picked.length < 3) { toast('Need at least 3 different library photos for a collage'); return false; }
