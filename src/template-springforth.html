@@ -565,6 +565,19 @@ function layout(){
     const hl = byId('headline')?.text ?? '';
     if (hl) els.push(text('headline', hl, { x:m, y:head, w:w-m*2, size:60*u, align:'center', lh:1.2, color:DEEP, shadow:false }));
   }
+  // Collage photos are framed-photo elements, one per cell, so each can be dragged, resized,
+  // zoomed and moved inside its frame. One already on the page keeps where it was put.
+  const cellEls = [];
+  if (S.template === 'collage' && S.bg.kind === 'collage' && S.bg.cells) {
+    const boxes = collageCells(S.bg.grid || '2x2', w, h);
+    S.bg.cells.forEach((c, i) => {
+      const r = boxes[i]; if (!r || c.off) return;
+      const had = (S.els || []).find(e => e.cell === i);
+      if (had) { had.src = c.url; had.libId = c.id; cellEls.push(had); return; }
+      cellEls.push({ id:'cell-' + i, type:'image', cell:i, src:c.url, libId:c.id, x:r[0], y:r[1], w:r[2], h:r[3],
+                     style:c.style || 'tape', rot:c.rot || 0, seed:c.seed, zoom:1, px:0, py:0 });
+    });
+  }
   else if (S.template === 'logo') {
     // the frame's own lockup is the whole point of this one — nothing else goes on the page
   }
@@ -586,6 +599,7 @@ function layout(){
   const notes = els.filter(e => e.type === 'note');           // notes render behind their own text
   for (const n of notes) { const i = els.indexOf(n); els.splice(i,1); els.unshift(n); }
   const p = els.findIndex(e => e.id === 'photo'); if (p > 0) els.unshift(els.splice(p,1)[0]);
+  els.unshift(...cellEls);                                    // collage photos sit under the writing
   els.unshift(...frame);                                      // the frame sits under the content
   els.push(...stickers);                                      // stickers are placed by hand, and stay put
   S.els = els;
@@ -649,7 +663,7 @@ function bbox(ctx, el){
     return { x:el.x, y:el.y, w:el.w, h:Math.max(1, lines.length) * el.size * el.lh };
   }
   if (el.type === 'logo') return { x:el.x, y:el.y, w:el.w, h:el.w*logoAspect(el) };
-  if (el.type === 'image') return { x:el.x, y:el.y, w:el.w, h:el.w*imageAspect(el) };
+  if (el.type === 'image') return { x:el.x, y:el.y, w:el.w, h:imageH(el) };
   if (el.type === 'sticker') return { x:el.x, y:el.y, w:el.w, h:el.w*stickerAspect(el) };
   if (el.type === 'wave') return { x:el.x, y:el.y, w:el.w, h:el.w*waveAspect(el) };
   return { x:el.x, y:el.y, w:el.w, h:el.h };
@@ -825,11 +839,19 @@ function drawNote(ctx, el){
   }
   ctx.restore();
 }
-function drawCover(ctx, img, x, y, cw, ch){
-  const iw = img.naturalWidth, ih = img.naturalHeight, s = Math.max(cw/iw, ch/ih), dw = iw*s, dh = ih*s;
-  ctx.save(); ctx.beginPath(); ctx.rect(x, y, cw, ch); ctx.clip(); ctx.drawImage(img, x + (cw-dw)/2, y + (ch-dh)/2, dw, dh); ctx.restore();
+// crop: { zoom, px, py } — how far the photo is zoomed inside its frame and nudged off centre
+function coverFit(img, cw, ch, zoom){
+  const iw = img.naturalWidth, ih = img.naturalHeight, s = Math.max(cw/iw, ch/ih) * Math.max(1, zoom || 1);
+  const dw = iw*s, dh = ih*s;
+  return { dw, dh, mx:(dw-cw)/2, my:(dh-ch)/2 };
 }
-function drawFramedPhoto(ctx, img, x, y, cw, ch, style, rot, seed){
+function drawCover(ctx, img, x, y, cw, ch, crop){
+  const f = coverFit(img, cw, ch, crop && crop.zoom);
+  const ox = Math.max(-f.mx, Math.min(f.mx, (crop && crop.px) || 0));
+  const oy = Math.max(-f.my, Math.min(f.my, (crop && crop.py) || 0));
+  ctx.save(); ctx.beginPath(); ctx.rect(x, y, cw, ch); ctx.clip(); ctx.drawImage(img, x + (cw-f.dw)/2 + ox, y + (ch-f.dh)/2 + oy, f.dw, f.dh); ctx.restore();
+}
+function drawFramedPhoto(ctx, img, x, y, cw, ch, style, rot, seed, crop){
   let s = (Math.abs(seed||3)*9301+49297) % 233280 || 5; const rnd = () => (s = (s*9301+49297) % 233280) / 233280;
   ctx.save();
   ctx.translate(x + cw/2, y + ch/2); ctx.rotate(rot || 0); ctx.translate(-cw/2, -ch/2);
@@ -838,18 +860,23 @@ function drawFramedPhoto(ctx, img, x, y, cw, ch, style, rot, seed){
   ctx.shadowColor = 'rgba(40,40,40,0.30)'; ctx.shadowBlur = cw*0.045; ctx.shadowOffsetY = cw*0.011;
   ctx.fillStyle = '#ffffff'; ctx.fillRect(-pad, -pad, cw + pad*2, ch + pad + bottom);
   ctx.shadowColor = 'transparent';
-  drawCover(ctx, img, 0, 0, cw, ch);
+  drawCover(ctx, img, 0, 0, cw, ch, crop);
   if (style === 'tape') {
     drawTape(ctx, 0, 0, cw*0.28, -0.62 + rnd()*0.16, TAPE_FILLS[3]);
     drawTape(ctx, cw, ch, cw*0.28, -0.62 + rnd()*0.16, TAPE_FILLS[3]);
   }
   ctx.restore();
 }
+// A framed photo is its own shape (el.h) when it came from a collage cell, otherwise the
+// photo's own proportions. Either way it can be zoomed and moved inside the frame.
+function imageH(el){ return el.h || el.w * imageAspect(el); }
 function drawImageEl(ctx, el){
   const im = IMG.lib[el.src]; if (!im) return;
-  drawFramedPhoto(ctx, im, el.x, el.y, el.w, el.w * (im.naturalHeight/im.naturalWidth), el.style || 'tape', el.rot || 0, el.seed);
+  drawFramedPhoto(ctx, im, el.x, el.y, el.w, imageH(el), el.style || 'tape', el.rot || 0, el.seed,
+    { zoom:el.zoom || 1, px:el.px || 0, py:el.py || 0 });
 }
 function imageAspect(el){ const im = IMG.lib[el.src]; return im ? im.naturalHeight/im.naturalWidth : 0.75; }
+function cropRoom(el){ const im = IMG.lib[el.src]; return im ? coverFit(im, el.w, imageH(el), el.zoom) : { mx:0, my:0 }; }
 
 // ---------- collage + background compositing ----------
 function collageCells(grid, w, h){
@@ -872,6 +899,9 @@ function drawPhoto(ctx, w, h, bg){
   if (bg.kind === 'collage' && bg.cells && bg.cells.length) {
     const cells = collageCells(bg.grid || '2x2', w, h);
     bg.cells.forEach((c, i) => {
+      // collage photos are page elements now (movable, zoomable); this only covers a state
+      // that hasn't been laid out yet
+      if (c.off || (S.els || []).some(e => e.cell === i)) return;
       const im = IMG.lib[c.url], r = cells[i]; if (!r) return;
       if (im) drawFramedPhoto(ctx, im, r[0], r[1], r[2], r[3], c.style || 'tape', c.rot || 0, c.seed);
     });
@@ -1063,7 +1093,10 @@ cv.addEventListener('pointerdown', e => {
     if (el) {
       S.sel = el.id;
       const kids = (el.kids||[]).map(byId).filter(Boolean);
-      drag = { kind:'move', el, sx:x, sy:y, ox:el.x, oy:el.y, kids:kids.map(k => ({k, x:k.x, y:k.y})) };
+      // a framed photo in "move photo in frame" mode (or Alt/Option-drag) pans inside its frame
+      if (el.type === 'image' && (e.altKey || cropMode === el.id)) drag = { kind:'crop', el, sx:x, sy:y, px:el.px || 0, py:el.py || 0 };
+      else { if (cropMode && cropMode !== el.id) cropMode = null;
+        drag = { kind:'move', el, sx:x, sy:y, ox:el.x, oy:el.y, kids:kids.map(k => ({k, x:k.x, y:k.y})) }; }
     } else {
       S.sel = null;
       drag = { kind:'pan', sx:x, sy:y, ox:S.bg.ox, oy:S.bg.oy };
@@ -1080,6 +1113,10 @@ cv.addEventListener('pointermove', e => {
     const dx = x-drag.sx, dy = y-drag.sy;
     drag.el.x = drag.ox+dx; drag.el.y = drag.oy+dy;
     for (const c of drag.kids) { c.k.x = c.x+dx; c.k.y = c.y+dy; }
+  } else if (drag.kind === 'crop') {
+    const r = cropRoom(drag.el);
+    drag.el.px = Math.max(-r.mx, Math.min(r.mx, drag.px + (x-drag.sx)));
+    drag.el.py = Math.max(-r.my, Math.min(r.my, drag.py + (y-drag.sy)));
   } else if (drag.kind === 'pan') {
     S.bg.ox = drag.ox + (x-drag.sx); S.bg.oy = drag.oy + (y-drag.sy);
   } else if (drag.kind === 'scale') {
@@ -1090,7 +1127,8 @@ cv.addEventListener('pointermove', e => {
     el.x = ax <= b0.x+1 ? ax : ax-nw;
     el.y = ay <= b0.y+1 ? ay : ay-nh;
     if (el.type === 'text') { el.w = drag.w0*f; el.size = Math.max(8, drag.size0*f); }
-    else if (el.type === 'logo' || el.type === 'image' || el.type === 'sticker' || el.type === 'wave') el.w = drag.w0*f;
+    else if (el.type === 'image') { el.w = drag.w0*f; if (el.h) el.h = drag.h0*f; }
+    else if (el.type === 'logo' || el.type === 'sticker' || el.type === 'wave') el.w = drag.w0*f;
     else { el.w = drag.w0*f; el.h = drag.h0*f; }
   }
   render();
@@ -1243,6 +1281,8 @@ function h(tag, attrs, ...kids){
 function removeSel(){
   if (!S.sel) return; pushUndo();
   const el = byId(S.sel);
+  // a deleted collage photo stays deleted, rather than being rebuilt by the next layout
+  if (el && el.cell != null && S.bg.cells && S.bg.cells[el.cell]) S.bg.cells[el.cell].off = true;
   // a deleted frame piece has to come out of S.wave too, or the next layout rebuilds it
   if (el && el.type === 'wave') {
     const w = S.wave || 'bottom';
@@ -1256,7 +1296,9 @@ function removeSel(){
 function renderInspector(){
   const box = $('#inspector'); box.innerHTML = '';
   const el = S.sel && byId(S.sel);
-  if (!el) { box.append(h('p',{class:'hint'},'Nothing selected. Click a piece of the graphic to adjust it.')); return; }
+  if (!el) { box.append(h('p',{class:'hint'},'Nothing selected. Click a piece of the graphic to adjust it.'));
+    if (S.bg.kind === 'photo') box.append(h('p',{class:'hint'},'Background photo: drag it to move it, and scroll (or pinch) over it to zoom.'));
+    return; }
   const row = (label, ...c) => h('div',{class:'row'}, h('label',{}, label), ...c);
   const change = fn => e => { fn(e); render(); };
   const commitOnce = { done:false };
@@ -1305,7 +1347,12 @@ function renderInspector(){
     box.append(h('p',{class:'hint',style:'margin-top:8px'},'Tip: “Auto-adjust” in Photo adjustments sets Darken/Fade for this photo.'));
   }
   else if (el.type === 'image') {
-    box.append(h('p',{class:'hint',style:'margin-bottom:8px'}, 'Photo on the page. Drag to move, corners to resize.'));
+    box.append(h('p',{class:'hint',style:'margin-bottom:8px'}, 'Drag to move, corners to resize. Scroll (or pinch) over the photo to zoom it inside its frame.'));
+    box.append(row('Zoom', h('input',{type:'range',id:'insp-zoom',min:100,max:400,value:Math.round((el.zoom||1)*100),oninput:change(e=>{guard();el.zoom=e.target.value/100;})})));
+    box.append(h('div',{class:'row'}, h('label',{},''),
+      h('button',{class:'btn sm','aria-pressed':String(cropMode === el.id),title:'While this is on, dragging moves the photo inside its frame (or double-click the photo)',
+        onclick:()=>{ cropMode = cropMode === el.id ? null : el.id; renderInspector(); render(); }}, cropMode === el.id ? '✓ Moving photo in frame' : '✥ Move photo in frame'),
+      h('button',{class:'btn sm',title:'Back to the whole photo, centred',onclick:()=>{ pushUndo(); el.zoom = 1; el.px = el.py = 0; renderInspector(); render(); }}, 'Fit')));
     box.append(row('Width', h('input',{type:'range',id:'insp-width',min:Math.round(W()*0.15),max:W(),value:Math.round(el.w),oninput:change(e=>{guard();el.w=+e.target.value;})})));
     box.append(row('Frame', seg([['tape','Taped'],['polaroid','Polaroid'],['plain','Plain']], ()=>el.style||'tape', v=>el.style=v)));
     box.append(row('Tilt', h('input',{type:'range',min:-12,max:12,value:Math.round((el.rot||0)*100),oninput:change(e=>{guard();el.rot=e.target.value/100;})})));
@@ -1437,9 +1484,15 @@ async function usePhoto(p){
       S.bg.kind = 'photo'; S.bg.cells = null; S.bg.ox = S.bg.oy = 0; S.bg.zoom = 1; $('#zoom').value = 100;
       templateDefaults(); layout(); autoContrast(false);
     } else if (S.template === 'collage') {
-      // swap the least-recently-set cell
+      // a selected collage photo is swapped in place; otherwise the least-recently-set one
+      const sel = byId(S.sel);
       if (!S.bg.cells || !S.bg.cells.length) await makeCollage(p.kind);
-      else { S.bg.cells[0] = { url:p.url, id:p.id, kind:p.kind, style:S.bg.cells[0].style, rot:S.bg.cells[0].rot, seed:S.bg.cells[0].seed }; S.bg.cells.push(S.bg.cells.shift()); }
+      else if (sel && sel.cell != null) { const c = S.bg.cells[sel.cell]; Object.assign(c, { url:p.url, id:p.id, kind:p.kind }); sel.zoom = 1; sel.px = sel.py = 0; }
+      else {
+        const i = S.bg.cells.findIndex(c => !c.off); const at = i < 0 ? 0 : i;
+        Object.assign(S.bg.cells[at], { url:p.url, id:p.id, kind:p.kind });
+        const el = S.els.find(e => e.cell === at); if (el) { el.zoom = 1; el.px = el.py = 0; }
+      }
       layout();
     } else {
       addPhoto(p, im);
@@ -1528,6 +1581,7 @@ async function makeCollage(kind, chosen){
     rot:(Math.random()-0.5)*0.10, seed:Math.floor(Math.random()*9999) }));
   await Promise.all(cells.map(c => libImage(c.url)));
   S.bg.kind = 'collage'; S.bg.cells = cells; S.bg.grid = grid; S.bg.dim = 0;
+  S.els = (S.els || []).filter(e => e.cell == null);          // a fresh collage lays out fresh frames
   if (S.bg.ground === 'cork') S.bg.ground = 'paper';
   if (!S.bg.seed) S.bg.seed = Math.floor(Math.random()*100000) + 1;
   S.bg.seed = S.bg.seed || Math.floor(Math.random()*100000) + 1;
@@ -2682,6 +2736,41 @@ $('#clearBtn').addEventListener('click', () => {
   hideWelcome();
   templateDefaults(); layout(); syncControls(); renderInspector(); renderResults(); renderQuickFields(); fitCanvas(); persist();
   toast('Cleared \u2014 Undo brings it back');
+});
+
+// ---------- zooming photos ----------
+// Scroll (or trackpad-pinch) over a framed or collage photo to zoom it inside its frame, or
+// over a full-page photo to zoom the background. One undo step per gesture.
+var cropMode = null;                 // id of the framed photo whose drag pans inside its frame
+let wheelUndoAt = 0;
+cv.addEventListener('wheel', e => {
+  const [x, y] = toDesign(e);
+  const el = hitEl(x, y);
+  const photo = el && el.type === 'image' ? el : null;
+  if (!photo && !(S.bg.kind === 'photo' && IMG.bg && !el)) return;
+  e.preventDefault();
+  if (Date.now() - wheelUndoAt > 600) pushUndo();
+  wheelUndoAt = Date.now();
+  const f = Math.exp(-e.deltaY * (e.ctrlKey ? 0.01 : 0.0015));
+  if (photo) {
+    photo.zoom = Math.max(1, Math.min(4, (photo.zoom || 1) * f));
+    if (S.sel !== photo.id) { S.sel = photo.id; renderInspector(); }
+    const z = $('#insp-zoom'); if (z) z.value = Math.round(photo.zoom*100);
+  } else {
+    S.bg.zoom = Math.max(1, Math.min(3, (S.bg.zoom || 1) * f));
+    $('#zoom').value = Math.round(S.bg.zoom*100);
+  }
+  render();
+}, { passive:false });
+// Double-click a framed photo to switch dragging between moving the frame and moving the
+// photo inside it.
+cv.addEventListener('dblclick', e => {
+  const [x, y] = toDesign(e);
+  const el = hitEl(x, y);
+  if (!el || el.type !== 'image') return;
+  cropMode = cropMode === el.id ? null : el.id;
+  S.sel = el.id; renderInspector(); render();
+  toast(cropMode ? 'Drag to move the photo inside its frame — double-click again when done' : 'Dragging moves the whole photo again');
 });
 
 // ---------- misc ----------

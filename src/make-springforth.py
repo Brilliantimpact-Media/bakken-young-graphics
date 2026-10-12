@@ -92,7 +92,7 @@ rep("function logoAspect(){ return IMG.logo ? IMG.logo.naturalHeight / IMG.logo.
     "  return im ? im.naturalHeight / im.naturalWidth : (base === 'wordmark' ? 0.134 : 1.12); }\n"
     "function logoAspect(el){ return markAspect((el && el.variant) || 'lockup'); }")
 rep("if (el.type === 'logo') return { x:el.x, y:el.y, w:el.w, h:el.w*logoAspect() };",
-    "if (el.type === 'logo') return { x:el.x, y:el.y, w:el.w, h:el.w*logoAspect(el) };\n  if (el.type === 'image') return { x:el.x, y:el.y, w:el.w, h:el.w*imageAspect(el) };\n  if (el.type === 'sticker') return { x:el.x, y:el.y, w:el.w, h:el.w*stickerAspect(el) };\n  if (el.type === 'wave') return { x:el.x, y:el.y, w:el.w, h:el.w*waveAspect(el) };")
+    "if (el.type === 'logo') return { x:el.x, y:el.y, w:el.w, h:el.w*logoAspect(el) };\n  if (el.type === 'image') return { x:el.x, y:el.y, w:el.w, h:imageH(el) };\n  if (el.type === 'sticker') return { x:el.x, y:el.y, w:el.w, h:el.w*stickerAspect(el) };\n  if (el.type === 'wave') return { x:el.x, y:el.y, w:el.w, h:el.w*waveAspect(el) };")
 rep("function drawLogo(ctx, el){\n  const h = el.w * logoAspect();", "function drawLogo(ctx, el){\n  const h = el.w * logoAspect(el);")
 
 # Two-tone text: the footer's second line (the domain) is gold against the blue band.
@@ -384,12 +384,38 @@ rep("""  const defs = S.template === 'headline' ? [['headline','Headline','input
              : S.template === 'logo' ? []
              : [['headline','Headline','textarea']];""")
 
+rep("""      S.sel = el.id;
+      const kids = (el.kids||[]).map(byId).filter(Boolean);
+      drag = { kind:'move', el, sx:x, sy:y, ox:el.x, oy:el.y, kids:kids.map(k => ({k, x:k.x, y:k.y})) };""",
+"""      S.sel = el.id;
+      const kids = (el.kids||[]).map(byId).filter(Boolean);
+      // a framed photo in "move photo in frame" mode (or Alt/Option-drag) pans inside its frame
+      if (el.type === 'image' && (e.altKey || cropMode === el.id)) drag = { kind:'crop', el, sx:x, sy:y, px:el.px || 0, py:el.py || 0 };
+      else { if (cropMode && cropMode !== el.id) cropMode = null;
+        drag = { kind:'move', el, sx:x, sy:y, ox:el.x, oy:el.y, kids:kids.map(k => ({k, x:k.x, y:k.y})) }; }""")
+rep("""  } else if (drag.kind === 'pan') {
+    S.bg.ox = drag.ox + (x-drag.sx); S.bg.oy = drag.oy + (y-drag.sy);""",
+"""  } else if (drag.kind === 'crop') {
+    const r = cropRoom(drag.el);
+    drag.el.px = Math.max(-r.mx, Math.min(r.mx, drag.px + (x-drag.sx)));
+    drag.el.py = Math.max(-r.my, Math.min(r.my, drag.py + (y-drag.sy)));
+  } else if (drag.kind === 'pan') {
+    S.bg.ox = drag.ox + (x-drag.sx); S.bg.oy = drag.oy + (y-drag.sy);""")
+rep("    else if (el.type === 'logo' || el.type === 'image' || el.type === 'sticker' || el.type === 'wave') el.w = drag.w0*f;",
+    "    else if (el.type === 'image') { el.w = drag.w0*f; if (el.h) el.h = drag.h0*f; }\n    else if (el.type === 'logo' || el.type === 'sticker' || el.type === 'wave') el.w = drag.w0*f;")
+rep("  if (!el) { box.append(h('p',{class:'hint'},'Nothing selected. Click a piece of the graphic to adjust it.')); return; }",
+    "  if (!el) { box.append(h('p',{class:'hint'},'Nothing selected. Click a piece of the graphic to adjust it.'));\n"
+    "    if (S.bg.kind === 'photo') box.append(h('p',{class:'hint'},'Background photo: drag it to move it, and scroll (or pinch) over it to zoom.'));\n"
+    "    return; }")
+
 rep("""function removeSel(){
   if (!S.sel) return; pushUndo();
   const el = byId(S.sel);""",
 """function removeSel(){
   if (!S.sel) return; pushUndo();
   const el = byId(S.sel);
+  // a deleted collage photo stays deleted, rather than being rebuilt by the next layout
+  if (el && el.cell != null && S.bg.cells && S.bg.cells[el.cell]) S.bg.cells[el.cell].off = true;
   // a deleted frame piece has to come out of S.wave too, or the next layout rebuilds it
   if (el && el.type === 'wave') {
     const w = S.wave || 'bottom';
@@ -403,7 +429,12 @@ rep("    box.append(h('p',{class:'hint',style:'margin-bottom:8px'}, 'Bakken-Youn
     "    box.append(row('Colour', seg([['color','Full colour'],['white','White']], ()=>String(el.variant||'').includes('white') ? 'white' : 'color', v=>el.variant = (el.variant||'lockup').replace('-white','') + (v === 'white' ? '-white' : ''))));")
 rep("  else if (el.type === 'box') {\n    box.append(h('div',{class:'field'}, h('label',{},'Label'),",
 """  else if (el.type === 'image') {
-    box.append(h('p',{class:'hint',style:'margin-bottom:8px'}, 'Photo on the page. Drag to move, corners to resize.'));
+    box.append(h('p',{class:'hint',style:'margin-bottom:8px'}, 'Drag to move, corners to resize. Scroll (or pinch) over the photo to zoom it inside its frame.'));
+    box.append(row('Zoom', h('input',{type:'range',id:'insp-zoom',min:100,max:400,value:Math.round((el.zoom||1)*100),oninput:change(e=>{guard();el.zoom=e.target.value/100;})})));
+    box.append(h('div',{class:'row'}, h('label',{},''),
+      h('button',{class:'btn sm','aria-pressed':String(cropMode === el.id),title:'While this is on, dragging moves the photo inside its frame (or double-click the photo)',
+        onclick:()=>{ cropMode = cropMode === el.id ? null : el.id; renderInspector(); render(); }}, cropMode === el.id ? '\u2713 Moving photo in frame' : '\u2725 Move photo in frame'),
+      h('button',{class:'btn sm',title:'Back to the whole photo, centred',onclick:()=>{ pushUndo(); el.zoom = 1; el.px = el.py = 0; renderInspector(); render(); }}, 'Fit')));
     box.append(row('Width', h('input',{type:'range',id:'insp-width',min:Math.round(W()*0.15),max:W(),value:Math.round(el.w),oninput:change(e=>{guard();el.w=+e.target.value;})})));
     box.append(row('Frame', seg([['tape','Taped'],['polaroid','Polaroid'],['plain','Plain']], ()=>el.style||'tape', v=>el.style=v)));
     box.append(row('Tilt', h('input',{type:'range',min:-12,max:12,value:Math.round((el.rot||0)*100),oninput:change(e=>{guard();el.rot=e.target.value/100;})})));

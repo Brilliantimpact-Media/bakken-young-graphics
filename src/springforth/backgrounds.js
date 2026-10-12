@@ -158,11 +158,19 @@ function drawNote(ctx, el){
   }
   ctx.restore();
 }
-function drawCover(ctx, img, x, y, cw, ch){
-  const iw = img.naturalWidth, ih = img.naturalHeight, s = Math.max(cw/iw, ch/ih), dw = iw*s, dh = ih*s;
-  ctx.save(); ctx.beginPath(); ctx.rect(x, y, cw, ch); ctx.clip(); ctx.drawImage(img, x + (cw-dw)/2, y + (ch-dh)/2, dw, dh); ctx.restore();
+// crop: { zoom, px, py } — how far the photo is zoomed inside its frame and nudged off centre
+function coverFit(img, cw, ch, zoom){
+  const iw = img.naturalWidth, ih = img.naturalHeight, s = Math.max(cw/iw, ch/ih) * Math.max(1, zoom || 1);
+  const dw = iw*s, dh = ih*s;
+  return { dw, dh, mx:(dw-cw)/2, my:(dh-ch)/2 };
 }
-function drawFramedPhoto(ctx, img, x, y, cw, ch, style, rot, seed){
+function drawCover(ctx, img, x, y, cw, ch, crop){
+  const f = coverFit(img, cw, ch, crop && crop.zoom);
+  const ox = Math.max(-f.mx, Math.min(f.mx, (crop && crop.px) || 0));
+  const oy = Math.max(-f.my, Math.min(f.my, (crop && crop.py) || 0));
+  ctx.save(); ctx.beginPath(); ctx.rect(x, y, cw, ch); ctx.clip(); ctx.drawImage(img, x + (cw-f.dw)/2 + ox, y + (ch-f.dh)/2 + oy, f.dw, f.dh); ctx.restore();
+}
+function drawFramedPhoto(ctx, img, x, y, cw, ch, style, rot, seed, crop){
   let s = (Math.abs(seed||3)*9301+49297) % 233280 || 5; const rnd = () => (s = (s*9301+49297) % 233280) / 233280;
   ctx.save();
   ctx.translate(x + cw/2, y + ch/2); ctx.rotate(rot || 0); ctx.translate(-cw/2, -ch/2);
@@ -171,18 +179,23 @@ function drawFramedPhoto(ctx, img, x, y, cw, ch, style, rot, seed){
   ctx.shadowColor = 'rgba(40,40,40,0.30)'; ctx.shadowBlur = cw*0.045; ctx.shadowOffsetY = cw*0.011;
   ctx.fillStyle = '#ffffff'; ctx.fillRect(-pad, -pad, cw + pad*2, ch + pad + bottom);
   ctx.shadowColor = 'transparent';
-  drawCover(ctx, img, 0, 0, cw, ch);
+  drawCover(ctx, img, 0, 0, cw, ch, crop);
   if (style === 'tape') {
     drawTape(ctx, 0, 0, cw*0.28, -0.62 + rnd()*0.16, TAPE_FILLS[3]);
     drawTape(ctx, cw, ch, cw*0.28, -0.62 + rnd()*0.16, TAPE_FILLS[3]);
   }
   ctx.restore();
 }
+// A framed photo is its own shape (el.h) when it came from a collage cell, otherwise the
+// photo's own proportions. Either way it can be zoomed and moved inside the frame.
+function imageH(el){ return el.h || el.w * imageAspect(el); }
 function drawImageEl(ctx, el){
   const im = IMG.lib[el.src]; if (!im) return;
-  drawFramedPhoto(ctx, im, el.x, el.y, el.w, el.w * (im.naturalHeight/im.naturalWidth), el.style || 'tape', el.rot || 0, el.seed);
+  drawFramedPhoto(ctx, im, el.x, el.y, el.w, imageH(el), el.style || 'tape', el.rot || 0, el.seed,
+    { zoom:el.zoom || 1, px:el.px || 0, py:el.py || 0 });
 }
 function imageAspect(el){ const im = IMG.lib[el.src]; return im ? im.naturalHeight/im.naturalWidth : 0.75; }
+function cropRoom(el){ const im = IMG.lib[el.src]; return im ? coverFit(im, el.w, imageH(el), el.zoom) : { mx:0, my:0 }; }
 
 // ---------- collage + background compositing ----------
 function collageCells(grid, w, h){
@@ -205,6 +218,9 @@ function drawPhoto(ctx, w, h, bg){
   if (bg.kind === 'collage' && bg.cells && bg.cells.length) {
     const cells = collageCells(bg.grid || '2x2', w, h);
     bg.cells.forEach((c, i) => {
+      // collage photos are page elements now (movable, zoomable); this only covers a state
+      // that hasn't been laid out yet
+      if (c.off || (S.els || []).some(e => e.cell === i)) return;
       const im = IMG.lib[c.url], r = cells[i]; if (!r) return;
       if (im) drawFramedPhoto(ctx, im, r[0], r[1], r[2], r[3], c.style || 'tape', c.rot || 0, c.seed);
     });

@@ -96,6 +96,19 @@ function layout(){
     const hl = byId('headline')?.text ?? '';
     if (hl) els.push(text('headline', hl, { x:m, y:head, w:w-m*2, size:60*u, align:'center', lh:1.2, color:DEEP, shadow:false }));
   }
+  // Collage photos are framed-photo elements, one per cell, so each can be dragged, resized,
+  // zoomed and moved inside its frame. One already on the page keeps where it was put.
+  const cellEls = [];
+  if (S.template === 'collage' && S.bg.kind === 'collage' && S.bg.cells) {
+    const boxes = collageCells(S.bg.grid || '2x2', w, h);
+    S.bg.cells.forEach((c, i) => {
+      const r = boxes[i]; if (!r || c.off) return;
+      const had = (S.els || []).find(e => e.cell === i);
+      if (had) { had.src = c.url; had.libId = c.id; cellEls.push(had); return; }
+      cellEls.push({ id:'cell-' + i, type:'image', cell:i, src:c.url, libId:c.id, x:r[0], y:r[1], w:r[2], h:r[3],
+                     style:c.style || 'tape', rot:c.rot || 0, seed:c.seed, zoom:1, px:0, py:0 });
+    });
+  }
   else if (S.template === 'logo') {
     // the frame's own lockup is the whole point of this one — nothing else goes on the page
   }
@@ -117,6 +130,7 @@ function layout(){
   const notes = els.filter(e => e.type === 'note');           // notes render behind their own text
   for (const n of notes) { const i = els.indexOf(n); els.splice(i,1); els.unshift(n); }
   const p = els.findIndex(e => e.id === 'photo'); if (p > 0) els.unshift(els.splice(p,1)[0]);
+  els.unshift(...cellEls);                                    // collage photos sit under the writing
   els.unshift(...frame);                                      // the frame sits under the content
   els.push(...stickers);                                      // stickers are placed by hand, and stay put
   S.els = els;

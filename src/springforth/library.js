@@ -82,9 +82,15 @@ async function usePhoto(p){
       S.bg.kind = 'photo'; S.bg.cells = null; S.bg.ox = S.bg.oy = 0; S.bg.zoom = 1; $('#zoom').value = 100;
       templateDefaults(); layout(); autoContrast(false);
     } else if (S.template === 'collage') {
-      // swap the least-recently-set cell
+      // a selected collage photo is swapped in place; otherwise the least-recently-set one
+      const sel = byId(S.sel);
       if (!S.bg.cells || !S.bg.cells.length) await makeCollage(p.kind);
-      else { S.bg.cells[0] = { url:p.url, id:p.id, kind:p.kind, style:S.bg.cells[0].style, rot:S.bg.cells[0].rot, seed:S.bg.cells[0].seed }; S.bg.cells.push(S.bg.cells.shift()); }
+      else if (sel && sel.cell != null) { const c = S.bg.cells[sel.cell]; Object.assign(c, { url:p.url, id:p.id, kind:p.kind }); sel.zoom = 1; sel.px = sel.py = 0; }
+      else {
+        const i = S.bg.cells.findIndex(c => !c.off); const at = i < 0 ? 0 : i;
+        Object.assign(S.bg.cells[at], { url:p.url, id:p.id, kind:p.kind });
+        const el = S.els.find(e => e.cell === at); if (el) { el.zoom = 1; el.px = el.py = 0; }
+      }
       layout();
     } else {
       addPhoto(p, im);
@@ -173,6 +179,7 @@ async function makeCollage(kind, chosen){
     rot:(Math.random()-0.5)*0.10, seed:Math.floor(Math.random()*9999) }));
   await Promise.all(cells.map(c => libImage(c.url)));
   S.bg.kind = 'collage'; S.bg.cells = cells; S.bg.grid = grid; S.bg.dim = 0;
+  S.els = (S.els || []).filter(e => e.cell == null);          // a fresh collage lays out fresh frames
   if (S.bg.ground === 'cork') S.bg.ground = 'paper';
   if (!S.bg.seed) S.bg.seed = Math.floor(Math.random()*100000) + 1;
   S.bg.seed = S.bg.seed || Math.floor(Math.random()*100000) + 1;

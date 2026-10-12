@@ -245,3 +245,38 @@ $('#clearBtn').addEventListener('click', () => {
   templateDefaults(); layout(); syncControls(); renderInspector(); renderResults(); renderQuickFields(); fitCanvas(); persist();
   toast('Cleared \u2014 Undo brings it back');
 });
+
+// ---------- zooming photos ----------
+// Scroll (or trackpad-pinch) over a framed or collage photo to zoom it inside its frame, or
+// over a full-page photo to zoom the background. One undo step per gesture.
+var cropMode = null;                 // id of the framed photo whose drag pans inside its frame
+let wheelUndoAt = 0;
+cv.addEventListener('wheel', e => {
+  const [x, y] = toDesign(e);
+  const el = hitEl(x, y);
+  const photo = el && el.type === 'image' ? el : null;
+  if (!photo && !(S.bg.kind === 'photo' && IMG.bg && !el)) return;
+  e.preventDefault();
+  if (Date.now() - wheelUndoAt > 600) pushUndo();
+  wheelUndoAt = Date.now();
+  const f = Math.exp(-e.deltaY * (e.ctrlKey ? 0.01 : 0.0015));
+  if (photo) {
+    photo.zoom = Math.max(1, Math.min(4, (photo.zoom || 1) * f));
+    if (S.sel !== photo.id) { S.sel = photo.id; renderInspector(); }
+    const z = $('#insp-zoom'); if (z) z.value = Math.round(photo.zoom*100);
+  } else {
+    S.bg.zoom = Math.max(1, Math.min(3, (S.bg.zoom || 1) * f));
+    $('#zoom').value = Math.round(S.bg.zoom*100);
+  }
+  render();
+}, { passive:false });
+// Double-click a framed photo to switch dragging between moving the frame and moving the
+// photo inside it.
+cv.addEventListener('dblclick', e => {
+  const [x, y] = toDesign(e);
+  const el = hitEl(x, y);
+  if (!el || el.type !== 'image') return;
+  cropMode = cropMode === el.id ? null : el.id;
+  S.sel = el.id; renderInspector(); render();
+  toast(cropMode ? 'Drag to move the photo inside its frame — double-click again when done' : 'Dragging moves the whole photo again');
+});
