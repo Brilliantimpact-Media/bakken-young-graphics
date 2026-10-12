@@ -2535,9 +2535,10 @@ function captionQuote(post){
 // Build one complete graphic into S/IMG and hand back what's needed to put it back later.
 async function buildOption(o){
   S.template = o.template; S.els = []; S.bg.cells = null;
-  // frame: 'a' blue wave (default), 'c' the white footer, 'none' a bare photo (the badge layout)
-  S.waveStyle = o.frame === 'c' ? 'c' : 'a';
-  S.wave = o.frame === 'c' ? 'bottom' : o.frame === 'none' ? 'none' : 'both';
+  // frame: one of FRAMES below, or 'none' for a bare photo (the badge layout)
+  const fr = o.frame && o.frame !== 'none' ? o.frame : null;
+  S.waveStyle = fr ? fr.style : 'a';
+  S.wave = o.frame === 'none' ? 'none' : fr ? fr.wave : 'both';
   if (o.headline != null && o.template !== 'quote') S.els.push(text('headline', o.headline));
   if (o.template === 'quote') { S.els.push(text('quote', o.quote)); S.els.push(text('attr', o.attr)); }
   if (o.template === 'list') (o.items || []).forEach((t, i) => S.els.push(text('item-' + (i+1), t)));
@@ -2554,6 +2555,25 @@ async function buildOption(o){
   if (o.badge) placeBadge('badge-now-enrolling');
   return { label: o.label, state: JSON.parse(snapshot()), bg: IMG.bg, src: IMG.src ? clone(IMG.src) : null, thumb: thumb(),
            photos: o.photo ? [o.photo.id] : (o.photos || []).map(x => x.id) };
+}
+
+// Their posts use several borders, not just the blue wave, so the three options each get a
+// different one: never the same twice in a set, and the full blue wave at most once.
+const FRAMES = [
+  { name:'blue wave',        style:'a', wave:'both',   weight:3 },
+  { name:'bottom wave',      style:'a', wave:'bottom', weight:3 },
+  { name:'white footer',     style:'c', wave:'bottom', weight:3 },
+  { name:'plain wave',       style:'b', wave:'both',   weight:1 },
+];
+function assignFrames(specs){
+  // weighted shuffle, then hand them out in order to the options that don't have one yet
+  const order = FRAMES.map(f => ({ f, k: Math.pow(Math.random(), 1/f.weight) })).sort((a,b) => b.k - a.k).map(x => x.f);
+  let i = 0;
+  for (const s of specs) {
+    if (s.frame) continue;
+    s.frame = order[i++ % order.length];
+    s.label += ' \u00b7 ' + s.frame.name;
+  }
 }
 
 const CTX = { iso:null, offered:new Set(), options:[], on:-1 };
@@ -2582,16 +2602,15 @@ async function generateFromPost(){
       specs.push({ label:'Photo only', template:'logo', photo:ranked[0] });
       if (ranked[1]) specs.push(/enroll/.test(bucket)
         ? { label:'Enrolling badge', template:'logo', photo:ranked[1], frame:'none', badge:true }
-        : { label:'White footer', template:'logo', photo:ranked[1], frame:'c' });
+        : { label:'Photo only', template:'logo', photo:ranked[1] });
       if (ranked.length >= 5) specs.push({ label:'Collage', template:'collage', photos:ranked.slice(2, 6) });
       else if (ranked[2]) specs.push({ label:'Photo only', template:'logo', photo:ranked[2] });
     } else if (ranked.length) {
       specs.push({ label:'Photo + headline', template:'headline', headline:head, photo:ranked[0] });
-      // the full photo takes one of their other frames: the badge on enrollment posts,
-      // otherwise the white footer from the October set
+      // enrollment posts get the full photo with their Now Enrolling badge
       if (ranked[1]) specs.push(/enroll/.test(bucket)
         ? { label:'Enrolling badge', template:'photo', headline:head, photo:ranked[1], frame:'none', badge:true }
-        : { label:'White footer', template:'photo', headline:head, photo:ranked[1], frame:'c' });
+        : { label:'Full photo', template:'photo', headline:head, photo:ranked[1] });
     }
     if (p.noHead) { /* no writing on the page, so no list, quote or note card */ }
     else if (list) specs.push({ label:'List card', template:'list', headline:list.headline, items:list.items });
@@ -2599,6 +2618,7 @@ async function generateFromPost(){
     else if (/community|enroll/.test(bucket) && ranked.length >= 5) specs.push({ label:'Collage', template:'collage', headline:head, photos:ranked.slice(2, 6) });
     else specs.push({ label:'Note card', template:'note', headline:head });
     if (!p.noHead && specs.length < 3 && ranked[2]) specs.splice(1, 0, { label:'Photo + headline', template:'headline', headline:head, photo:ranked[2] });
+    assignFrames(specs.slice(0, 3));
     CTX.options = [];
     for (const o of specs.slice(0, 3)) {
       const built = await buildOption(o);
