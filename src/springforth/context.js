@@ -159,7 +159,7 @@ async function generateFromPost(){
     applyOption(0, false);
     renderOptions();
     renderCalendar();
-    toast('Three options for ' + DAY_ABBR[p.date.getDay()] + ' ' + (p.date.getMonth()+1) + '/' + p.date.getDate() + ' — click one below the graphic');
+    toast('Three options for ' + DAY_ABBR[p.date.getDay()] + ' ' + (p.date.getMonth()+1) + '/' + p.date.getDate() + ' — pick one under Options for this post');
   } catch (err) { console.error(err); toast('Couldn’t generate: ' + (err.message || err)); }
   finally { $('#loading').classList.remove('show'); genBusy = false; updateCalGen(); }
 }
@@ -198,3 +198,18 @@ function updateCalGen(){
 $('#calGen').addEventListener('click', generateFromPost);
 $('#optsMore').addEventListener('click', generateFromPost);
 $('#optsClose').addEventListener('click', () => { CTX.options = []; CTX.on = -1; renderOptions(); });
+
+// Clear: everything off the page but the paper and the wave frame. The calendar selection
+// stays, so the next "Generate from calendar" picks up where Karissa was.
+$('#clearBtn').addEventListener('click', () => {
+  pushUndo();
+  S.template = 'logo'; S.els = []; S.sel = null;
+  S.bg.kind = 'paper'; S.bg.ground = 'paper'; S.bg.cells = null; S.bg.dim = 0;
+  // the photo stays loaded (just not shown on paper) so Undo brings the graphic back whole
+  IMG.src = { kind:'ground', ground:'paper' };
+  CTX.options = []; CTX.on = -1; renderOptions();
+  currentDraftId = null;
+  hideWelcome();
+  templateDefaults(); layout(); syncControls(); renderInspector(); renderResults(); renderQuickFields(); fitCanvas(); persist();
+  toast('Cleared \u2014 Undo brings it back');
+});

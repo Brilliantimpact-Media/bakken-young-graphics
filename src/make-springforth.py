@@ -272,6 +272,10 @@ rep('<button class="btn sm" id="shufPhoto" title="Keep the layout, try a differe
 rep('<button class="btn sm gen" id="genBtn" title="Build a complete graphic from your text with a random photo, look and layout">✨ Generate</button>',
     '<button class="btn sm gen" id="calGen" disabled title="Pick a post in the calendar first">📅 Generate from calendar</button>\n'
     '      <button class="btn sm" id="genBtn" title="Build a graphic from your own text with a random photo, look and layout — not tied to the calendar">✨ Random</button>')
+# Clear: a blank page (paper and the frame) to start over from; Undo brings the graphic back
+rep('<button class="btn sm" id="resetBtn" title="Put everything back where the template starts">Reset layout</button>',
+    '<button class="btn sm" id="resetBtn" title="Put everything back where the template starts">Reset layout</button>\n'
+    '    <button class="btn sm" id="clearBtn" title="Start over on a blank page (Undo brings it back)">Clear</button>')
 # the three calendar options sit at the top of the right rail, in view beside the canvas
 rep('''  <aside class="panel" id="right">
     <div class="sec">''',
