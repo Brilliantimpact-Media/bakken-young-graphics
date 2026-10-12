@@ -124,8 +124,16 @@ function renderStickerRow(){
       h('img',{src:'art/stickers/' + s.file,alt:name})));
   }
 }
+// The "Now Enrolling" badge isn't a doodle: it sits where their October posts put it,
+// lapping off the right edge in the lower half of the page, at its full size.
+function placeBadge(name){
+  const w = W(), hh = H(), sw = w*0.588;
+  S.els.push({ id:'sticker-' + Date.now(), type:'sticker', name, x:w - sw, y:hh*0.61, w:sw, rot:0 });
+  return S.els[S.els.length-1];
+}
 function addSticker(name){
   pushUndo();
+  if (/^badge-/.test(name)) { S.sel = placeBadge(name).id; renderInspector(); render(); persist(); return; }
   const w = W(), hh = H(), sw = w*0.14;
   const im = IMG.stickers[name];
   const sh = sw * (im ? im.naturalHeight/im.naturalWidth : 1);

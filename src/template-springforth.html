@@ -285,6 +285,12 @@ canvas#c.dragging{cursor:grabbing}
           <button data-v="both" aria-pressed="false">Both</button>
           <button data-v="none" aria-pressed="false">None</button>
         </div></div>
+      <div class="row"><label>Frame</label>
+        <div class="seg" id="frameSeg">
+          <button data-v="a" aria-pressed="true">Blue wave</button>
+          <button data-v="b" aria-pressed="false">Plain wave</button>
+          <button data-v="c" aria-pressed="false">White footer</button>
+        </div></div>
       <div class="row" id="noteFillRow"><label>Note</label><div class="swatches" id="noteFills"></div></div>
     </div>
 
@@ -677,7 +683,7 @@ function loadArt(){
     one('art/cork.jpg').then(i => IMG.tex.cork = i),
     fetch('art/waves/index.json').then(r => r.json()).then(j => {
       WAVE = j;
-      return Promise.all(Object.keys(j.styles).flatMap(st => ['top','bottom'].map(part =>
+      return Promise.all(Object.keys(j.styles).flatMap(st => Object.keys(j.styles[st].parts).map(part =>
         one('art/waves/' + st + '-' + part + '.png').then(im => { IMG.waves[st + '-' + part] = im; }))));
     }).catch(() => WAVE = null),
     fetch('art/notes/index.json').then(r => r.json()).then(list => {
@@ -1141,6 +1147,15 @@ $('#tiles').addEventListener('click', e => { const b = e.target.closest('.tile')
 $('#size').addEventListener('change', e => { pushUndo(); S.size = e.target.value; S.bg.ox = S.bg.oy = 0; layout(); renderInspector(); fitCanvas(); persist(); });
 $('#textPos').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; pushUndo(); S.textPos = b.dataset.v; templateDefaults(); layout(); syncControls(); renderInspector(); render(); persist(); });
 $('#waveSeg').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; pushUndo(); S.wave = b.dataset.v; templateDefaults(); layout(); syncControls(); renderInspector(); render(); persist(); });
+// Frame style: the blue wave with the lockup, the plain wave, or the white footer from their
+// October posts. The white footer is a bottom piece only, so it brings the wave to Bottom.
+function setFrame(st){
+  S.waveStyle = st;
+  if (st === 'c') S.wave = 'bottom';
+  S.els = S.els.filter(e => e.type !== 'wave');
+  templateDefaults(); layout();
+}
+$('#frameSeg').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; pushUndo(); setFrame(b.dataset.v); syncControls(); renderInspector(); render(); persist(); });
 function renderNoteFills(){
   const box = $('#noteFills'); box.innerHTML = '';
   for (const [hex,name] of NOTE_FILLS) box.append(h('button',{class:'sw',title:name,style:`background:${hex}`,'aria-pressed':String((S.noteFill||'').toLowerCase()===hex),onclick:()=>{ pushUndo(); S.noteFill = hex; layout(); syncControls(); render(); persist(); }}));
@@ -1174,6 +1189,7 @@ function syncControls(){
   $('#textPosRow').style.display = S.template === 'headline' ? '' : 'none';
   $('#noteFillRow').style.display = S.template === 'note' ? '' : 'none';
   document.querySelectorAll('#waveSeg button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === (S.wave||'bottom'))));
+  document.querySelectorAll('#frameSeg button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === (S.waveStyle||'a'))));
   renderNoteFills(); renderGroundChips(); renderStickerRow();
   const isPhoto = S.bg.kind === 'photo';
   ['dim','zoom','fade','fadeSize'].forEach(id => { const n = document.getElementById(id); if (n) n.closest('.row').style.opacity = isPhoto ? '' : '.4'; });
@@ -1296,7 +1312,7 @@ function renderInspector(){
   }
   else if (el.type === 'wave') {
     box.append(h('p',{class:'hint',style:'margin-bottom:8px'}, 'A piece of the wave frame. Drag to move, corners to resize, Delete to take it off.'));
-    box.append(row('Style', seg([['a','With lockup'],['b','Plain']], ()=>el.style||'a', v=>el.style=v)));
+    box.append(row('Style', seg([['a','With lockup'],['b','Plain'],['c','White footer']], ()=>el.style||'a', v=>{ el.style=v; if (v === 'c') { el.part='bottom'; el.id='wave-bottom'; } })));
     box.append(row('Edge', seg([['bottom','Bottom'],['top','Top']], ()=>el.part||'bottom', v=>{ el.part=v; el.id='wave-'+v; })));
     box.append(chk('Flip over', ()=>!!el.flip, v=>el.flip=v));
     box.append(row('Width', h('input',{type:'range',id:'insp-width',min:Math.round(W()*0.4),max:Math.round(W()*1.6),value:Math.round(el.w),oninput:change(e=>{guard();el.w=+e.target.value;})})));
@@ -1463,8 +1479,16 @@ function renderStickerRow(){
       h('img',{src:'art/stickers/' + s.file,alt:name})));
   }
 }
+// The "Now Enrolling" badge isn't a doodle: it sits where their October posts put it,
+// lapping off the right edge in the lower half of the page, at its full size.
+function placeBadge(name){
+  const w = W(), hh = H(), sw = w*0.588;
+  S.els.push({ id:'sticker-' + Date.now(), type:'sticker', name, x:w - sw, y:hh*0.61, w:sw, rot:0 });
+  return S.els[S.els.length-1];
+}
 function addSticker(name){
   pushUndo();
+  if (/^badge-/.test(name)) { S.sel = placeBadge(name).id; renderInspector(); render(); persist(); return; }
   const w = W(), hh = H(), sw = w*0.14;
   const im = IMG.stickers[name];
   const sh = sw * (im ? im.naturalHeight/im.naturalWidth : 1);
@@ -2430,7 +2454,7 @@ const CONTEXT_TAGS = [
   [/chess|strateg|\bgames?\b/, ['chess','games','thinking']],
   [/exhibit|present|showcase|carnival|booth|entrepreneur|business|market/, ['exhibition','presenting','project']],
   [/parent|famil|\bmom|\bdad|at home|grandparent/, ['parents','family']],
-  [/communit|together|friend|kind|help|belong|tribe|village/, ['community','friends','kindness','together']],
+  [/communit|together|friend|\bkind(?!\s+of)|help|belong|tribe|village/, ['community','friends','kindness','together']],
   [/outside|outdoor|nature|recess|\bfield\b|\bplay|fresh air|explor/, ['outdoor','play','nature']],
   [/field trip|\btrip\b|adventure|outing/, ['field-trip','fun']],
   [/enroll|\btours?\b|visit|open house|join us|apply|spots|new families/, ['whole-school','welcome','community']],
@@ -2455,7 +2479,9 @@ function contextWants(p){
   const txt = ((p.hook || '') + ' ' + captionBody(p.post)).toLowerCase();
   for (const [re, tags] of CONTEXT_TAGS) if (re.test(txt)) add(tags, 3);
   for (const part of String(p.bucket || '').split(/[\/,&]+/)) {
-    const tags = BUCKET_TAGS[part.trim().toLowerCase()]; if (tags) add(tags, 1.5);
+    // an enrollment post is about the school as a whole, whatever its caption mentions
+    const key = part.trim().toLowerCase(), tags = BUCKET_TAGS[key];
+    if (tags) add(tags, /^enroll/.test(key) ? 4 : 1.5);
   }
   return want;
 }
@@ -2509,6 +2535,9 @@ function captionQuote(post){
 // Build one complete graphic into S/IMG and hand back what's needed to put it back later.
 async function buildOption(o){
   S.template = o.template; S.els = []; S.bg.cells = null;
+  // frame: 'a' blue wave (default), 'c' the white footer, 'none' a bare photo (the badge layout)
+  S.waveStyle = o.frame === 'c' ? 'c' : 'a';
+  S.wave = o.frame === 'c' ? 'bottom' : o.frame === 'none' ? 'none' : 'both';
   if (o.headline != null && o.template !== 'quote') S.els.push(text('headline', o.headline));
   if (o.template === 'quote') { S.els.push(text('quote', o.quote)); S.els.push(text('attr', o.attr)); }
   if (o.template === 'list') (o.items || []).forEach((t, i) => S.els.push(text('item-' + (i+1), t)));
@@ -2522,6 +2551,7 @@ async function buildOption(o){
   }
   randomStyle();
   if (o.template === 'headline') { addPhoto(o.photo, await libImage(o.photo.url)); }
+  if (o.badge) placeBadge('badge-now-enrolling');
   return { label: o.label, state: JSON.parse(snapshot()), bg: IMG.bg, src: IMG.src ? clone(IMG.src) : null, thumb: thumb(),
            photos: o.photo ? [o.photo.id] : (o.photos || []).map(x => x.id) };
 }
@@ -2550,12 +2580,18 @@ async function generateFromPost(){
     if (p.noHead && ranked.length) {
       // x in HOOK TEXT: the picture is the post — full photos in the frame, and a collage
       specs.push({ label:'Photo only', template:'logo', photo:ranked[0] });
-      if (ranked[1]) specs.push({ label:'Photo only', template:'logo', photo:ranked[1] });
+      if (ranked[1]) specs.push(/enroll/.test(bucket)
+        ? { label:'Enrolling badge', template:'logo', photo:ranked[1], frame:'none', badge:true }
+        : { label:'White footer', template:'logo', photo:ranked[1], frame:'c' });
       if (ranked.length >= 5) specs.push({ label:'Collage', template:'collage', photos:ranked.slice(2, 6) });
       else if (ranked[2]) specs.push({ label:'Photo only', template:'logo', photo:ranked[2] });
     } else if (ranked.length) {
       specs.push({ label:'Photo + headline', template:'headline', headline:head, photo:ranked[0] });
-      if (ranked[1]) specs.push({ label:'Full photo', template:'photo', headline:head, photo:ranked[1] });
+      // the full photo takes one of their other frames: the badge on enrollment posts,
+      // otherwise the white footer from the October set
+      if (ranked[1]) specs.push(/enroll/.test(bucket)
+        ? { label:'Enrolling badge', template:'photo', headline:head, photo:ranked[1], frame:'none', badge:true }
+        : { label:'White footer', template:'photo', headline:head, photo:ranked[1], frame:'c' });
     }
     if (p.noHead) { /* no writing on the page, so no list, quote or note card */ }
     else if (list) specs.push({ label:'List card', template:'list', headline:list.headline, items:list.items });

@@ -16,7 +16,7 @@ const CONTEXT_TAGS = [
   [/chess|strateg|\bgames?\b/, ['chess','games','thinking']],
   [/exhibit|present|showcase|carnival|booth|entrepreneur|business|market/, ['exhibition','presenting','project']],
   [/parent|famil|\bmom|\bdad|at home|grandparent/, ['parents','family']],
-  [/communit|together|friend|kind|help|belong|tribe|village/, ['community','friends','kindness','together']],
+  [/communit|together|friend|\bkind(?!\s+of)|help|belong|tribe|village/, ['community','friends','kindness','together']],
   [/outside|outdoor|nature|recess|\bfield\b|\bplay|fresh air|explor/, ['outdoor','play','nature']],
   [/field trip|\btrip\b|adventure|outing/, ['field-trip','fun']],
   [/enroll|\btours?\b|visit|open house|join us|apply|spots|new families/, ['whole-school','welcome','community']],
@@ -41,7 +41,9 @@ function contextWants(p){
   const txt = ((p.hook || '') + ' ' + captionBody(p.post)).toLowerCase();
   for (const [re, tags] of CONTEXT_TAGS) if (re.test(txt)) add(tags, 3);
   for (const part of String(p.bucket || '').split(/[\/,&]+/)) {
-    const tags = BUCKET_TAGS[part.trim().toLowerCase()]; if (tags) add(tags, 1.5);
+    // an enrollment post is about the school as a whole, whatever its caption mentions
+    const key = part.trim().toLowerCase(), tags = BUCKET_TAGS[key];
+    if (tags) add(tags, /^enroll/.test(key) ? 4 : 1.5);
   }
   return want;
 }
@@ -95,6 +97,9 @@ function captionQuote(post){
 // Build one complete graphic into S/IMG and hand back what's needed to put it back later.
 async function buildOption(o){
   S.template = o.template; S.els = []; S.bg.cells = null;
+  // frame: 'a' blue wave (default), 'c' the white footer, 'none' a bare photo (the badge layout)
+  S.waveStyle = o.frame === 'c' ? 'c' : 'a';
+  S.wave = o.frame === 'c' ? 'bottom' : o.frame === 'none' ? 'none' : 'both';
   if (o.headline != null && o.template !== 'quote') S.els.push(text('headline', o.headline));
   if (o.template === 'quote') { S.els.push(text('quote', o.quote)); S.els.push(text('attr', o.attr)); }
   if (o.template === 'list') (o.items || []).forEach((t, i) => S.els.push(text('item-' + (i+1), t)));
@@ -108,6 +113,7 @@ async function buildOption(o){
   }
   randomStyle();
   if (o.template === 'headline') { addPhoto(o.photo, await libImage(o.photo.url)); }
+  if (o.badge) placeBadge('badge-now-enrolling');
   return { label: o.label, state: JSON.parse(snapshot()), bg: IMG.bg, src: IMG.src ? clone(IMG.src) : null, thumb: thumb(),
            photos: o.photo ? [o.photo.id] : (o.photos || []).map(x => x.id) };
 }
@@ -136,12 +142,18 @@ async function generateFromPost(){
     if (p.noHead && ranked.length) {
       // x in HOOK TEXT: the picture is the post — full photos in the frame, and a collage
       specs.push({ label:'Photo only', template:'logo', photo:ranked[0] });
-      if (ranked[1]) specs.push({ label:'Photo only', template:'logo', photo:ranked[1] });
+      if (ranked[1]) specs.push(/enroll/.test(bucket)
+        ? { label:'Enrolling badge', template:'logo', photo:ranked[1], frame:'none', badge:true }
+        : { label:'White footer', template:'logo', photo:ranked[1], frame:'c' });
       if (ranked.length >= 5) specs.push({ label:'Collage', template:'collage', photos:ranked.slice(2, 6) });
       else if (ranked[2]) specs.push({ label:'Photo only', template:'logo', photo:ranked[2] });
     } else if (ranked.length) {
       specs.push({ label:'Photo + headline', template:'headline', headline:head, photo:ranked[0] });
-      if (ranked[1]) specs.push({ label:'Full photo', template:'photo', headline:head, photo:ranked[1] });
+      // the full photo takes one of their other frames: the badge on enrollment posts,
+      // otherwise the white footer from the October set
+      if (ranked[1]) specs.push(/enroll/.test(bucket)
+        ? { label:'Enrolling badge', template:'photo', headline:head, photo:ranked[1], frame:'none', badge:true }
+        : { label:'White footer', template:'photo', headline:head, photo:ranked[1], frame:'c' });
     }
     if (p.noHead) { /* no writing on the page, so no list, quote or note card */ }
     else if (list) specs.push({ label:'List card', template:'list', headline:list.headline, items:list.items });

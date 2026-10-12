@@ -16,7 +16,7 @@ function loadArt(){
     one('art/cork.jpg').then(i => IMG.tex.cork = i),
     fetch('art/waves/index.json').then(r => r.json()).then(j => {
       WAVE = j;
-      return Promise.all(Object.keys(j.styles).flatMap(st => ['top','bottom'].map(part =>
+      return Promise.all(Object.keys(j.styles).flatMap(st => Object.keys(j.styles[st].parts).map(part =>
         one('art/waves/' + st + '-' + part + '.png').then(im => { IMG.waves[st + '-' + part] = im; }))));
     }).catch(() => WAVE = null),
     fetch('art/notes/index.json').then(r => r.json()).then(list => {

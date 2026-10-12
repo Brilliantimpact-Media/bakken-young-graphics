@@ -224,6 +224,12 @@ rep("""      <div class="row" id="textPosRow"><label>Text</label>
           <button data-v="both" aria-pressed="false">Both</button>
           <button data-v="none" aria-pressed="false">None</button>
         </div></div>
+      <div class="row"><label>Frame</label>
+        <div class="seg" id="frameSeg">
+          <button data-v="a" aria-pressed="true">Blue wave</button>
+          <button data-v="b" aria-pressed="false">Plain wave</button>
+          <button data-v="c" aria-pressed="false">White footer</button>
+        </div></div>
       <div class="row" id="noteFillRow"><label>Note</label><div class="swatches" id="noteFills"></div></div>""")
 # the calendar opens the rail: the schedule is where the work starts
 rep('  <aside class="panel" id="left">\n',
@@ -317,6 +323,15 @@ rep("['#tiles','#results','#drafts','#genBtn','#shufPhoto','#shufLook','#addText
 rep("$('#textPos').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; pushUndo(); S.textPos = b.dataset.v; templateDefaults(); layout(); syncControls(); renderInspector(); render(); persist(); });",
 """$('#textPos').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; pushUndo(); S.textPos = b.dataset.v; templateDefaults(); layout(); syncControls(); renderInspector(); render(); persist(); });
 $('#waveSeg').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; pushUndo(); S.wave = b.dataset.v; templateDefaults(); layout(); syncControls(); renderInspector(); render(); persist(); });
+// Frame style: the blue wave with the lockup, the plain wave, or the white footer from their
+// October posts. The white footer is a bottom piece only, so it brings the wave to Bottom.
+function setFrame(st){
+  S.waveStyle = st;
+  if (st === 'c') S.wave = 'bottom';
+  S.els = S.els.filter(e => e.type !== 'wave');
+  templateDefaults(); layout();
+}
+$('#frameSeg').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; pushUndo(); setFrame(b.dataset.v); syncControls(); renderInspector(); render(); persist(); });
 function renderNoteFills(){
   const box = $('#noteFills'); box.innerHTML = '';
   for (const [hex,name] of NOTE_FILLS) box.append(h('button',{class:'sw',title:name,style:`background:${hex}`,'aria-pressed':String((S.noteFill||'').toLowerCase()===hex),onclick:()=>{ pushUndo(); S.noteFill = hex; layout(); syncControls(); render(); persist(); }}));
@@ -325,6 +340,7 @@ rep("  $('#textPosRow').style.display = (S.template === 'headline' || S.template
 """  $('#textPosRow').style.display = S.template === 'headline' ? '' : 'none';
   $('#noteFillRow').style.display = S.template === 'note' ? '' : 'none';
   document.querySelectorAll('#waveSeg button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === (S.wave||'bottom'))));
+  document.querySelectorAll('#frameSeg button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === (S.waveStyle||'a'))));
   renderNoteFills(); renderGroundChips(); renderStickerRow();
   const isPhoto = S.bg.kind === 'photo';
   ['dim','zoom','fade','fadeSize'].forEach(id => { const n = document.getElementById(id); if (n) n.closest('.row').style.opacity = isPhoto ? '' : '.4'; });
@@ -394,7 +410,7 @@ rep("  else if (el.type === 'box') {\n    box.append(h('div',{class:'field'}, h(
   }
   else if (el.type === 'wave') {
     box.append(h('p',{class:'hint',style:'margin-bottom:8px'}, 'A piece of the wave frame. Drag to move, corners to resize, Delete to take it off.'));
-    box.append(row('Style', seg([['a','With lockup'],['b','Plain']], ()=>el.style||'a', v=>el.style=v)));
+    box.append(row('Style', seg([['a','With lockup'],['b','Plain'],['c','White footer']], ()=>el.style||'a', v=>{ el.style=v; if (v === 'c') { el.part='bottom'; el.id='wave-bottom'; } })));
     box.append(row('Edge', seg([['bottom','Bottom'],['top','Top']], ()=>el.part||'bottom', v=>{ el.part=v; el.id='wave-'+v; })));
     box.append(chk('Flip over', ()=>!!el.flip, v=>el.flip=v));
     box.append(row('Width', h('input',{type:'range',id:'insp-width',min:Math.round(W()*0.4),max:Math.round(W()*1.6),value:Math.round(el.w),oninput:change(e=>{guard();el.w=+e.target.value;})})));

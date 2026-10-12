@@ -731,6 +731,154 @@
     "guides"
    ],
    "group": "school-photo-2026"
+  },
+  {
+   "file": "oct-2026-1.jpg",
+   "thumb": "oct-2026-1-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "2026-10",
+    "hero",
+    "celebration",
+    "smiling",
+    "growth",
+    "younger",
+    "together"
+   ],
+   "group": "oct-2026-1"
+  },
+  {
+   "file": "oct-2026-2a.jpg",
+   "thumb": "oct-2026-2a-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "2026-10",
+    "reading",
+    "discussion",
+    "younger",
+    "together",
+    "focus"
+   ],
+   "group": "oct-2026-2a"
+  },
+  {
+   "file": "oct-2026-2b.jpg",
+   "thumb": "oct-2026-2b-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "2026-10",
+    "hands-on",
+    "creative",
+    "focus",
+    "older"
+   ],
+   "group": "oct-2026-2b"
+  },
+  {
+   "file": "oct-2026-3.jpg",
+   "thumb": "oct-2026-3-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "2026-10",
+    "reading",
+    "focus",
+    "older"
+   ],
+   "group": "oct-2026-3"
+  },
+  {
+   "file": "oct-2026-4.jpg",
+   "thumb": "oct-2026-4-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "2026-10",
+    "writing",
+    "art",
+    "schoolwork",
+    "focus"
+   ],
+   "group": "oct-2026-4"
+  },
+  {
+   "file": "oct-2026-5.jpg",
+   "thumb": "oct-2026-5-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "2026-10",
+    "play",
+    "movement",
+    "fun",
+    "friends",
+    "older"
+   ],
+   "group": "oct-2026-5"
+  },
+  {
+   "file": "oct-2026-7.jpg",
+   "thumb": "oct-2026-7-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "2026-10",
+    "games",
+    "together",
+    "younger",
+    "discussion"
+   ],
+   "group": "oct-2026-7"
+  },
+  {
+   "file": "oct-2026-8.jpg",
+   "thumb": "oct-2026-8-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "2026-10",
+    "science",
+    "hands-on",
+    "experiment",
+    "fun",
+    "friends",
+    "older"
+   ],
+   "group": "oct-2026-8"
+  },
+  {
+   "file": "oct-2026-9.jpg",
+   "thumb": "oct-2026-9-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "2026-10",
+    "math",
+    "reading",
+    "schoolwork",
+    "focus",
+    "younger"
+   ],
+   "group": "oct-2026-9"
+  },
+  {
+   "file": "oct-2026-10.jpg",
+   "thumb": "oct-2026-10-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "2026-10",
+    "reading",
+    "focus",
+    "younger"
+   ],
+   "group": "oct-2026-10"
+  },
+  {
+   "file": "oct-2026-11.jpg",
+   "thumb": "oct-2026-11-thumb.jpg",
+   "kind": "classroom",
+   "tags": [
+    "2026-10",
+    "games",
+    "friends",
+    "together",
+    "younger"
+   ],
+   "group": "oct-2026-11"
   }
  ]
 }
